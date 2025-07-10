@@ -10,13 +10,14 @@ from app.models import Base
 from app.main import app
 from app.routers.team import get_db
 
-# Use a temporary file-based SQLite database for tests
-@pytest.fixture(scope="session", autouse=True)
+# Use a temporary file-based SQLite database for each test function
+@pytest.fixture(scope="function", autouse=True)
 def setup_database():
     with tempfile.NamedTemporaryFile(suffix=".db") as tmp:
         TEST_DATABASE_URL = f"sqlite:///{tmp.name}"
         engine = create_engine(TEST_DATABASE_URL, connect_args={"check_same_thread": False})
         TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+        Base.metadata.drop_all(bind=engine)
         Base.metadata.create_all(bind=engine)
 
         def override_get_db():

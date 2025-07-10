@@ -30,4 +30,35 @@ uvicorn app.main:app --reload --port 8000
 - `app/utils/`: Utility functions
 - `app/models.py`: ORM models (database)
 - `app/schemas.py`: Pydantic schemas (validation)
-- `app/database.py`: Database setup 
+- `app/database.py`: Database setup
+
+---
+
+## API Endpoints
+
+### User & Team
+- `POST /team/register` – Register a user
+- `POST /team/create` – Create a team
+- `POST /team/join` – Join a team
+
+### Game Session
+- `POST /game/session` – Start a new game session for a team
+  - Request: `{ "team_id": <int> }`
+  - Response: `{ "id": <int>, "team_id": <int>, "status": "active" }`
+- `GET /game/session/{team_id}` – Get the current active session for a team
+
+---
+
+## Running Tests
+
+1. Make sure your virtual environment is activated:
+   ```
+   source backend/venv/bin/activate
+   ```
+2. Run all tests:
+   ```
+   pytest
+   ```
+
+- Tests use a temporary file-based SQLite database for isolation.
+- Test coverage includes user/team registration, team joining, and all game session API logic (including error cases). 
