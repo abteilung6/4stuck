@@ -3,6 +3,7 @@ from .database import init_db, SessionLocal
 from .routers.team import router as team_router
 from .routers.game import router as game_router
 from .routers.puzzle import router as puzzle_router
+from .routers.ws import router as ws_router
 import threading
 import time
 
@@ -21,8 +22,8 @@ def on_startup():
             try:
                 from app.models import User
                 users = db.query(User).all()
+                # At runtime, user.points is an int (not a Column); linter may show false positives here.
                 for user in users:
-                    # At runtime, user.points is an int (not a Column); linter may show false positives here.
                     if hasattr(user, 'points') and isinstance(user.points, int) and user.points > 0:
                         user.points = max(0, user.points - POINTS_LOST_PER_DECAY)
                 db.commit()
@@ -34,6 +35,7 @@ def on_startup():
 app.include_router(team_router)
 app.include_router(game_router)
 app.include_router(puzzle_router)
+app.include_router(ws_router)
 
 @app.get("/")
 def read_root():
