@@ -1,16 +1,39 @@
 from fastapi import FastAPI
-from .database import init_db
+from .database import init_db, SessionLocal
 from .routers.team import router as team_router
 from .routers.game import router as game_router
+from .routers.puzzle import router as puzzle_router
+import threading
+import time
+
+DECAY_INTERVAL_SECONDS = 5
+POINTS_LOST_PER_DECAY = 1
 
 app = FastAPI()
 
 @app.on_event("startup")
 def on_startup():
     init_db()
+    def decay_loop():
+        while True:
+            time.sleep(DECAY_INTERVAL_SECONDS)
+            db = SessionLocal()
+            try:
+                from app.models import User
+                users = db.query(User).all()
+                for user in users:
+                    # At runtime, user.points is an int (not a Column); linter may show false positives here.
+                    if hasattr(user, 'points') and isinstance(user.points, int) and user.points > 0:
+                        user.points = max(0, user.points - POINTS_LOST_PER_DECAY)
+                db.commit()
+            finally:
+                db.close()
+    thread = threading.Thread(target=decay_loop, daemon=True)
+    thread.start()
 
 app.include_router(team_router)
 app.include_router(game_router)
+app.include_router(puzzle_router)
 
 @app.get("/")
 def read_root():
