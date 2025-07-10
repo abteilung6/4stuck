@@ -44,3 +44,24 @@ You don’t have to ever use `eject`. The curated feature set is suitable for sm
 You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
 
 To learn React, check out the [React documentation](https://reactjs.org/).
+
+## Generating TypeScript API Types and Axios Client from FastAPI OpenAPI Spec
+
+To keep your frontend in sync with the backend API, you can automatically generate TypeScript types and an axios client using the FastAPI OpenAPI spec. This ensures type safety and up-to-date API contracts.
+
+### Prerequisites
+- The FastAPI backend must be running and accessible at `http://localhost:8000` (or adjust the URL as needed).
+- You need `openapi-typescript` and `openapi-typescript-codegen` installed (install with `npm install --save-dev openapi-typescript openapi-typescript-codegen`).
+
+### Command
+Run the following command from the `backend/` directory:
+
+```
+npx openapi-typescript http://localhost:8000/openapi.json -o ../frontend/src/api-types.ts && npx openapi-typescript-codegen --input http://localhost:8000/openapi.json --output ../frontend/src/api --client axios
+```
+
+- This will generate:
+  - `frontend/src/api-types.ts`: TypeScript types for all API schemas.
+  - `frontend/src/api/`: An axios-based API client with services for each endpoint group.
+
+**Regenerate these files whenever you change the backend API!**
