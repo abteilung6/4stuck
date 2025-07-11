@@ -67,3 +67,70 @@ Add a WebSocket endpoint: /ws/game/{session_id}
 Track connected clients: Use a dictionary mapping session_id to a set of WebSocket connections
 Broadcast function: Send a message to all clients in a session
 Trigger broadcasts: When points change, puzzles are solved, or a player is eliminated, call the broadcast function
+
+---
+
+# Frontend Game UI Development Workflow
+
+This document outlines the next optimal steps for building out the user-facing game interface, enabling end-to-end playtesting and a complete multiplayer experience.
+
+## 1. Lobby & Team Management UI
+- **User Registration/Login:**
+  - Allow users to register or log in (if authentication is implemented).
+  - Store user identity in frontend state (e.g., context or Redux).
+- **Team Creation/Join:**
+  - UI for creating a new team or joining an existing one.
+  - Display available teams and their members (using backend API).
+  - Show current user's team and roster.
+- **Team State Updates:**
+  - Listen for real-time updates (WebSocket) to reflect changes in team composition.
+
+## 2. Game Session Start/Join
+- **Start New Game:**
+  - UI for team leader to start a new game session.
+  - Option for team members to join an existing session.
+- **Session Lobby:**
+  - Show all teams/players in the session.
+  - Indicate session status (waiting, in progress, completed).
+
+## 3. Puzzle Display & Answer Submission
+- **Current Puzzle View:**
+  - Display the current puzzle for the team.
+  - Input for submitting answers.
+  - Show feedback (correct/incorrect, points awarded/lost).
+- **Puzzle Progression:**
+  - Indicate when a puzzle is solved and the next one appears.
+  - Handle timeouts or point decay visually.
+
+## 4. Live Game State
+- **Team & Player Points:**
+  - Real-time display of team and player points.
+  - Visualize point decay, transfers, and eliminations.
+- **Game Events:**
+  - Show notifications for key events (e.g., team eliminated, puzzle solved).
+- **WebSocket Integration:**
+  - Use backend WebSocket to update UI instantly as state changes.
+
+## 5. End-of-Game/Results Screen
+- **Results Display:**
+  - Show final standings, points, and winners.
+  - Option to start a new game or return to lobby.
+
+## 6. General UI/UX Considerations
+- **Responsiveness:**
+  - Ensure UI works on desktop and mobile.
+- **Error Handling:**
+  - Gracefully handle API/WebSocket errors and display user-friendly messages.
+- **Loading States:**
+  - Indicate when data is being fetched or actions are processing.
+
+---
+
+**Implementation Order Recommendation:**
+1. Lobby & Team Management UI
+2. Game Session Start/Join
+3. Puzzle Display & Answer Submission
+4. Live Game State
+5. End-of-Game/Results Screen
+
+This workflow will guide the next phase of development, focusing on delivering a playable and testable game experience for users.
