@@ -27,6 +27,9 @@ const GameSessionView: React.FC<GameSessionViewProps> = ({ session, user, team }
   const [players, setPlayers] = useState<GameState['players']>(team.members.map(m => ({ id: m.id, username: m.username, points: 0 })));
   const [notifications, setNotifications] = useState<string[]>([]);
   const wsRef = useRef<WebSocket | null>(null);
+  const [isEliminated, setIsEliminated] = useState(false);
+  const [gameOver, setGameOver] = useState(false);
+  const [finalStandings, setFinalStandings] = useState<GameState['players']>([]);
 
   // Fetch current puzzle for the user
   const fetchPuzzle = async () => {
@@ -50,8 +53,15 @@ const GameSessionView: React.FC<GameSessionViewProps> = ({ session, user, team }
     ws.onmessage = (event) => {
       const state: GameState = JSON.parse(event.data);
       setPlayers(state.players);
-      // Example: show notification if someone is eliminated or points change
-      // (You can expand this logic as needed)
+      // Detect elimination
+      const me = state.players.find(p => p.id === user.id);
+      if (me && me.points <= 0) setIsEliminated(true);
+      // Detect game over (all but one player/team with points)
+      const activePlayers = state.players.filter(p => p.points > 0);
+      if (activePlayers.length <= 1) {
+        setGameOver(true);
+        setFinalStandings([...state.players].sort((a, b) => b.points - a.points));
+      }
       setNotifications((prev) => [
         `Game state updated at ${new Date().toLocaleTimeString()}`,
         ...prev.slice(0, 4)
@@ -93,6 +103,104 @@ const GameSessionView: React.FC<GameSessionViewProps> = ({ session, user, team }
       setLoading(false);
     }
   };
+
+  // Determine if it's the user's turn (active puzzle assigned to them)
+  const isMyTurn = !!puzzle && !isEliminated && !gameOver;
+
+  // UI for eliminated player
+  if (isEliminated && !gameOver) {
+    return (
+      <div style={{ maxWidth: 600, margin: '2rem auto', padding: 24, border: '1px solid #ccc', borderRadius: 8 }}>
+        <h2>Game Session</h2>
+        <div style={{ color: '#b00', fontWeight: 'bold', fontSize: 20 }}>You have been eliminated.</div>
+        <div>Thank you for playing! Please wait for the game to finish.</div>
+        {/* Show team points and events for spectatorship */}
+        <hr />
+        <h4>Team Points</h4>
+        <table style={{ width: '100%', background: '#f6f6f6', borderRadius: 4 }}>
+          <thead>
+            <tr><th>Player</th><th>Points</th></tr>
+          </thead>
+          <tbody>
+            {players.map(p => (
+              <tr key={p.id} style={{ fontWeight: p.id === user.id ? 'bold' : undefined }}>
+                <td>{p.username}</td>
+                <td>{p.points}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+        {notifications.length > 0 && (
+          <div style={{ marginTop: 16 }}>
+            <h4>Game Events</h4>
+            <ul style={{ paddingLeft: 20 }}>
+              {notifications.map((n, i) => <li key={i}>{n}</li>)}
+            </ul>
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  // UI for game over
+  if (gameOver) {
+    return (
+      <div style={{ maxWidth: 600, margin: '2rem auto', padding: 24, border: '1px solid #ccc', borderRadius: 8 }}>
+        <h2>Game Over</h2>
+        <div style={{ fontWeight: 'bold', fontSize: 20, marginBottom: 16 }}>Final Standings</div>
+        <table style={{ width: '100%', background: '#f6f6f6', borderRadius: 4 }}>
+          <thead>
+            <tr><th>Player</th><th>Points</th></tr>
+          </thead>
+          <tbody>
+            {finalStandings.map(p => (
+              <tr key={p.id} style={{ fontWeight: p.id === user.id ? 'bold' : undefined }}>
+                <td>{p.username}</td>
+                <td>{p.points}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+        <div style={{ marginTop: 24 }}>
+          <button onClick={() => window.location.reload()}>Return to Lobby</button>
+        </div>
+      </div>
+    );
+  }
+
+  // UI for waiting for turn
+  if (!isMyTurn && !isEliminated && !gameOver) {
+    return (
+      <div style={{ maxWidth: 600, margin: '2rem auto', padding: 24, border: '1px solid #ccc', borderRadius: 8 }}>
+        <h2>Game Session</h2>
+        <div style={{ color: '#888', fontWeight: 'bold', fontSize: 20 }}>Waiting for your turn...</div>
+        <div>Watch your teammates and get ready!</div>
+        <hr />
+        <h4>Team Points</h4>
+        <table style={{ width: '100%', background: '#f6f6f6', borderRadius: 4 }}>
+          <thead>
+            <tr><th>Player</th><th>Points</th></tr>
+          </thead>
+          <tbody>
+            {players.map(p => (
+              <tr key={p.id} style={{ fontWeight: p.id === user.id ? 'bold' : undefined }}>
+                <td>{p.username}</td>
+                <td>{p.points}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+        {notifications.length > 0 && (
+          <div style={{ marginTop: 16 }}>
+            <h4>Game Events</h4>
+            <ul style={{ paddingLeft: 20 }}>
+              {notifications.map((n, i) => <li key={i}>{n}</li>)}
+            </ul>
+          </div>
+        )}
+      </div>
+    );
+  }
 
   return (
     <div style={{ maxWidth: 600, margin: '2rem auto', padding: 24, border: '1px solid #ccc', borderRadius: 8 }}>
