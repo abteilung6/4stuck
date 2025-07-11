@@ -23,6 +23,9 @@ class TeamOut(TeamBase):
     id: int
     model_config = {'from_attributes': True}
 
+class TeamWithMembersOut(TeamOut):
+    members: list[UserOut]
+
 class GameSessionCreate(BaseModel):
     team_id: int
 

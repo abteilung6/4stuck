@@ -45,4 +45,18 @@ def join_team(username: str, team_id: int, db: Session = Depends(get_db)):
     user.team_id = team_id
     db.commit()
     db.refresh(user)
-    return user 
+    return user
+
+@router.get("/", response_model=list[schemas.TeamWithMembersOut])
+def list_teams(db: Session = Depends(get_db)):
+    teams = db.query(models.Team).all()
+    result = []
+    for team in teams:
+        members = [schemas.UserOut.model_validate(user) for user in team.users]
+        team_out = schemas.TeamWithMembersOut(
+            id=team.id,
+            name=team.name,
+            members=members
+        )
+        result.append(team_out)
+    return result 
