@@ -5,6 +5,7 @@ import type { TeamCreate } from '../api/models/TeamCreate';
 import type { UserOut } from '../api/models/UserOut';
 import { GameService } from '../api/services/GameService';
 import type { GameSessionOut } from '../api/models/GameSessionOut';
+import GameSessionView from './GameSessionView';
 
 export const Lobby: React.FC = () => {
   const [username, setUsername] = useState('');
@@ -144,6 +145,14 @@ export const Lobby: React.FC = () => {
     setStatus('You left the team. (Reload to re-sync)');
     // Note: No backend endpoint for leaving a team; would need to implement.
   };
+
+  // Find the current user object from the team members
+  const currentUser = currentTeam?.members.find(m => m.username === currentName) || null;
+
+  // If a session is active, show the game session view
+  if (session && currentTeam && currentUser) {
+    return <GameSessionView session={session} user={currentUser} team={currentTeam} />;
+  }
 
   return (
     <div style={{ maxWidth: 500, margin: '2rem auto', padding: 24, border: '1px solid #ccc', borderRadius: 8 }}>
