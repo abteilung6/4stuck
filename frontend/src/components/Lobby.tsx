@@ -7,6 +7,7 @@ import { GameService } from '../api/services/GameService';
 import type { GameSessionOut } from '../api/models/GameSessionOut';
 import GameSessionView from './GameSessionView';
 import { useRef } from 'react';
+import './Lobby.css'; // Add a CSS file for styles
 
 export const Lobby: React.FC = () => {
   const [username, setUsername] = useState('');
@@ -197,86 +198,91 @@ export const Lobby: React.FC = () => {
   }
 
   return (
-    <div style={{ maxWidth: 500, margin: '2rem auto', padding: 24, border: '1px solid #ccc', borderRadius: 8 }}>
+    <div className="lobby-container">
       <h2>Game Lobby</h2>
-      <div style={{ marginBottom: 16 }}>
+      <div className="username-input-container">
         <input
           type="text"
           placeholder="Username"
           value={username}
           onChange={e => setUsername(e.target.value)}
           disabled={!!currentName}
-          style={{ marginRight: 8 }}
+          aria-label="Enter your username"
+          tabIndex={1}
         />
-        <button onClick={handleSetName} disabled={!!currentName}>
+        <button onClick={handleSetName} disabled={!!currentName} aria-label="Set Username">
           Set Name
         </button>
-        {currentName && <span style={{ marginLeft: 16 }}>Hello, <b>{currentName}</b>!</span>}
+        {currentName && <span className="hello-message">Hello, <b>{currentName}</b>!</span>}
       </div>
       <hr />
       <h3>Available Teams:</h3>
       {loading ? (
-        <div>Loading teams...</div>
+        <div className="loading-spinner"></div>
       ) : error ? (
-        <div style={{ color: '#b00' }}>{error}</div>
+        <div className="error-message">{error}</div>
       ) : (
-        <ul style={{ listStyle: 'none', padding: 0 }}>
+        <ul className="teams-list">
           {teams.map(team => (
-            <li key={team.id} style={{ marginBottom: 8, display: 'flex', alignItems: 'center' }}>
-              <span style={{ flex: 1 }}>{team.name} &nbsp;|&nbsp; {team.members.length} members</span>
-              <button onClick={() => handleJoinTeam(team)} disabled={!!currentTeam && currentTeam.id === team.id || !currentName}>
+            <li key={team.id} className="team-item">
+              <span className="team-name">{team.name} &nbsp;|&nbsp; {team.members.length} members</span>
+              <button onClick={() => handleJoinTeam(team)} disabled={!!currentTeam && currentTeam.id === team.id || !currentName} aria-label={`Join team ${team.name}`}>
                 Join
               </button>
             </li>
           ))}
         </ul>
       )}
-      <div style={{ marginTop: 8 }}>
+      <div className="new-team-input-container">
         <input
           type="text"
           placeholder="New team name"
           value={newTeamName}
           onChange={e => setNewTeamName(e.target.value)}
           disabled={creatingTeam}
-          style={{ marginRight: 8 }}
+          aria-label="Enter new team name"
+          tabIndex={2}
         />
-        <button onClick={handleCreateTeam} disabled={creatingTeam || !currentName}>
+        <button onClick={handleCreateTeam} disabled={creatingTeam || !currentName} aria-label="Create New Team">
           + Create New Team
         </button>
       </div>
       <hr />
       {currentTeam && (
-        <div>
+        <div className="team-info-container">
           <h3>Your Team: {currentTeam.name}</h3>
-          <ul style={{ listStyle: 'none', padding: 0 }}>
+          <ul className="team-members-list">
             {currentTeam.members.map((member) => (
               <li key={member.id}>{member.username}</li>
             ))}
           </ul>
-          <button onClick={handleLeaveTeam} style={{ marginRight: 8 }}>
+          <button onClick={handleLeaveTeam} className="leave-team-button" aria-label="Leave Team">
             Leave Team
           </button>
           <button
             onClick={handleStartGame}
             disabled={sessionLoading || !!session}
-            style={{ marginRight: 8 }}
+            className="start-game-button"
+            aria-label="Start Game"
           >
             {sessionLoading ? 'Starting...' : session ? 'Game In Progress' : 'Start Game'}
           </button>
           {session && (
-            <div style={{ marginTop: 8, color: 'green' }}>
+            <div className="active-session-info">
               Game session active! (Session ID: {session.id})
             </div>
           )}
         </div>
       )}
-      <div style={{ marginTop: 24, minHeight: 24, color: '#b00' }}>{status}</div>
+      <div className="status-message">{status}</div>
       <button
         onClick={() => {
           localStorage.removeItem('sessionId');
           localStorage.removeItem('teamId');
           setTimeout(() => window.location.reload(), 100); // 100ms delay
         }}
+        className="return-to-lobby-button"
+        aria-label="Return to Lobby"
       >
         Return to Lobby
       </button>

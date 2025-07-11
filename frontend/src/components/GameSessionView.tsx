@@ -4,6 +4,7 @@ import type { GameSessionOut } from '../api/models/GameSessionOut';
 import type { TeamWithMembersOut } from '../api/models/TeamWithMembersOut';
 import type { PuzzleState } from '../api/models/PuzzleState';
 import type { PuzzleResult } from '../api/models/PuzzleResult';
+import './GameSessionView.css'; // Add a CSS file for styles
 
 interface GameState {
   session: { id: number; status: string };
@@ -110,20 +111,20 @@ const GameSessionView: React.FC<GameSessionViewProps> = ({ session, user, team }
   // UI for eliminated player
   if (isEliminated && !gameOver) {
     return (
-      <div style={{ maxWidth: 600, margin: '2rem auto', padding: 24, border: '1px solid #ccc', borderRadius: 8 }}>
+      <div className="game-session-container">
         <h2>Game Session</h2>
-        <div style={{ color: '#b00', fontWeight: 'bold', fontSize: 20 }}>You have been eliminated.</div>
+        <div className="eliminated-message">You have been eliminated.</div>
         <div>Thank you for playing! Please wait for the game to finish.</div>
         {/* Show team points and events for spectatorship */}
         <hr />
         <h4>Team Points</h4>
-        <table style={{ width: '100%', background: '#f6f6f6', borderRadius: 4 }}>
+        <table className="team-points-table">
           <thead>
             <tr><th>Player</th><th>Points</th></tr>
           </thead>
           <tbody>
             {players.map(p => (
-              <tr key={p.id} style={{ fontWeight: p.id === user.id ? 'bold' : undefined }}>
+              <tr key={p.id} className={p.id === user.id ? 'current-user' : ''}>
                 <td>{p.username}</td>
                 <td>{p.points}</td>
               </tr>
@@ -131,9 +132,9 @@ const GameSessionView: React.FC<GameSessionViewProps> = ({ session, user, team }
           </tbody>
         </table>
         {notifications.length > 0 && (
-          <div style={{ marginTop: 16 }}>
+          <div className="game-events-section">
             <h4>Game Events</h4>
-            <ul style={{ paddingLeft: 20 }}>
+            <ul className="game-events-list">
               {notifications.map((n, i) => <li key={i}>{n}</li>)}
             </ul>
           </div>
@@ -145,23 +146,23 @@ const GameSessionView: React.FC<GameSessionViewProps> = ({ session, user, team }
   // UI for game over
   if (gameOver) {
     return (
-      <div style={{ maxWidth: 600, margin: '2rem auto', padding: 24, border: '1px solid #ccc', borderRadius: 8 }}>
+      <div className="game-session-container">
         <h2>Game Over</h2>
-        <div style={{ fontWeight: 'bold', fontSize: 20, marginBottom: 16 }}>Final Standings</div>
-        <table style={{ width: '100%', background: '#f6f6f6', borderRadius: 4 }}>
+        <div className="final-standings-title">Final Standings</div>
+        <table className="team-points-table">
           <thead>
             <tr><th>Player</th><th>Points</th></tr>
           </thead>
           <tbody>
             {finalStandings.map(p => (
-              <tr key={p.id} style={{ fontWeight: p.id === user.id ? 'bold' : undefined }}>
+              <tr key={p.id} className={p.id === user.id ? 'current-user' : ''}>
                 <td>{p.username}</td>
                 <td>{p.points}</td>
               </tr>
             ))}
           </tbody>
         </table>
-        <div style={{ marginTop: 24 }}>
+        <div className="return-to-lobby-button-container">
           <button onClick={() => {
             localStorage.removeItem('sessionId');
             localStorage.removeItem('teamId');
@@ -175,19 +176,19 @@ const GameSessionView: React.FC<GameSessionViewProps> = ({ session, user, team }
   // UI for waiting for turn
   if (!isMyTurn && !isEliminated && !gameOver) {
     return (
-      <div style={{ maxWidth: 600, margin: '2rem auto', padding: 24, border: '1px solid #ccc', borderRadius: 8 }}>
+      <div className="game-session-container">
         <h2>Game Session</h2>
-        <div style={{ color: '#888', fontWeight: 'bold', fontSize: 20 }}>Waiting for your turn...</div>
+        <div className="waiting-message">Waiting for your turn...</div>
         <div>Watch your teammates and get ready!</div>
         <hr />
         <h4>Team Points</h4>
-        <table style={{ width: '100%', background: '#f6f6f6', borderRadius: 4 }}>
+        <table className="team-points-table">
           <thead>
             <tr><th>Player</th><th>Points</th></tr>
           </thead>
           <tbody>
             {players.map(p => (
-              <tr key={p.id} style={{ fontWeight: p.id === user.id ? 'bold' : undefined }}>
+              <tr key={p.id} className={p.id === user.id ? 'current-user' : ''}>
                 <td>{p.username}</td>
                 <td>{p.points}</td>
               </tr>
@@ -195,9 +196,9 @@ const GameSessionView: React.FC<GameSessionViewProps> = ({ session, user, team }
           </tbody>
         </table>
         {notifications.length > 0 && (
-          <div style={{ marginTop: 16 }}>
+          <div className="game-events-section">
             <h4>Game Events</h4>
-            <ul style={{ paddingLeft: 20 }}>
+            <ul className="game-events-list">
               {notifications.map((n, i) => <li key={i}>{n}</li>)}
             </ul>
           </div>
@@ -207,21 +208,21 @@ const GameSessionView: React.FC<GameSessionViewProps> = ({ session, user, team }
   }
 
   return (
-    <div style={{ maxWidth: 600, margin: '2rem auto', padding: 24, border: '1px solid #ccc', borderRadius: 8 }}>
+    <div className="game-session-container">
       <h2>Game Session</h2>
       <div>Team: <b>{team.name}</b></div>
       <div>You are: <b>{user.username}</b></div>
       <div>Session ID: {session.id}</div>
       <hr />
-      <div style={{ marginBottom: 16 }}>
+      <div className="team-points-section">
         <h4>Team Points</h4>
-        <table style={{ width: '100%', background: '#f6f6f6', borderRadius: 4 }}>
+        <table className="team-points-table">
           <thead>
             <tr><th>Player</th><th>Points</th></tr>
           </thead>
           <tbody>
             {players.map(p => (
-              <tr key={p.id} style={{ fontWeight: p.id === user.id ? 'bold' : undefined }}>
+              <tr key={p.id} className={p.id === user.id ? 'current-user' : ''}>
                 <td>{p.username}</td>
                 <td>{p.points}</td>
               </tr>
@@ -230,32 +231,34 @@ const GameSessionView: React.FC<GameSessionViewProps> = ({ session, user, team }
         </table>
       </div>
       {notifications.length > 0 && (
-        <div style={{ marginBottom: 16 }}>
+        <div className="game-events-section">
           <h4>Game Events</h4>
-          <ul style={{ paddingLeft: 20 }}>
+          <ul className="game-events-list">
             {notifications.map((n, i) => <li key={i}>{n}</li>)}
           </ul>
         </div>
       )}
       <hr />
-      {loading && <div>Loading...</div>}
-      {error && <div style={{ color: '#b00' }}>{error}</div>}
+      {loading && <div className="loading-spinner"></div>}
+      {error && <div className="error-message">{error}</div>}
       {puzzle && (
-        <div>
+        <div className="puzzle-section">
           <h3>Puzzle: {puzzle.type}</h3>
-          <pre style={{ background: '#f6f6f6', padding: 8 }}>{JSON.stringify(puzzle.data, null, 2)}</pre>
-          <form onSubmit={handleSubmit} style={{ marginTop: 16 }}>
+          <pre className="puzzle-data-pre">{JSON.stringify(puzzle.data, null, 2)}</pre>
+          <form onSubmit={handleSubmit} className="puzzle-input-form">
             <input
               type="text"
               placeholder="Your answer"
               value={answer}
               onChange={e => setAnswer(e.target.value)}
               disabled={loading}
-              style={{ marginRight: 8 }}
+              className="puzzle-input-field"
+              aria-label="Your answer input"
+              tabIndex={0}
             />
-            <button type="submit" disabled={loading || !answer}>Submit</button>
+            <button type="submit" disabled={loading || !answer} className="submit-button" aria-label="Submit answer">Submit</button>
           </form>
-          {feedback && <div style={{ marginTop: 12, color: feedback === 'Correct!' ? 'green' : '#b00' }}>{feedback}</div>}
+          {feedback && <div className={`feedback-message ${feedback === 'Correct!' ? 'correct' : 'incorrect'}`}>{feedback}</div>}
         </div>
       )}
     </div>
