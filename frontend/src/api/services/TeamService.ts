@@ -4,6 +4,7 @@
 /* eslint-disable */
 import type { TeamCreate } from '../models/TeamCreate';
 import type { TeamOut } from '../models/TeamOut';
+import type { TeamWithMembersOut } from '../models/TeamWithMembersOut';
 import type { UserCreate } from '../models/UserCreate';
 import type { UserOut } from '../models/UserOut';
 import type { CancelablePromise } from '../core/CancelablePromise';
@@ -69,6 +70,17 @@ export class TeamService {
             errors: {
                 422: `Validation Error`,
             },
+        });
+    }
+    /**
+     * List Teams
+     * @returns TeamWithMembersOut Successful Response
+     * @throws ApiError
+     */
+    public static listTeamsTeamGet(): CancelablePromise<Array<TeamWithMembersOut>> {
+        return __request(OpenAPI, {
+            method: 'GET',
+            url: '/team/',
         });
     }
 }

@@ -18,6 +18,7 @@ export type { PuzzleState } from './models/PuzzleState';
 export type { TeamCreate } from './models/TeamCreate';
 export type { TeamOut } from './models/TeamOut';
 export type { TeamPoints } from './models/TeamPoints';
+export type { TeamWithMembersOut } from './models/TeamWithMembersOut';
 export type { UserCreate } from './models/UserCreate';
 export type { UserOut } from './models/UserOut';
 export type { ValidationError } from './models/ValidationError';
