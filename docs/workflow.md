@@ -216,3 +216,40 @@ After a game session is started, the UI transitions from the lobby to the puzzle
 ---
 
 This breakdown guides the implementation of the puzzle/game UI, enabling a seamless and interactive gameplay experience after session start.
+
+---
+
+# Real-Time Game State & Team Points in GameSessionView: Detailed Breakdown
+
+## Overview
+Enhance the in-game experience by displaying live team points, player status, and game events in the puzzle/game UI. Use real-time updates (WebSocket or polling) to keep all players in sync as the game progresses.
+
+## Backend Steps
+1. **WebSocket Endpoint**
+   - Confirm the existence of a WebSocket endpoint that broadcasts game state updates for a session (e.g., `/ws/game/{session_id}`).
+   - Ensure the backend sends relevant updates: team points, puzzle state, player eliminations, and key game events.
+2. **Game State Payload**
+   - Define/confirm the structure of the game state message sent to clients (should include team points, player status, current puzzle info, etc.).
+3. **Testing**
+   - Add/verify tests for WebSocket broadcasting and game state updates.
+
+## Frontend Steps
+1. **WebSocket Integration**
+   - Connect to the backend WebSocket endpoint for the current session.
+   - Listen for incoming game state messages and update the UI accordingly.
+2. **Team Points & Player Status Panel**
+   - Display a panel in `GameSessionView` showing all team members and their current points/status.
+   - Update this panel in real time as messages arrive.
+3. **Game Events/Notifications**
+   - Show notifications for key events (e.g., puzzle solved, points awarded, player eliminated, team eliminated).
+4. **Error Handling & Reconnection**
+   - Handle WebSocket errors and implement reconnection logic if needed.
+
+## Implementation Order Recommendation
+1. Backend: Confirm/implement WebSocket payload and tests.
+2. Frontend: Integrate WebSocket, display team points/status, handle updates.
+3. Frontend: Add event notifications and polish UI.
+
+---
+
+This breakdown guides the implementation of real-time game state and team points, creating a dynamic and engaging multiplayer experience.
