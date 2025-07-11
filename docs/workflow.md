@@ -172,3 +172,47 @@ Enables teams to transition from the lobby/team management phase into active gam
 ---
 
 This breakdown guides the implementation of the game session start feature, bridging the lobby and gameplay phases for a seamless user experience.
+
+---
+
+# Puzzle/Game UI After Session Start: Detailed Breakdown
+
+## Overview
+After a game session is started, the UI transitions from the lobby to the puzzle/game view. This component is responsible for presenting puzzles, handling answer submission, showing feedback, and updating in real time as the game progresses.
+
+## Backend Steps
+1. **Endpoint Review**
+   - Confirm endpoints for fetching the current puzzle (e.g., `GET /puzzle/state/{user_id}` or similar).
+   - Confirm endpoint for submitting an answer (e.g., `POST /puzzle/answer`).
+   - Confirm real-time update mechanism (WebSocket or polling).
+2. **Testing**
+   - Ensure endpoints are covered by tests for puzzle retrieval, answer validation, and state updates.
+
+## Frontend Steps
+1. **Component Structure**
+   - Create a new component (e.g., `GameSessionView` or `PuzzleUI`).
+   - Accept session info and user/team context as props or from global state.
+2. **Puzzle Fetching**
+   - On mount, fetch the current puzzle for the user/team.
+   - Display puzzle data (type, content, etc.).
+3. **Answer Submission**
+   - Provide input(s) for the user to submit an answer.
+   - On submit, call the backend answer endpoint and handle the response.
+   - Show feedback (correct/incorrect, points awarded/lost, etc.).
+4. **Real-Time Updates**
+   - Integrate with the backend WebSocket (or polling) to receive live updates (e.g., puzzle solved, points changed, team eliminated).
+   - Update the UI in response to real-time events.
+5. **State Management & Navigation**
+   - Handle transitions between puzzles, end-of-game, or elimination states.
+   - Optionally, allow navigation back to the lobby or results screen.
+6. **Error Handling & Loading States**
+   - Show loading indicators and user-friendly error messages as needed.
+
+## Implementation Order Recommendation
+1. Backend: Confirm/implement endpoints and tests.
+2. Frontend: Scaffold component, integrate puzzle fetching and answer submission.
+3. Frontend: Add real-time updates and state transitions.
+
+---
+
+This breakdown guides the implementation of the puzzle/game UI, enabling a seamless and interactive gameplay experience after session start.
