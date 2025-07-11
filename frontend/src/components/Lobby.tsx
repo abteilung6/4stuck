@@ -3,6 +3,8 @@ import { TeamService } from '../api/services/TeamService';
 import type { TeamWithMembersOut } from '../api/models/TeamWithMembersOut';
 import type { TeamCreate } from '../api/models/TeamCreate';
 import type { UserOut } from '../api/models/UserOut';
+import { GameService } from '../api/services/GameService';
+import type { GameSessionOut } from '../api/models/GameSessionOut';
 
 export const Lobby: React.FC = () => {
   const [username, setUsername] = useState('');
@@ -14,6 +16,8 @@ export const Lobby: React.FC = () => {
   const [error, setError] = useState<string>('');
   const [creatingTeam, setCreatingTeam] = useState<boolean>(false);
   const [newTeamName, setNewTeamName] = useState<string>('');
+  const [session, setSession] = useState<GameSessionOut | null>(null);
+  const [sessionLoading, setSessionLoading] = useState<boolean>(false);
 
   // Fetch teams from backend
   const fetchTeams = async () => {
@@ -34,10 +38,33 @@ export const Lobby: React.FC = () => {
     }
   };
 
+  // Fetch current session for the team
+  const fetchSession = async (teamId: number) => {
+    setSessionLoading(true);
+    try {
+      const sess = await GameService.getCurrentSessionGameSessionTeamIdGet(teamId);
+      setSession(sess);
+    } catch (err) {
+      setSession(null); // No active session
+    } finally {
+      setSessionLoading(false);
+    }
+  };
+
   useEffect(() => {
     fetchTeams();
     // eslint-disable-next-line
   }, [currentName]);
+
+  // When currentTeam changes, check for active session
+  useEffect(() => {
+    if (currentTeam) {
+      fetchSession(currentTeam.id);
+    } else {
+      setSession(null);
+    }
+    // eslint-disable-next-line
+  }, [currentTeam]);
 
   const handleSetName = async () => {
     if (username.trim()) {
@@ -94,6 +121,21 @@ export const Lobby: React.FC = () => {
       setStatus('Failed to create team. Name may already exist.');
     } finally {
       setCreatingTeam(false);
+    }
+  };
+
+  const handleStartGame = async () => {
+    if (!currentTeam) return;
+    setSessionLoading(true);
+    setStatus('Starting game session...');
+    try {
+      const sess = await GameService.createGameSessionGameSessionPost({ team_id: currentTeam.id });
+      setSession(sess);
+      setStatus('Game session started!');
+    } catch (err: any) {
+      setStatus('Failed to start game session. There may already be an active session.');
+    } finally {
+      setSessionLoading(false);
     }
   };
 
@@ -163,7 +205,18 @@ export const Lobby: React.FC = () => {
           <button onClick={handleLeaveTeam} style={{ marginRight: 8 }}>
             Leave Team
           </button>
-          <button disabled>Ready/Start Game</button>
+          <button
+            onClick={handleStartGame}
+            disabled={sessionLoading || !!session}
+            style={{ marginRight: 8 }}
+          >
+            {sessionLoading ? 'Starting...' : session ? 'Game In Progress' : 'Start Game'}
+          </button>
+          {session && (
+            <div style={{ marginTop: 8, color: 'green' }}>
+              Game session active! (Session ID: {session.id})
+            </div>
+          )}
         </div>
       )}
       <div style={{ marginTop: 24, minHeight: 24, color: '#b00' }}>{status}</div>
