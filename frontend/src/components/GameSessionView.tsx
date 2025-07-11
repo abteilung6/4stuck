@@ -162,7 +162,11 @@ const GameSessionView: React.FC<GameSessionViewProps> = ({ session, user, team }
           </tbody>
         </table>
         <div style={{ marginTop: 24 }}>
-          <button onClick={() => window.location.reload()}>Return to Lobby</button>
+          <button onClick={() => {
+            localStorage.removeItem('sessionId');
+            localStorage.removeItem('teamId');
+            window.location.reload();
+          }}>Return to Lobby</button>
         </div>
       </div>
     );

@@ -6,6 +6,7 @@ import type { UserOut } from '../api/models/UserOut';
 import { GameService } from '../api/services/GameService';
 import type { GameSessionOut } from '../api/models/GameSessionOut';
 import GameSessionView from './GameSessionView';
+import { useRef } from 'react';
 
 export const Lobby: React.FC = () => {
   const [username, setUsername] = useState('');
@@ -19,6 +20,7 @@ export const Lobby: React.FC = () => {
   const [newTeamName, setNewTeamName] = useState<string>('');
   const [session, setSession] = useState<GameSessionOut | null>(null);
   const [sessionLoading, setSessionLoading] = useState<boolean>(false);
+  const isFirstLoad = useRef(true);
 
   // Fetch teams from backend
   const fetchTeams = async () => {
@@ -66,6 +68,46 @@ export const Lobby: React.FC = () => {
     }
     // eslint-disable-next-line
   }, [currentTeam]);
+
+  // Load persisted state on mount
+  useEffect(() => {
+    if (isFirstLoad.current) {
+      const savedName = localStorage.getItem('username');
+      const savedTeamId = localStorage.getItem('teamId');
+      const savedSessionId = localStorage.getItem('sessionId');
+      if (savedName) setCurrentName(savedName);
+      if (savedName) setUsername(savedName);
+      if (savedTeamId) {
+        // Will be set after teams are fetched
+      }
+      if (savedSessionId) {
+        setSession({ id: Number(savedSessionId), team_id: savedTeamId ? Number(savedTeamId) : undefined, status: 'active' } as any);
+      }
+      isFirstLoad.current = false;
+    }
+  }, []);
+
+  // Persist state on change
+  useEffect(() => {
+    if (currentName) localStorage.setItem('username', currentName);
+  }, [currentName]);
+  useEffect(() => {
+    if (currentTeam) localStorage.setItem('teamId', String(currentTeam.id));
+  }, [currentTeam]);
+  useEffect(() => {
+    if (session) localStorage.setItem('sessionId', String(session.id));
+    else localStorage.removeItem('sessionId');
+  }, [session]);
+
+  // After teams are fetched, restore currentTeam if needed
+  useEffect(() => {
+    const savedTeamId = localStorage.getItem('teamId');
+    if (savedTeamId && teams.length > 0 && !currentTeam) {
+      const found = teams.find(t => String(t.id) === savedTeamId);
+      if (found) setCurrentTeam(found);
+    }
+    // eslint-disable-next-line
+  }, [teams]);
 
   const handleSetName = async () => {
     if (username.trim()) {
@@ -229,6 +271,15 @@ export const Lobby: React.FC = () => {
         </div>
       )}
       <div style={{ marginTop: 24, minHeight: 24, color: '#b00' }}>{status}</div>
+      <button
+        onClick={() => {
+          localStorage.removeItem('sessionId');
+          localStorage.removeItem('teamId');
+          setTimeout(() => window.location.reload(), 100); // 100ms delay
+        }}
+      >
+        Return to Lobby
+      </button>
     </div>
   );
 };
