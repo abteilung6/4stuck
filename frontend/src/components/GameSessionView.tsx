@@ -1,9 +1,16 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { PuzzleService } from '../api/services/PuzzleService';
 import type { GameSessionOut } from '../api/models/GameSessionOut';
 import type { TeamWithMembersOut } from '../api/models/TeamWithMembersOut';
 import type { PuzzleState } from '../api/models/PuzzleState';
 import type { PuzzleResult } from '../api/models/PuzzleResult';
+
+interface GameState {
+  session: { id: number; status: string };
+  team: { id: number; name: string };
+  players: Array<{ id: number; username: string; points: number }>;
+  puzzles: Array<{ id: number; user_id: number; type: string; status: string; data: any }>;
+}
 
 interface GameSessionViewProps {
   session: GameSessionOut;
@@ -17,6 +24,9 @@ const GameSessionView: React.FC<GameSessionViewProps> = ({ session, user, team }
   const [feedback, setFeedback] = useState<string>('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [players, setPlayers] = useState<GameState['players']>(team.members.map(m => ({ id: m.id, username: m.username, points: 0 })));
+  const [notifications, setNotifications] = useState<string[]>([]);
+  const wsRef = useRef<WebSocket | null>(null);
 
   // Fetch current puzzle for the user
   const fetchPuzzle = async () => {
@@ -32,6 +42,26 @@ const GameSessionView: React.FC<GameSessionViewProps> = ({ session, user, team }
       setLoading(false);
     }
   };
+
+  // WebSocket setup for real-time game state
+  useEffect(() => {
+    const ws = new WebSocket(`ws://localhost:8000/ws/game/${session.id}`);
+    wsRef.current = ws;
+    ws.onmessage = (event) => {
+      const state: GameState = JSON.parse(event.data);
+      setPlayers(state.players);
+      // Example: show notification if someone is eliminated or points change
+      // (You can expand this logic as needed)
+      setNotifications((prev) => [
+        `Game state updated at ${new Date().toLocaleTimeString()}`,
+        ...prev.slice(0, 4)
+      ]);
+    };
+    ws.onerror = () => setNotifications((prev) => ["WebSocket error", ...prev]);
+    ws.onclose = () => setNotifications((prev) => ["WebSocket closed", ...prev]);
+    return () => { ws.close(); };
+    // eslint-disable-next-line
+  }, [session.id]);
 
   useEffect(() => {
     fetchPuzzle();
@@ -65,11 +95,36 @@ const GameSessionView: React.FC<GameSessionViewProps> = ({ session, user, team }
   };
 
   return (
-    <div style={{ maxWidth: 500, margin: '2rem auto', padding: 24, border: '1px solid #ccc', borderRadius: 8 }}>
+    <div style={{ maxWidth: 600, margin: '2rem auto', padding: 24, border: '1px solid #ccc', borderRadius: 8 }}>
       <h2>Game Session</h2>
       <div>Team: <b>{team.name}</b></div>
       <div>You are: <b>{user.username}</b></div>
       <div>Session ID: {session.id}</div>
+      <hr />
+      <div style={{ marginBottom: 16 }}>
+        <h4>Team Points</h4>
+        <table style={{ width: '100%', background: '#f6f6f6', borderRadius: 4 }}>
+          <thead>
+            <tr><th>Player</th><th>Points</th></tr>
+          </thead>
+          <tbody>
+            {players.map(p => (
+              <tr key={p.id} style={{ fontWeight: p.id === user.id ? 'bold' : undefined }}>
+                <td>{p.username}</td>
+                <td>{p.points}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      {notifications.length > 0 && (
+        <div style={{ marginBottom: 16 }}>
+          <h4>Game Events</h4>
+          <ul style={{ paddingLeft: 20 }}>
+            {notifications.map((n, i) => <li key={i}>{n}</li>)}
+          </ul>
+        </div>
+      )}
       <hr />
       {loading && <div>Loading...</div>}
       {error && <div style={{ color: '#b00' }}>{error}</div>}
@@ -91,7 +146,6 @@ const GameSessionView: React.FC<GameSessionViewProps> = ({ session, user, team }
           {feedback && <div style={{ marginTop: 12, color: feedback === 'Correct!' ? 'green' : '#b00' }}>{feedback}</div>}
         </div>
       )}
-      {/* Placeholder for real-time updates, team points, etc. */}
     </div>
   );
 };
