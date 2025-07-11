@@ -6,11 +6,21 @@ from .routers.puzzle import router as puzzle_router
 from .routers.ws import router as ws_router
 import threading
 import time
+from fastapi.middleware.cors import CORSMiddleware
 
 DECAY_INTERVAL_SECONDS = 5
 POINTS_LOST_PER_DECAY = 1
 
 app = FastAPI()
+
+# CORS setup: allow all origins for development
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*", "127.0.0.1:5173", "localhost:5173", "http://127.0.0.1:5173", "http://localhost:5173"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 @app.on_event("startup")
 def on_startup():

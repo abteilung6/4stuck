@@ -1,24 +1,33 @@
-import React, { useState } from 'react';
-
-// Placeholder types for teams and members
-type Team = {
-  id: string;
-  name: string;
-  members: string[];
-};
-
-const mockTeams: Team[] = [
-  { id: '1', name: 'Team Alpha', members: ['Alice', 'Bob', 'Charlie'] },
-  { id: '2', name: 'Team Bravo', members: ['You', 'Alice', 'Bob'] },
-  { id: '3', name: 'Team Charlie', members: ['Dave', 'Eve', 'Frank', 'Grace'] },
-];
+import React, { useState, useEffect } from 'react';
+import { TeamService } from '../api/services/TeamService';
+import type { TeamWithMembersOut } from '../api/models/TeamWithMembersOut';
 
 export const Lobby: React.FC = () => {
   const [username, setUsername] = useState('');
   const [currentName, setCurrentName] = useState<string | null>(null);
-  const [teams] = useState<Team[]>(mockTeams);
-  const [currentTeam, setCurrentTeam] = useState<Team | null>(null);
+  const [teams, setTeams] = useState<TeamWithMembersOut[]>([]);
+  const [currentTeam, setCurrentTeam] = useState<TeamWithMembersOut | null>(null);
   const [status, setStatus] = useState<string>('');
+  const [loading, setLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string>('');
+
+  // Fetch teams from backend
+  const fetchTeams = async () => {
+    setLoading(true);
+    setError('');
+    try {
+      const data = await TeamService.listTeamsTeamGet();
+      setTeams(data);
+    } catch (err) {
+      setError('Failed to load teams.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchTeams();
+  }, []);
 
   const handleSetName = () => {
     if (username.trim()) {
@@ -29,7 +38,7 @@ export const Lobby: React.FC = () => {
     }
   };
 
-  const handleJoinTeam = (team: Team) => {
+  const handleJoinTeam = (team: TeamWithMembersOut) => {
     setCurrentTeam(team);
     setStatus(`Joined ${team.name}`);
   };
@@ -62,16 +71,22 @@ export const Lobby: React.FC = () => {
       </div>
       <hr />
       <h3>Available Teams:</h3>
-      <ul style={{ listStyle: 'none', padding: 0 }}>
-        {teams.map(team => (
-          <li key={team.id} style={{ marginBottom: 8, display: 'flex', alignItems: 'center' }}>
-            <span style={{ flex: 1 }}>{team.name} &nbsp;|&nbsp; {team.members.length} members</span>
-            <button onClick={() => handleJoinTeam(team)} disabled={!!currentTeam && currentTeam.id === team.id}>
-              Join
-            </button>
-          </li>
-        ))}
-      </ul>
+      {loading ? (
+        <div>Loading teams...</div>
+      ) : error ? (
+        <div style={{ color: '#b00' }}>{error}</div>
+      ) : (
+        <ul style={{ listStyle: 'none', padding: 0 }}>
+          {teams.map(team => (
+            <li key={team.id} style={{ marginBottom: 8, display: 'flex', alignItems: 'center' }}>
+              <span style={{ flex: 1 }}>{team.name} &nbsp;|&nbsp; {team.members.length} members</span>
+              <button onClick={() => handleJoinTeam(team)} disabled={!!currentTeam && currentTeam.id === team.id}>
+                Join
+              </button>
+            </li>
+          ))}
+        </ul>
+      )}
       <button onClick={handleCreateTeam} style={{ marginTop: 8 }}>
         + Create New Team
       </button>
@@ -80,8 +95,8 @@ export const Lobby: React.FC = () => {
         <div>
           <h3>Your Team: {currentTeam.name}</h3>
           <ul style={{ listStyle: 'none', padding: 0 }}>
-            {currentTeam.members.map((member, idx) => (
-              <li key={idx}>{member}</li>
+            {currentTeam.members.map((member) => (
+              <li key={member.id}>{member.username}</li>
             ))}
           </ul>
           <button onClick={handleLeaveTeam} style={{ marginRight: 8 }}>
