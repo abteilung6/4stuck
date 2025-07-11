@@ -134,3 +134,41 @@ This document outlines the next optimal steps for building out the user-facing g
 5. End-of-Game/Results Screen
 
 This workflow will guide the next phase of development, focusing on delivering a playable and testable game experience for users.
+
+---
+
+# Start Game Session from Lobby: Detailed Breakdown
+
+## Overview
+Enables teams to transition from the lobby/team management phase into active gameplay by starting a game session. This is a critical step for enabling end-to-end playtesting and unlocking the puzzle/game UI.
+
+## Backend Steps
+1. **Endpoint Review**
+   - Confirm existence of an endpoint to start a game session (e.g., `POST /game/session`).
+   - Confirm required request body (e.g., team_id) and response (e.g., session info).
+2. **Permissions/Logic**
+   - Optionally restrict session start to team leader or allow any member (MVP: any member).
+   - Ensure a team cannot start multiple concurrent sessions.
+3. **Testing**
+   - Add/verify tests for session creation, duplicate prevention, and error handling.
+
+## Frontend Steps
+1. **UI Update**
+   - Add a “Start Game” button to the lobby/team view (visible if user is in a team and no session is active).
+   - Disable or hide the button if a session is already active for the team.
+2. **API Integration**
+   - On click, call the backend endpoint to start a session for the current team.
+   - Handle loading, success, and error states.
+3. **State Management**
+   - Store the session info in frontend state/context for use in the puzzle/game UI.
+   - Transition UI to the game/puzzle view when the session starts.
+4. **Feedback**
+   - Show confirmation, errors, or session status to the user.
+
+## Implementation Order Recommendation
+1. Backend: Confirm/implement endpoint and tests.
+2. Frontend: Add button, integrate API, handle state/transition.
+
+---
+
+This breakdown guides the implementation of the game session start feature, bridging the lobby and gameplay phases for a seamless user experience.
