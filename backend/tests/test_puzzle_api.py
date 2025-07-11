@@ -34,7 +34,7 @@ def create_test_app_and_client():
     app.dependency_overrides[get_db_game] = override_get_db
     app.dependency_overrides[get_db_puzzle] = override_get_db
     client = TestClient(app)
-    return client, tmp
+    return client, tmp, TestingSessionLocal
 
 def create_team_user_session(client):
     unique = str(uuid4())
@@ -50,7 +50,7 @@ def create_team_user_session(client):
     return user_id, team_id, session_id
 
 def test_create_and_get_puzzle():
-    client, tmp = create_test_app_and_client()
+    client, tmp, _ = create_test_app_and_client()
     user_id, team_id, session_id = create_team_user_session(client)
     # Create puzzle
     resp = client.post("/puzzle/create", json={"type": "memory", "game_session_id": session_id, "user_id": user_id})
@@ -64,7 +64,7 @@ def test_create_and_get_puzzle():
     tmp.close()
 
 def test_submit_answer_correct_and_incorrect():
-    client, tmp = create_test_app_and_client()
+    client, tmp, _ = create_test_app_and_client()
     user_id, team_id, session_id = create_team_user_session(client)
     # Create puzzle
     resp = client.post("/puzzle/create", json={"type": "memory", "game_session_id": session_id, "user_id": user_id})
@@ -86,7 +86,7 @@ def test_submit_answer_correct_and_incorrect():
     tmp.close()
 
 def test_team_points_and_decay():
-    client, tmp = create_test_app_and_client()
+    client, tmp, _ = create_test_app_and_client()
     user_id, team_id, session_id = create_team_user_session(client)
     # Get team points
     resp = client.get(f"/puzzle/points/{team_id}")
@@ -97,4 +97,49 @@ def test_team_points_and_decay():
     # Decay points
     resp2 = client.post(f"/puzzle/decay/{team_id}")
     assert resp2.status_code == 200
+    tmp.close()
+
+def test_player_elimination_and_game_over():
+    client, tmp, TestingSessionLocal = create_test_app_and_client()
+    # Create two users on the same team
+    unique = str(uuid4())
+    username1 = f"user1_{unique}"
+    username2 = f"user2_{unique}"
+    teamname = f"Team_{unique}"
+    client.post("/team/register", json={"username": username1})
+    client.post("/team/register", json={"username": username2})
+    team_resp = client.post("/team/create", json={"name": teamname})
+    team_id = team_resp.json()["id"]
+    client.post(f"/team/join?username={username1}&team_id={team_id}")
+    client.post(f"/team/join?username={username2}&team_id={team_id}")
+    session_resp = client.post("/game/session", json={"team_id": team_id})
+    session_id = session_resp.json()["id"]
+    # Create puzzle for user1
+    user1_id = client.get(f"/team/").json()[0]["members"][0]["id"]
+    user2_id = client.get(f"/team/").json()[0]["members"][1]["id"]
+    resp = client.post("/puzzle/create", json={"type": "memory", "game_session_id": session_id, "user_id": user1_id})
+    puzzle = resp.json()
+    # Set user1 points to 0 (simulate elimination)
+    from app.models import User
+    db = TestingSessionLocal()
+    user1 = db.query(User).filter(User.id == user1_id).first()
+    assert user1 is not None, "user1 not found in DB"
+    setattr(user1, 'points', 0)
+    db.commit()
+    db.close()
+    # Try to answer puzzle as eliminated user
+    answer = puzzle["data"]["mapping"][str(puzzle["data"]["question_number"])]
+    answer_resp = client.post("/puzzle/answer", json={"puzzle_id": puzzle["id"], "answer": answer})
+    assert answer_resp.status_code == 400
+    # Simulate user2 elimination and check game over logic (all points 0)
+    db = TestingSessionLocal()
+    user2 = db.query(User).filter(User.id == user2_id).first()
+    assert user2 is not None, "user2 not found in DB"
+    setattr(user2, 'points', 0)
+    db.commit()
+    db.close()
+    # Get team points, all should be 0
+    points_resp = client.get(f"/puzzle/points/{team_id}")
+    points = points_resp.json()
+    assert all(p["points"] == 0 for p in points["players"])
     tmp.close() 
