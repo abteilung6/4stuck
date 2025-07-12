@@ -4,6 +4,7 @@ from .routers.team import router as team_router
 from .routers.game import router as game_router
 from .routers.puzzle import router as puzzle_router
 from .routers.ws import router as ws_router
+from .utils.websocket_broadcast import broadcast_state
 import threading
 import time
 from fastapi.middleware.cors import CORSMiddleware
@@ -30,13 +31,30 @@ def on_startup():
             time.sleep(DECAY_INTERVAL_SECONDS)
             db = SessionLocal()
             try:
-                from app.models import User
+                from app.models import User, GameSession
                 users = db.query(User).all()
                 # At runtime, user.points is an int (not a Column); linter may show false positives here.
+                sessions_to_update = set()
                 for user in users:
                     if hasattr(user, 'points') and isinstance(user.points, int) and user.points > 0:
                         user.points = max(0, user.points - POINTS_LOST_PER_DECAY)
+                        # Track which sessions need updates
+                        if user.team_id:
+                            sessions = db.query(GameSession).filter(GameSession.team_id == user.team_id).all()
+                            for session in sessions:
+                                sessions_to_update.add(session.id)
                 db.commit()
+                
+                # Broadcast updates to all affected sessions
+                for session_id in sessions_to_update:
+                    try:
+                        import asyncio
+                        loop = asyncio.new_event_loop()
+                        asyncio.set_event_loop(loop)
+                        loop.run_until_complete(broadcast_state(session_id, db))
+                        loop.close()
+                    except Exception as e:
+                        print(f"Failed to broadcast decay update for session {session_id}: {e}")
             finally:
                 db.close()
     thread = threading.Thread(target=decay_loop, daemon=True)

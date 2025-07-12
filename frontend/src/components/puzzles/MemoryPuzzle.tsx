@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 
 export interface MemoryPuzzleProps {
   puzzle: any;
@@ -19,14 +19,27 @@ export const MemoryPuzzle: React.FC<MemoryPuzzleProps> = ({
 }) => {
   const [showMapping, setShowMapping] = useState(true);
   const [timeLeft, setTimeLeft] = useState(5);
+  const lastPuzzleId = useRef<number | undefined>(undefined);
+
+  // Only reset timer if puzzle id truly changes
+  useEffect(() => {
+    if (puzzle?.id == null) return;
+    if (lastPuzzleId.current === puzzle.id) return;
+    setShowMapping(true);
+    setTimeLeft(5);
+    lastPuzzleId.current = puzzle.id;
+  }, [puzzle ? puzzle.id : undefined]);
 
   useEffect(() => {
-    if (showMapping && timeLeft > 0) {
-      const timer = setTimeout(() => setTimeLeft(timeLeft - 1), 1000);
-      return () => clearTimeout(timer);
-    } else if (timeLeft === 0) {
+    if (!showMapping) return;
+    if (timeLeft <= 0) {
       setShowMapping(false);
+      return;
     }
+    const timer = setTimeout(() => {
+      setTimeLeft((prev) => prev - 1);
+    }, 1000);
+    return () => clearTimeout(timer);
   }, [showMapping, timeLeft]);
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -45,7 +58,6 @@ export const MemoryPuzzle: React.FC<MemoryPuzzleProps> = ({
       <div className="puzzle-content">
         <h3>Memory Puzzle</h3>
         <p>Memorize the color-number mapping below. You have {timeLeft} seconds left.</p>
-        
         <div className="mapping-display">
           <h4>Color-Number Mapping:</h4>
           <div className="mapping-grid">
@@ -65,7 +77,6 @@ export const MemoryPuzzle: React.FC<MemoryPuzzleProps> = ({
     <div className="puzzle-content">
       <h3>Memory Puzzle</h3>
       <p><strong>Question:</strong> What color is associated with the number {question_number}?</p>
-      
       <form onSubmit={handleSubmit} className="answer-form">
         <div className="choices">
           {choices.map((choice: string) => (
@@ -82,12 +93,10 @@ export const MemoryPuzzle: React.FC<MemoryPuzzleProps> = ({
             </label>
           ))}
         </div>
-        
         <button type="submit" disabled={loading || !answer} className="submit-button">
           {loading ? 'Submitting...' : 'Submit Answer'}
         </button>
       </form>
-      
       {feedback && (
         <div className={`feedback ${feedback.includes('Correct') ? 'correct' : 'incorrect'}`}>
           {feedback}

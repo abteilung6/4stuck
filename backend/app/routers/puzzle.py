@@ -2,6 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from sqlalchemy import and_
 from .. import models, schemas, database
+from ..utils.websocket_broadcast import broadcast_state
 import random
 
 router = APIRouter(prefix="/puzzle", tags=["puzzle"])
@@ -114,7 +115,7 @@ def get_current_puzzle(user_id: int, db: Session = Depends(get_db)):
     return schemas.PuzzleState.from_orm(puzzle)
 
 @router.post("/answer", response_model=schemas.PuzzleResult)
-def submit_answer(answer: schemas.PuzzleAnswer, db: Session = Depends(get_db)):
+async def submit_answer(answer: schemas.PuzzleAnswer, db: Session = Depends(get_db)):
     puzzle = db.query(models.Puzzle).filter(models.Puzzle.id == answer.puzzle_id).first()
     if not puzzle or puzzle.status != "active":
         raise HTTPException(status_code=404, detail="Puzzle not found or not active")
@@ -165,10 +166,16 @@ def submit_answer(answer: schemas.PuzzleAnswer, db: Session = Depends(get_db)):
         db.commit()
         db.refresh(new_puzzle)
         next_puzzle_id = new_puzzle.id
+        
+        # Broadcast updated state to all connected clients
+        await broadcast_state(int(puzzle.game_session_id), db)
     else:
         # Mark puzzle as failed
         puzzle.status = "failed"
         db.commit()
+        
+        # Broadcast updated state to all connected clients
+        await broadcast_state(int(puzzle.game_session_id), db)
     return schemas.PuzzleResult(
         correct=correct,
         awarded_to_user_id=awarded_to_user_id,
