@@ -1,6 +1,7 @@
 import React from 'react';
 import { TextPuzzle } from './TextPuzzle';
 import { MultipleChoicePuzzle } from './MultipleChoicePuzzle';
+import { MemoryPuzzle } from './MemoryPuzzle';
 
 export interface PuzzleRendererProps {
   puzzle: any;
@@ -22,6 +23,17 @@ export const PuzzleRenderer: React.FC<PuzzleRendererProps> = ({
   if (!puzzle) return <p>No puzzle available.</p>;
 
   switch (puzzle.type) {
+    case 'memory':
+      return (
+        <MemoryPuzzle
+          puzzle={puzzle}
+          answer={answer}
+          setAnswer={setAnswer}
+          submitAnswer={submitAnswer}
+          loading={loading}
+          feedback={feedback}
+        />
+      );
     case 'multiple_choice':
       return (
         <MultipleChoicePuzzle
