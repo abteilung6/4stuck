@@ -21,13 +21,4 @@ class MockWebSocket {
 }
 globalThis.WebSocket = MockWebSocket as any;
 
-// Mock localStorage
-const localStorageMock = {
-  getItem: vi.fn(),
-  setItem: vi.fn(),
-  removeItem: vi.fn(),
-  clear: vi.fn(),
-  length: 0,
-  key: vi.fn(),
-};
-globalThis.localStorage = localStorageMock as Storage; 
+// localStorage is no longer used, so no mock needed 

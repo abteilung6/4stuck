@@ -10,105 +10,55 @@ import { useRef } from 'react';
 import './Lobby.css'; // Add a CSS file for styles
 
 export const Lobby: React.FC = () => {
-  const [username, setUsername] = useState('');
-  const [currentName, setCurrentName] = useState<string | null>(null);
   const [teams, setTeams] = useState<TeamWithMembersOut[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+  const [username, setUsername] = useState('');
+  const [currentName, setCurrentName] = useState('');
   const [currentTeam, setCurrentTeam] = useState<TeamWithMembersOut | null>(null);
-  const [status, setStatus] = useState<string>('');
-  const [loading, setLoading] = useState<boolean>(false);
-  const [error, setError] = useState<string>('');
-  const [creatingTeam, setCreatingTeam] = useState<boolean>(false);
-  const [newTeamName, setNewTeamName] = useState<string>('');
+  const [newTeamName, setNewTeamName] = useState('');
+  const [creatingTeam, setCreatingTeam] = useState(false);
   const [session, setSession] = useState<GameSessionOut | null>(null);
-  const [sessionLoading, setSessionLoading] = useState<boolean>(false);
+  const [sessionLoading, setSessionLoading] = useState(false);
+  const [status, setStatus] = useState('');
   const isFirstLoad = useRef(true);
 
-  // Fetch teams from backend
   const fetchTeams = async () => {
-    setLoading(true);
-    setError('');
     try {
       const data = await TeamService.listTeamsTeamGet();
       setTeams(data);
-      // If user is already in a team, update currentTeam
-      if (currentName) {
-        const found = data.find(team => team.members.some(m => m.username === currentName));
-        setCurrentTeam(found || null);
-      }
     } catch (err) {
-      setError('Failed to load teams.');
+      setError('Failed to fetch teams.');
     } finally {
       setLoading(false);
     }
   };
 
-  // Fetch current session for the team
   const fetchSession = async (teamId: number) => {
-    setSessionLoading(true);
     try {
-      const sess = await GameService.getCurrentSessionGameSessionTeamIdGet(teamId);
-      setSession(sess);
-    } catch (err) {
-      setSession(null); // No active session
-    } finally {
-      setSessionLoading(false);
+      const data = await GameService.getCurrentSessionGameSessionTeamIdGet(teamId);
+      setSession(data);
+    } catch (err: any) {
+      if (err?.response?.status === 404) {
+        setSession(null);
+      } else {
+        setError('Failed to fetch session.');
+      }
     }
   };
 
+  // Fetch teams on mount
   useEffect(() => {
     fetchTeams();
-    // eslint-disable-next-line
-  }, [currentName]);
+  }, []);
 
-  // When currentTeam changes, check for active session
+  // Fetch session when team changes
   useEffect(() => {
     if (currentTeam) {
       fetchSession(currentTeam.id);
-    } else {
-      setSession(null);
     }
     // eslint-disable-next-line
   }, [currentTeam]);
-
-  // Load persisted state on mount
-  useEffect(() => {
-    if (isFirstLoad.current) {
-      const savedName = localStorage.getItem('username');
-      const savedTeamId = localStorage.getItem('teamId');
-      const savedSessionId = localStorage.getItem('sessionId');
-      if (savedName) setCurrentName(savedName);
-      if (savedName) setUsername(savedName);
-      if (savedTeamId) {
-        // Will be set after teams are fetched
-      }
-      if (savedSessionId) {
-        setSession({ id: Number(savedSessionId), team_id: savedTeamId ? Number(savedTeamId) : undefined, status: 'active' } as any);
-      }
-      isFirstLoad.current = false;
-    }
-  }, []);
-
-  // Persist state on change
-  useEffect(() => {
-    if (currentName) localStorage.setItem('username', currentName);
-  }, [currentName]);
-  useEffect(() => {
-    if (currentTeam) localStorage.setItem('teamId', String(currentTeam.id));
-  }, [currentTeam]);
-  useEffect(() => {
-    if (session) localStorage.setItem('sessionId', String(session.id));
-    else localStorage.removeItem('sessionId');
-  }, [session]);
-
-  // After teams are fetched, restore currentTeam if needed
-  useEffect(() => {
-    const savedTeamId = localStorage.getItem('teamId');
-    if (savedTeamId && teams.length > 0 && !currentTeam) {
-      const found = teams.find(t => String(t.id) === savedTeamId);
-      if (found) setCurrentTeam(found);
-    }
-    // eslint-disable-next-line
-  }, [teams]);
 
   const handleSetName = async () => {
     if (username.trim()) {
@@ -138,6 +88,8 @@ export const Lobby: React.FC = () => {
       await TeamService.joinTeamTeamJoinPost(currentName, team.id);
       setStatus(`Joined ${team.name}`);
       await fetchTeams();
+      // Set currentTeam to the team we just joined
+      setCurrentTeam(team);
     } catch (err: any) {
       setStatus('Failed to join team.');
     }
@@ -156,11 +108,10 @@ export const Lobby: React.FC = () => {
     setStatus('Creating team...');
     try {
       const created = await TeamService.createTeamTeamCreatePost({ name: newTeamName } as TeamCreate);
-      setStatus(`Created team ${created.name}`);
+      setStatus(`Created team ${created.name}. Now join it!`);
       setNewTeamName('');
       await fetchTeams();
-      // Auto-join the new team
-      await handleJoinTeam(created as TeamWithMembersOut);
+      // Don't auto-join - let user manually join the team
     } catch (err: any) {
       setStatus('Failed to create team. Name may already exist.');
     } finally {
@@ -175,6 +126,17 @@ export const Lobby: React.FC = () => {
     try {
       const sess = await GameService.createGameSessionGameSessionPost({ team_id: currentTeam.id });
       setSession(sess);
+      console.log('[Lobby] setSession', sess);
+      // Re-fetch teams and update currentTeam to ensure members are up-to-date
+      await fetchTeams();
+      setTeams(prevTeams => {
+        const updatedTeam = prevTeams.find(t => t.id === currentTeam.id);
+        if (updatedTeam) {
+          setCurrentTeam(updatedTeam);
+          console.log('[Lobby] Updated currentTeam after start game:', updatedTeam);
+        }
+        return prevTeams;
+      });
       setStatus('Game session started!');
     } catch (err: any) {
       setStatus('Failed to start game session. There may already be an active session.');
@@ -185,15 +147,15 @@ export const Lobby: React.FC = () => {
 
   const handleLeaveTeam = () => {
     setCurrentTeam(null);
-    setStatus('You left the team. (Reload to re-sync)');
-    // Note: No backend endpoint for leaving a team; would need to implement.
+    setStatus('You left the team.');
   };
 
   // Find the current user object from the team members
-  const currentUser = currentTeam?.members.find(m => m.username === currentName) || null;
+  const currentUser = currentTeam?.members?.find(m => m.username === currentName) || null;
 
   // If a session is active, show the game session view
   if (session && currentTeam && currentUser) {
+    console.log('[Lobby] Rendering GameSessionView', { session, currentTeam, currentUser });
     return <GameSessionView session={session} user={currentUser} team={currentTeam} />;
   }
 
@@ -277,8 +239,6 @@ export const Lobby: React.FC = () => {
       <div className="status-message">{status}</div>
       <button
         onClick={() => {
-          localStorage.removeItem('sessionId');
-          localStorage.removeItem('teamId');
           setTimeout(() => window.location.reload(), 100); // 100ms delay
         }}
         className="return-to-lobby-button"

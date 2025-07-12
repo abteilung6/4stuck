@@ -92,16 +92,36 @@ export function useGameLogic({ sessionId, userId, initialTeam }: UseGameLogicPro
   const fetchPuzzle = useCallback(async () => {
     setLoading(true);
     setError('');
+    console.log('[fetchPuzzle] Attempting to fetch puzzle for user', userId, 'in session', sessionId);
     try {
       const data = await PuzzleService.getCurrentPuzzlePuzzleCurrentUserIdGet(userId);
+      console.log('[fetchPuzzle] Got puzzle:', data);
       setPuzzle(data);
     } catch (err) {
-      setError('No active puzzle for you right now.');
-      setPuzzle(null);
+      console.log('[fetchPuzzle] No puzzle found, attempting to create one...');
+      // If no puzzle exists, create one
+      try {
+        const puzzleTypes = ['text', 'multiple_choice', 'memory'];
+        const randomType = puzzleTypes[Math.floor(Math.random() * puzzleTypes.length)];
+        console.log('[fetchPuzzle] Creating puzzle of type', randomType);
+        await PuzzleService.createPuzzlePuzzleCreatePost({
+          type: randomType,
+          game_session_id: sessionId,
+          user_id: userId
+        });
+        // Now fetch the newly created puzzle
+        const data = await PuzzleService.getCurrentPuzzlePuzzleCurrentUserIdGet(userId);
+        console.log('[fetchPuzzle] Created and fetched puzzle:', data);
+        setPuzzle(data);
+      } catch (createErr) {
+        console.error('[fetchPuzzle] Failed to create initial puzzle:', createErr);
+        setError('Failed to create initial puzzle.');
+        setPuzzle(null);
+      }
     } finally {
       setLoading(false);
     }
-  }, [userId]);
+  }, [userId, sessionId]);
 
   // Submit answer
   const submitAnswer = useCallback(async () => {

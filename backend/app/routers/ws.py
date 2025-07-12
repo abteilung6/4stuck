@@ -3,6 +3,8 @@ from typing import Dict, Set
 from .. import models, schemas, database
 from sqlalchemy.orm import Session
 import json
+import logging
+logging.basicConfig(level=logging.INFO)
 
 router = APIRouter(prefix="/ws", tags=["websocket"])
 
@@ -44,7 +46,9 @@ async def broadcast_state(session_id: int, db: Session):
 
 @router.websocket("/game/{session_id}")
 async def websocket_endpoint(websocket: WebSocket, session_id: int, db: Session = Depends(get_db)):
+    logging.info(f"[WS] About to accept websocket for session {session_id}")
     await websocket.accept()
+    logging.info(f"[WS] Websocket accepted for session {session_id}")
     if session_id not in connections:
         connections[session_id] = set()
     connections[session_id].add(websocket)
@@ -52,11 +56,26 @@ async def websocket_endpoint(websocket: WebSocket, session_id: int, db: Session 
         # Send initial state
         await broadcast_state(session_id, db)
         while True:
-            # Wait for any message (could be a ping or client action)
-            data = await websocket.receive_text()
-            # For MVP, just re-broadcast state on any message
-            await broadcast_state(session_id, db)
+            logging.info(f"[WS] Waiting to receive text for session {session_id}")
+            try:
+                data = await websocket.receive_text()
+                logging.info(f"[WS] Received data for session {session_id}: {data}")
+                # For MVP, just re-broadcast state on any message
+                await broadcast_state(session_id, db)
+            except RuntimeError as e:
+                if "WebSocket is not connected" in str(e):
+                    logging.info(f"[WS] Client disconnected immediately for session {session_id}")
+                    break
+                else:
+                    raise
     except WebSocketDisconnect:
-        connections[session_id].remove(websocket)
-        if not connections[session_id]:
-            del connections[session_id] 
+        logging.info(f"[WS] WebSocketDisconnect for session {session_id}")
+    except Exception as e:
+        logging.error(f"[WS] Exception in websocket for session {session_id}: {e}")
+    finally:
+        # Clean up connection
+        if session_id in connections:
+            connections[session_id].discard(websocket)
+            if not connections[session_id]:
+                del connections[session_id]
+        logging.info(f"[WS] Connection cleaned up for session {session_id}") 

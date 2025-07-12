@@ -35,14 +35,66 @@ def generate_memory_puzzle():
     }
     return data, correct_answer
 
+# Helper: Generate a text puzzle
+def generate_text_puzzle():
+    questions = [
+        "What is the capital of France?",
+        "What is 2 + 2?",
+        "What color is the sky?",
+        "How many days are in a week?"
+    ]
+    answers = [
+        "paris",
+        "4",
+        "blue",
+        "7"
+    ]
+    idx = random.randint(0, len(questions) - 1)
+    data = {
+        "question": questions[idx]
+    }
+    return data, answers[idx]
+
+# Helper: Generate a multiple choice puzzle
+def generate_multiple_choice_puzzle():
+    questions = [
+        {
+            "question": "What is the largest planet in our solar system?",
+            "choices": ["Earth", "Mars", "Jupiter", "Saturn"],
+            "correct": "Jupiter"
+        },
+        {
+            "question": "Which programming language is this backend written in?",
+            "choices": ["JavaScript", "Python", "Java", "C++"],
+            "correct": "Python"
+        },
+        {
+            "question": "What year was the first iPhone released?",
+            "choices": ["2005", "2007", "2009", "2010"],
+            "correct": "2007"
+        }
+    ]
+    puzzle = random.choice(questions)
+    data = {
+        "question": puzzle["question"],
+        "choices": puzzle["choices"]
+    }
+    return data, puzzle["correct"]
+
 @router.post("/create", response_model=schemas.PuzzleState)
 def create_puzzle(puzzle: schemas.PuzzleCreate, db: Session = Depends(get_db)):
-    # Only memory puzzle for now
-    if puzzle.type != "memory":
-        raise HTTPException(status_code=400, detail="Only memory puzzle supported for now")
-    data, correct_answer = generate_memory_puzzle()
+    # Support multiple puzzle types
+    if puzzle.type == "memory":
+        data, correct_answer = generate_memory_puzzle()
+    elif puzzle.type == "text":
+        data, correct_answer = generate_text_puzzle()
+    elif puzzle.type == "multiple_choice":
+        data, correct_answer = generate_multiple_choice_puzzle()
+    else:
+        raise HTTPException(status_code=400, detail=f"Puzzle type '{puzzle.type}' not supported")
+    
     new_puzzle = models.Puzzle(
-        type="memory",
+        type=puzzle.type,
         data=data,
         correct_answer=correct_answer,
         status="active",
@@ -90,10 +142,19 @@ def submit_answer(answer: schemas.PuzzleAnswer, db: Session = Depends(get_db)):
                 awarded_to_user_id = next_user.id
                 points_awarded = POINTS_AWARD
                 db.commit()
-        # Assign new puzzle to solver
-        new_data, new_correct = generate_memory_puzzle()
+        # Assign new puzzle to solver (randomly choose puzzle type)
+        puzzle_types = ["text", "multiple_choice", "memory"]
+        new_type = random.choice(puzzle_types)
+        
+        if new_type == "memory":
+            new_data, new_correct = generate_memory_puzzle()
+        elif new_type == "text":
+            new_data, new_correct = generate_text_puzzle()
+        elif new_type == "multiple_choice":
+            new_data, new_correct = generate_multiple_choice_puzzle()
+        
         new_puzzle = models.Puzzle(
-            type="memory",
+            type=new_type,
             data=new_data,
             correct_answer=new_correct,
             status="active",

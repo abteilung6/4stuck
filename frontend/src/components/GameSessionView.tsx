@@ -3,6 +3,7 @@ import { useGameLogic } from '../hooks/useGameLogic';
 import type { GameSessionOut } from '../api/models/GameSessionOut';
 import type { TeamWithMembersOut } from '../api/models/TeamWithMembersOut';
 import './GameSessionView.css';
+import { PuzzleRenderer } from './puzzles/PuzzleRenderer';
 
 interface GameSessionViewProps {
   session: GameSessionOut;
@@ -107,13 +108,11 @@ const GameOverView: React.FC<{ gameStatus: any; user: any }> = ({ gameStatus, us
         ))}
       </tbody>
     </table>
-    <div className="return-to-lobby-button-container">
-      <button onClick={() => {
-        localStorage.removeItem('sessionId');
-        localStorage.removeItem('teamId');
-        window.location.reload();
-      }}>Return to Lobby</button>
-    </div>
+            <div className="return-to-lobby-button-container">
+          <button onClick={() => {
+            window.location.reload();
+          }}>Return to Lobby</button>
+        </div>
   </div>
 );
 
@@ -185,42 +184,19 @@ const ActiveGameView: React.FC<{
   setAnswer: (answer: string) => void;
   submitAnswer: () => Promise<void>;
 }> = ({ puzzle, answer, feedback, loading, gameState, user, setAnswer, submitAnswer }) => {
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    submitAnswer();
-  };
-
   return (
     <div className="game-session-container">
       <h2>Game Session</h2>
       <div className="puzzle-section">
         <h3>Your Puzzle</h3>
-        {puzzle ? (
-          <div className="puzzle-content">
-            <p><strong>Type:</strong> {puzzle.type}</p>
-            <p><strong>Question:</strong> {puzzle.data?.question || 'No question available'}</p>
-            <form onSubmit={handleSubmit} className="answer-form">
-              <input
-                type="text"
-                value={answer}
-                onChange={(e) => setAnswer(e.target.value)}
-                placeholder="Enter your answer..."
-                disabled={loading}
-                className="answer-input"
-              />
-              <button type="submit" disabled={loading || !answer.trim()} className="submit-button">
-                {loading ? 'Submitting...' : 'Submit Answer'}
-              </button>
-            </form>
-            {feedback && (
-              <div className={`feedback ${feedback.includes('Correct') ? 'correct' : 'incorrect'}`}>
-                {feedback}
-              </div>
-            )}
-          </div>
-        ) : (
-          <p>No puzzle available.</p>
-        )}
+        <PuzzleRenderer
+          puzzle={puzzle}
+          answer={answer}
+          setAnswer={setAnswer}
+          submitAnswer={submitAnswer}
+          loading={loading}
+          feedback={feedback}
+        />
       </div>
       <hr />
       <h4>Team Points</h4>

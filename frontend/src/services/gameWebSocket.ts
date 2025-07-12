@@ -20,6 +20,7 @@ export class GameWebSocketService implements WebSocketService {
   private reconnectAttempts = 0;
   private maxReconnectAttempts = 3;
   private reconnectDelay = 1000;
+  private sessionId: number | null = null;
 
   constructor(callbacks: WebSocketCallbacks) {
     this.callbacks = callbacks;
@@ -30,6 +31,7 @@ export class GameWebSocketService implements WebSocketService {
       return; // Already connected
     }
 
+    this.sessionId = sessionId;
     try {
       this.ws = new WebSocket(`ws://localhost:8000/ws/game/${sessionId}`);
       this.setupEventHandlers();
@@ -43,6 +45,8 @@ export class GameWebSocketService implements WebSocketService {
       this.ws.close();
       this.ws = null;
     }
+    this.sessionId = null;
+    this.reconnectAttempts = 0;
   }
 
   isConnected(): boolean {
@@ -89,12 +93,14 @@ export class GameWebSocketService implements WebSocketService {
   }
 
   private attemptReconnect(): void {
-    if (this.reconnectAttempts < this.maxReconnectAttempts) {
+    if (this.reconnectAttempts < this.maxReconnectAttempts && this.sessionId) {
       this.reconnectAttempts++;
       setTimeout(() => {
-        // Attempt to reconnect (would need sessionId to be stored)
-        this.callbacks.onError(`Reconnection attempt ${this.reconnectAttempts} failed`);
+        // Actually attempt to reconnect
+        this.connect(this.sessionId!);
       }, this.reconnectDelay * this.reconnectAttempts);
+    } else if (this.reconnectAttempts >= this.maxReconnectAttempts) {
+      this.callbacks.onError('Max reconnection attempts reached');
     }
   }
 }
