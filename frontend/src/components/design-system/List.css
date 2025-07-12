@@ -1,0 +1,23 @@
+.ds-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.ds-list-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75em 0.5em;
+  border-bottom: 1px solid #e0e0e0;
+  font-size: 1.05rem;
+  color: #222;
+  background: none;
+}
+.ds-list-item:last-child {
+  border-bottom: none;
+}
+.ds-list-item__name {
+  color: #111;
+  font-weight: 600;
+  font-size: 1.08em;
+} 

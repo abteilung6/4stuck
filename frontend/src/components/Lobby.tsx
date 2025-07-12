@@ -9,6 +9,14 @@ import type { GameSessionOut } from '../api/models/GameSessionOut';
 import GameSessionView from './GameSessionView';
 import { useRef } from 'react';
 import './Lobby.css'; // Add a CSS file for styles
+import Button from './design-system/Button';
+import Input from './design-system/Input';
+import Card from './design-system/Card';
+import Container from './design-system/Container';
+import StatusMessage from './design-system/StatusMessage';
+import SectionTitle from './design-system/SectionTitle';
+import List from './design-system/List';
+import './design-system/List.css';
 
 const Lobby: React.FC = () => {
   const [teams, setTeams] = useState<TeamWithMembersOut[]>([]);
@@ -48,8 +56,9 @@ const Lobby: React.FC = () => {
     }
   };
 
-  // Fetch teams on mount
+  // Fetch teams on mount and clear session
   useEffect(() => {
+    setSession(null); // Clear any existing session on mount
     fetchTeams();
   }, []);
 
@@ -153,6 +162,7 @@ const Lobby: React.FC = () => {
 
   const handleLeaveTeam = () => {
     setCurrentTeam(null);
+    setSession(null); // Clear session when leaving team
     setStatus('You left the team.');
   };
 
@@ -166,95 +176,111 @@ const Lobby: React.FC = () => {
   }
 
   return (
-    <div className="lobby-container">
-      <h2>Game Lobby</h2>
-      <div className="username-input-container">
-        <input
-          type="text"
-          placeholder="Username"
-          value={username}
-          onChange={e => setUsername(e.target.value)}
-          disabled={!!currentName}
-          aria-label="Enter your username"
-          tabIndex={1}
-        />
-        <button onClick={handleSetName} disabled={!!currentName} aria-label="Set Username">
-          Set Name
-        </button>
-        {currentName && <span className="hello-message">Hello, <b>{currentName}</b>!</span>}
-      </div>
-      <hr />
-      <h3>Available Teams:</h3>
-      {loading ? (
-        <div className="loading-spinner"></div>
-      ) : error ? (
-        <div className="error-message">{error}</div>
-      ) : (
-        <ul className="teams-list">
-          {teams.map(team => (
-            <li key={team.id} className="team-item">
-              <span className="team-name">{team.name} &nbsp;|&nbsp; {team.members.length} members</span>
-              <button onClick={() => handleJoinTeam(team)} disabled={!!currentTeam && currentTeam.id === team.id || !currentName} aria-label={`Join team ${team.name}`}>
-                Join
-              </button>
-            </li>
-          ))}
-        </ul>
-      )}
-      <div className="new-team-input-container">
-        <input
-          type="text"
-          placeholder="New team name"
-          value={newTeamName}
-          onChange={e => setNewTeamName(e.target.value)}
-          disabled={creatingTeam}
-          aria-label="Enter new team name"
-          tabIndex={2}
-        />
-        <button onClick={handleCreateTeam} disabled={creatingTeam || !currentName} aria-label="Create New Team">
-          + Create New Team
-        </button>
-      </div>
-      <hr />
+    <Container variant="full">
+      <Card>
+        <SectionTitle level={2}>Game Lobby</SectionTitle>
+        <div className="username-input-container" style={{ display: 'flex', gap: 8, alignItems: 'center', marginBottom: 16 }}>
+          <Input
+            type="text"
+            placeholder="Username"
+            value={username}
+            onChange={e => setUsername(e.target.value)}
+            disabled={!!currentName}
+            aria-label="Enter your username"
+            style={{ maxWidth: 180 }}
+          />
+          <Button onClick={handleSetName} disabled={!!currentName} aria-label="Set Username">
+            Set Username
+          </Button>
+          {currentName && <span className="hello-message" style={{ marginLeft: 8 }}>Hello, <b>{currentName}</b>!</span>}
+        </div>
+      </Card>
+      <Card>
+        <SectionTitle level={3}>Available Teams:</SectionTitle>
+        {loading ? (
+          <div className="loading-spinner"></div>
+        ) : error ? (
+          <StatusMessage type="error">{error}</StatusMessage>
+        ) : (
+          <List aria-label="Available teams" className="teams-list">
+            {teams.map(team => (
+              <List.Item key={team.id}>
+                <span className="ds-list-item__name">{team.name}</span>
+                <span aria-label={`${team.members.length} members`} style={{ color: '#444', fontWeight: 400, fontSize: '0.98em' }}>
+                  {team.members.length} members
+                </span>
+                <Button
+                  onClick={() => handleJoinTeam(team)}
+                  disabled={!!currentTeam && currentTeam.id === team.id || !currentName}
+                  aria-label={`Join team ${team.name}`}
+                  variant="secondary"
+                  style={{ minWidth: 70 }}
+                >
+                  Join
+                </Button>
+              </List.Item>
+            ))}
+          </List>
+        )}
+        <div className="new-team-input-container" style={{ display: 'flex', gap: 8, marginTop: 16 }}>
+          <Input
+            type="text"
+            placeholder="New team name"
+            value={newTeamName}
+            onChange={e => setNewTeamName(e.target.value)}
+            disabled={creatingTeam}
+            aria-label="Enter new team name"
+            style={{ maxWidth: 180 }}
+          />
+          <Button onClick={handleCreateTeam} disabled={creatingTeam || !currentName} aria-label="Create New Team">
+            + Create New Team
+          </Button>
+        </div>
+      </Card>
       {currentTeam && (
-        <div className="team-info-container">
-          <h3>Your Team: {currentTeam.name}</h3>
-          <ul className="team-members-list">
+        <Card>
+          <SectionTitle level={3}>Your Team: {currentTeam.name}</SectionTitle>
+          <ul className="team-members-list" style={{ listStyle: 'none', padding: 0, marginBottom: 12 }}>
             {currentTeam.members.map((member) => (
               <li key={member.id}>{member.username}</li>
             ))}
           </ul>
-          <button onClick={handleLeaveTeam} className="leave-team-button" aria-label="Leave Team">
-            Leave Team
-          </button>
-          <button
-            onClick={handleStartGame}
-            disabled={sessionLoading || !!session}
-            className="start-game-button"
-            aria-label="Start Game"
-          >
-            {sessionLoading ? 'Starting...' : session ? 'Game In Progress' : 'Start Game'}
-          </button>
+          <div style={{ display: 'flex', gap: 12 }}>
+            <Button onClick={handleLeaveTeam} variant="secondary" aria-label="Leave Team">
+              Leave Team
+            </Button>
+            <Button
+              onClick={handleStartGame}
+              disabled={sessionLoading || !!session}
+              variant="primary"
+              aria-label="Start Game"
+            >
+              {sessionLoading ? 'Starting...' : session ? 'Game In Progress' : 'Start Game'}
+            </Button>
+          </div>
           {session && (
-            <div className="active-session-info">
+            <StatusMessage type="info" style={{ marginTop: 12 }}>
               Game session active! (Session ID: {session.id})
-            </div>
+            </StatusMessage>
           )}
-        </div>
+        </Card>
       )}
-      <div className="status-message" data-testid="status-message">
-        {status || 'No status message'}
-      </div>
-      <button
+      {status && (
+        <StatusMessage type={status?.toLowerCase().includes('fail') ? 'error' : 'info'}>
+          {status}
+        </StatusMessage>
+      )}
+      <Button
         onClick={() => {
-          setTimeout(() => window.location.reload(), 100); // 100ms delay
+          setTimeout(() => window.location.reload(), 100);
         }}
-        className="return-to-lobby-button"
+        variant="secondary"
+        style={{ marginTop: 24 }}
         aria-label="Return to Lobby"
       >
         Return to Lobby
-      </button>
-    </div>
+      </Button>
+    </Container>
   );
 };
 

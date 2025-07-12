@@ -1,0 +1,88 @@
+/* Container Design System */
+.ds-container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 1rem auto;
+  padding: 2rem;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  background: #fff;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  box-sizing: border-box;
+}
+
+.ds-container--narrow {
+  max-width: 800px;
+}
+
+.ds-container--wide {
+  max-width: 1400px;
+}
+
+.ds-container--full {
+  max-width: none;
+  width: 100vw;
+  height: 100vh;
+  margin: 0;
+  padding: 2rem;
+  border-radius: 0;
+  border: none;
+  box-sizing: border-box;
+}
+
+/* Responsive breakpoints */
+@media (max-width: 1200px) {
+  .ds-container {
+    max-width: 95vw;
+    margin: 1rem 2.5vw;
+    padding: 1.5rem;
+  }
+  
+  .ds-container--narrow {
+    max-width: 90vw;
+  }
+  
+  .ds-container--wide {
+    max-width: 95vw;
+  }
+  
+  .ds-container--full {
+    width: 100vw;
+    height: 100vh;
+    margin: 0;
+    padding: 1.5rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .ds-container {
+    max-width: 100vw;
+    margin: 0.5rem 0;
+    padding: 1rem;
+    border-radius: 0;
+    border-left: none;
+    border-right: none;
+  }
+  
+  .ds-container--narrow,
+  .ds-container--wide {
+    max-width: 100vw;
+  }
+  
+  .ds-container--full {
+    width: 100vw;
+    height: 100vh;
+    margin: 0;
+    padding: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .ds-container {
+    padding: 0.75rem;
+  }
+  
+  .ds-container--full {
+    padding: 0.75rem;
+  }
+} 

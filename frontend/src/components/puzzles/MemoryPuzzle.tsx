@@ -1,4 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
+import Card from '../design-system/Card';
+import SectionTitle from '../design-system/SectionTitle';
+import Button from '../design-system/Button';
+import StatusMessage from '../design-system/StatusMessage';
+import { QuestionText, ChoiceText } from '../design-system/Typography';
 
 export interface MemoryPuzzleProps {
   puzzle: any;
@@ -55,32 +60,32 @@ export const MemoryPuzzle: React.FC<MemoryPuzzleProps> = ({
 
   if (showMapping) {
     return (
-      <div className="puzzle-content">
-        <h3>Memory Puzzle</h3>
-        <p>Memorize the color-number mapping below. You have {timeLeft} seconds left.</p>
-        <div className="mapping-display">
-          <h4>Color-Number Mapping:</h4>
+      <Card>
+        <SectionTitle level={2}>Memory Puzzle</SectionTitle>
+        <QuestionText>Memorize the color-number mapping below. You have {timeLeft} seconds left.</QuestionText>
+        <div className="mapping-display" aria-label="Color-Number Mapping">
+          <SectionTitle level={3} className="sr-only">Color-Number Mapping</SectionTitle>
           <div className="mapping-grid">
             {Object.entries(mapping as Record<string, string>).map(([number, color]) => (
-              <div key={number} className="mapping-item">
+              <div key={number} className="mapping-item" aria-label={`Number ${number} is ${color}`}>
                 <span className="number">{number}</span>
                 <span className="color">{color}</span>
               </div>
             ))}
           </div>
         </div>
-      </div>
+      </Card>
     );
   }
 
   return (
-    <div className="puzzle-content">
-      <h3>Memory Puzzle</h3>
-      <p><strong>Question:</strong> What color is associated with the number {question_number}?</p>
+    <Card>
+      <SectionTitle level={2}>Memory Puzzle</SectionTitle>
+      <QuestionText><strong>Question:</strong> What color is associated with the number {question_number}?</QuestionText>
       <form onSubmit={handleSubmit} className="answer-form">
-        <div className="choices">
+        <div className="choices" role="radiogroup" aria-label="Choices">
           {choices.map((choice: string) => (
-            <label key={choice} className="choice-option">
+            <label key={choice} className="choice-option" aria-label={choice}>
               <input
                 type="radio"
                 name="answer"
@@ -88,20 +93,19 @@ export const MemoryPuzzle: React.FC<MemoryPuzzleProps> = ({
                 checked={answer === choice}
                 onChange={(e) => setAnswer(e.target.value)}
                 disabled={loading}
+                aria-checked={answer === choice}
               />
-              <span className="choice-text">{choice}</span>
+              <ChoiceText>{choice}</ChoiceText>
             </label>
           ))}
         </div>
-        <button type="submit" disabled={loading || !answer} className="submit-button">
+        <Button type="submit" disabled={loading || !answer} variant="primary">
           {loading ? 'Submitting...' : 'Submit Answer'}
-        </button>
+        </Button>
       </form>
       {feedback && (
-        <div className={`feedback ${feedback.includes('Correct') ? 'correct' : 'incorrect'}`}>
-          {feedback}
-        </div>
+        <StatusMessage type={feedback.includes('Correct') ? 'success' : 'error'}>{feedback}</StatusMessage>
       )}
-    </div>
+    </Card>
   );
 }; 

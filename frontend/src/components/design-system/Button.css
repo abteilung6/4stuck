@@ -1,0 +1,47 @@
+.ds-btn {
+  font-family: 'Inter', 'Roboto', 'system-ui', sans-serif;
+  font-size: 1rem;
+  padding: 0.5em 1.5em;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s, box-shadow 0.15s;
+  box-shadow: 0 1px 4px rgba(30, 42, 60, 0.06);
+  outline: none;
+  margin: 0.25em;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+}
+
+.ds-btn--primary {
+  background: #1976d2;
+  color: #fff;
+}
+.ds-btn--primary:focus {
+  box-shadow: 0 0 0 2px #90caf9;
+}
+
+.ds-btn--secondary {
+  background: #f5f6fa;
+  color: #222;
+  border: 1px solid #cfd8dc;
+}
+.ds-btn--secondary:focus {
+  box-shadow: 0 0 0 2px #b0bec5;
+}
+
+.ds-btn--danger {
+  background: #e53935;
+  color: #fff;
+}
+.ds-btn--danger:focus {
+  box-shadow: 0 0 0 2px #ffcdd2;
+}
+
+.ds-btn:disabled,
+.ds-btn[aria-disabled='true'] {
+  background: #e0e0e0;
+  color: #aaa;
+  cursor: not-allowed;
+  box-shadow: none;
+} 

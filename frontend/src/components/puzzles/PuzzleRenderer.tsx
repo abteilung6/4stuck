@@ -2,6 +2,9 @@ import React from 'react';
 import { TextPuzzle } from './TextPuzzle';
 import { MultipleChoicePuzzle } from './MultipleChoicePuzzle';
 import { MemoryPuzzle } from './MemoryPuzzle';
+import Card from '../design-system/Card';
+import SectionTitle from '../design-system/SectionTitle';
+import { BodyText } from '../design-system/Typography';
 
 export interface PuzzleRendererProps {
   puzzle: any;
@@ -20,7 +23,12 @@ export const PuzzleRenderer: React.FC<PuzzleRendererProps> = ({
   loading,
   feedback,
 }) => {
-  if (!puzzle) return <p>No puzzle available.</p>;
+  if (!puzzle) return (
+    <Card>
+      <SectionTitle level={2}>No puzzle available</SectionTitle>
+      <BodyText color="secondary">Please wait for a puzzle to be generated.</BodyText>
+    </Card>
+  );
 
   switch (puzzle.type) {
     case 'memory':

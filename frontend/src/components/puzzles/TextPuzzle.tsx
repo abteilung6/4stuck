@@ -1,4 +1,9 @@
 import React from 'react';
+import Card from '../design-system/Card';
+import SectionTitle from '../design-system/SectionTitle';
+import Button from '../design-system/Button';
+import StatusMessage from '../design-system/StatusMessage';
+import { QuestionText } from '../design-system/Typography';
 
 export interface TextPuzzleProps {
   puzzle: any;
@@ -23,9 +28,9 @@ export const TextPuzzle: React.FC<TextPuzzleProps> = ({
   };
 
   return (
-    <div className="puzzle-content">
-      <p><strong>Type:</strong> {puzzle.type}</p>
-      <p><strong>Question:</strong> {puzzle.data?.question || 'No question available'}</p>
+    <Card>
+      <SectionTitle level={2}>Text Puzzle</SectionTitle>
+      <QuestionText><strong>Question:</strong> {puzzle.data?.question || 'No question available'}</QuestionText>
       <form onSubmit={handleSubmit} className="answer-form">
         <input
           type="text"
@@ -33,17 +38,16 @@ export const TextPuzzle: React.FC<TextPuzzleProps> = ({
           onChange={(e) => setAnswer(e.target.value)}
           placeholder="Enter your answer..."
           disabled={loading}
-          className="answer-input"
+          className="ds-input"
+          aria-label="Answer input"
         />
-        <button type="submit" disabled={loading || !answer.trim()} className="submit-button">
+        <Button type="submit" disabled={loading || !answer.trim()} variant="primary">
           {loading ? 'Submitting...' : 'Submit Answer'}
-        </button>
+        </Button>
       </form>
       {feedback && (
-        <div className={`feedback ${feedback.includes('Correct') ? 'correct' : 'incorrect'}`}>
-          {feedback}
-        </div>
+        <StatusMessage type={feedback.includes('Correct') ? 'success' : 'error'}>{feedback}</StatusMessage>
       )}
-    </div>
+    </Card>
   );
 }; 

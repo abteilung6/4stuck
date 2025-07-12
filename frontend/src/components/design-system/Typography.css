@@ -1,0 +1,222 @@
+/* Typography Design System */
+
+/* CSS Variables for Typography */
+:root {
+  /* Font Families */
+  --font-family-primary: 'Inter', 'Roboto', 'system-ui', sans-serif;
+  --font-family-mono: 'SF Mono', 'Monaco', 'Inconsolata', 'Roboto Mono', monospace;
+  
+  /* Font Sizes */
+  --font-size-xs: 0.75rem;    /* 12px */
+  --font-size-sm: 0.875rem;   /* 14px */
+  --font-size-base: 1rem;     /* 16px */
+  --font-size-lg: 1.125rem;   /* 18px */
+  --font-size-xl: 1.25rem;    /* 20px */
+  --font-size-2xl: 1.5rem;    /* 24px */
+  --font-size-3xl: 1.875rem;  /* 30px */
+  --font-size-4xl: 2.25rem;   /* 36px */
+  
+  /* Font Weights */
+  --font-weight-light: 300;
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+  
+  /* Line Heights */
+  --line-height-tight: 1.25;
+  --line-height-normal: 1.5;
+  --line-height-relaxed: 1.75;
+  
+  /* Colors */
+  --text-color-primary: #333;
+  --text-color-secondary: #666;
+  --text-color-muted: #888;
+  --text-color-inverse: #fff;
+  --text-color-success: #388e3c;
+  --text-color-error: #d32f2f;
+  --text-color-warning: #f57c00;
+  --text-color-info: #1976d2;
+  
+  /* Letter Spacing */
+  --letter-spacing-tight: -0.025em;
+  --letter-spacing-normal: 0;
+  --letter-spacing-wide: 0.025em;
+}
+
+/* Base Typography Reset */
+.ds-typography {
+  font-family: var(--font-family-primary);
+  color: var(--text-color-primary);
+  line-height: var(--line-height-normal);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Heading Components */
+.ds-heading {
+  font-family: var(--font-family-primary);
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--line-height-tight);
+  color: var(--text-color-primary);
+  margin: 0;
+}
+
+.ds-heading--h1 {
+  font-size: var(--font-size-4xl);
+  font-weight: var(--font-weight-bold);
+  letter-spacing: var(--letter-spacing-tight);
+}
+
+.ds-heading--h2 {
+  font-size: var(--font-size-3xl);
+  font-weight: var(--font-weight-semibold);
+}
+
+.ds-heading--h3 {
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-semibold);
+}
+
+.ds-heading--h4 {
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-medium);
+}
+
+.ds-heading--h5 {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-medium);
+}
+
+.ds-heading--h6 {
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-medium);
+}
+
+/* Text Components */
+.ds-text {
+  font-family: var(--font-family-primary);
+  line-height: var(--line-height-normal);
+  margin: 0;
+}
+
+.ds-text--body {
+  font-size: var(--font-size-base);
+  color: var(--text-color-primary);
+}
+
+.ds-text--body-large {
+  font-size: var(--font-size-lg);
+  color: var(--text-color-primary);
+}
+
+.ds-text--body-small {
+  font-size: var(--font-size-sm);
+  color: var(--text-color-secondary);
+}
+
+.ds-text--caption {
+  font-size: var(--font-size-xs);
+  color: var(--text-color-muted);
+  line-height: var(--line-height-normal);
+}
+
+.ds-text--label {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--text-color-primary);
+  line-height: var(--line-height-normal);
+}
+
+/* Utility Classes for Common Patterns */
+.ds-text--primary {
+  color: var(--text-color-primary);
+}
+
+.ds-text--secondary {
+  color: var(--text-color-secondary);
+}
+
+.ds-text--muted {
+  color: var(--text-color-muted);
+}
+
+.ds-text--inverse {
+  color: var(--text-color-inverse);
+}
+
+.ds-text--success {
+  color: var(--text-color-success);
+}
+
+.ds-text--error {
+  color: var(--text-color-error);
+}
+
+.ds-text--warning {
+  color: var(--text-color-warning);
+}
+
+.ds-text--info {
+  color: var(--text-color-info);
+}
+
+.ds-text--bold {
+  font-weight: var(--font-weight-bold);
+}
+
+.ds-text--semibold {
+  font-weight: var(--font-weight-semibold);
+}
+
+.ds-text--medium {
+  font-weight: var(--font-weight-medium);
+}
+
+.ds-text--normal {
+  font-weight: var(--font-weight-normal);
+}
+
+.ds-text--light {
+  font-weight: var(--font-weight-light);
+}
+
+/* Spacing Utilities */
+.ds-text--no-margin {
+  margin: 0;
+}
+
+.ds-text--margin-bottom {
+  margin-bottom: 0.5rem;
+}
+
+.ds-text--margin-bottom-large {
+  margin-bottom: 1rem;
+}
+
+/* Responsive Typography */
+@media (max-width: 768px) {
+  :root {
+    --font-size-4xl: 2rem;    /* 32px */
+    --font-size-3xl: 1.75rem; /* 28px */
+    --font-size-2xl: 1.375rem; /* 22px */
+  }
+}
+
+/* High Contrast Mode Support */
+@media (prefers-contrast: high) {
+  :root {
+    --text-color-primary: #000;
+    --text-color-secondary: #333;
+    --text-color-muted: #666;
+  }
+}
+
+/* Dark Mode Support (if needed later) */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --text-color-primary: #e0e0e0;
+    --text-color-secondary: #b0b0b0;
+    --text-color-muted: #888;
+  }
+} 

@@ -1,0 +1,25 @@
+.ds-input {
+  font-family: 'Inter', 'Roboto', 'system-ui', sans-serif;
+  font-size: 1rem;
+  padding: 0.5em 1em;
+  border-radius: 6px;
+  border: 1px solid #cfd8dc;
+  background: #fff;
+  color: #222;
+  outline: none;
+  margin: 0.25em 0;
+  transition: border 0.15s, box-shadow 0.15s;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.ds-input:focus {
+  border-color: #1976d2;
+  box-shadow: 0 0 0 2px #90caf9;
+}
+
+.ds-input:disabled {
+  background: #f5f6fa;
+  color: #aaa;
+  border-color: #e0e0e0;
+} 

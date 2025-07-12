@@ -4,6 +4,14 @@ import type { GameSessionOut } from '../api/models/GameSessionOut';
 import type { TeamWithMembersOut } from '../api/models/TeamWithMembersOut';
 import './GameSessionView.css';
 import { PuzzleRenderer } from './puzzles/PuzzleRenderer';
+import Card from './design-system/Card';
+import Container from './design-system/Container';
+import SectionTitle from './design-system/SectionTitle';
+import Button from './design-system/Button';
+import StatusMessage from './design-system/StatusMessage';
+import List from './design-system/List';
+import './design-system/Card.css';
+import './design-system/List.css';
 
 interface GameSessionViewProps {
   session: GameSessionOut;
@@ -33,20 +41,20 @@ const GameSessionView: React.FC<GameSessionViewProps> = ({ session, user, team }
   // Show loading state while waiting for WebSocket data
   if (!isConnected) {
     return (
-      <div className="game-session-container">
-        <h2>Game Session</h2>
-        <div className="loading-message">Connecting to game...</div>
-      </div>
+      <Container variant="full" dataTestId="game-session-container">
+        <SectionTitle level={2}>Game Session</SectionTitle>
+        <StatusMessage type="info">Connecting to game...</StatusMessage>
+      </Container>
     );
   }
 
   // Show error state
   if (error) {
     return (
-      <div className="game-session-container">
-        <h2>Game Session</h2>
-        <div className="error-message">Error: {error}</div>
-      </div>
+      <Container variant="full" dataTestId="game-session-container">
+        <SectionTitle level={2}>Game Session</SectionTitle>
+        <StatusMessage type="error">Error: {error}</StatusMessage>
+      </Container>
     );
   }
 
@@ -83,37 +91,30 @@ const GameSessionView: React.FC<GameSessionViewProps> = ({ session, user, team }
 
   // Fallback loading state
   return (
-    <div className="game-session-container">
-      <h2>Game Session</h2>
+    <Container variant="full" dataTestId="game-session-container">
+      <SectionTitle level={2}>Game Session</SectionTitle>
       <div className="loading-message">Loading game...</div>
-    </div>
+    </Container>
   );
 };
 
 // Separate UI components for different game states
 const GameOverView: React.FC<{ gameStatus: any; user: any }> = ({ gameStatus, user }) => (
-  <div className="game-session-container">
-    <h2>Game Over</h2>
-    <div className="final-standings-title">Final Standings</div>
-    <table className="team-points-table">
-      <thead>
-        <tr><th>Player</th><th>Points</th></tr>
-      </thead>
-      <tbody>
-        {gameStatus.finalStandings.map((p: any) => (
-          <tr key={p.id} className={p.id === user.id ? 'current-user' : ''}>
-            <td>{p.username}</td>
-            <td>{p.points}</td>
-          </tr>
-        ))}
-      </tbody>
-    </table>
-            <div className="return-to-lobby-button-container">
-          <button onClick={() => {
-            window.location.reload();
-          }}>Return to Lobby</button>
-        </div>
-  </div>
+  <Container variant="full" dataTestId="game-session-container">
+    <SectionTitle level={2}>Game Over</SectionTitle>
+    <SectionTitle level={3}>Final Standings</SectionTitle>
+    <List aria-label="Final standings">
+      {gameStatus.finalStandings.map((p: any) => (
+        <List.Item key={p.id} className={p.id === user.id ? 'current-user' : ''}>
+          <span className="ds-list-item__name">{p.username}</span>
+          <span style={{ color: '#1976d2', fontWeight: 600 }}>{p.points}</span>
+        </List.Item>
+      ))}
+    </List>
+    <Button onClick={() => window.location.reload()} variant="secondary" style={{ marginTop: 24 }} aria-label="Return to Lobby">
+      Return to Lobby
+    </Button>
+  </Container>
 );
 
 const EliminatedView: React.FC<{ gameState: any; user: any; notifications: string[] }> = ({ 
@@ -121,57 +122,51 @@ const EliminatedView: React.FC<{ gameState: any; user: any; notifications: strin
   user, 
   notifications 
 }) => (
-  <div className="game-session-container">
-    <h2>Game Session</h2>
-    <div className="eliminated-message">You have been eliminated.</div>
+  <Container variant="full" dataTestId="game-session-container">
+    <SectionTitle level={2}>Game Session</SectionTitle>
+    <StatusMessage type="error">You have been eliminated.</StatusMessage>
     <div>Thank you for playing! Please wait for the game to finish.</div>
-    <hr />
-    <h4>Team Points</h4>
-    <table className="team-points-table">
-      <thead>
-        <tr><th>Player</th><th>Points</th></tr>
-      </thead>
-      <tbody>
-        {gameState?.players?.map((p: any) => (
-          <tr key={p.id} className={p.id === user.id ? 'current-user' : ''}>
-            <td>{p.username}</td>
-            <td>{p.points}</td>
-          </tr>
-        ))}
-      </tbody>
-    </table>
+    <SectionTitle level={3} style={{ marginTop: 16 }}>Team Points</SectionTitle>
+    <List aria-label="Team points">
+      {gameState?.players?.map((p: any) => (
+        <List.Item key={p.id} className={p.id === user.id ? 'current-user' : ''}>
+          <span className="ds-list-item__name">{p.username}</span>
+          <span style={{ color: '#1976d2', fontWeight: 600 }}>{p.points}</span>
+        </List.Item>
+      ))}
+    </List>
     {notifications.length > 0 && (
-      <div className="game-events-section">
-        <h4>Game Events</h4>
-        <ul className="game-events-list">
-          {notifications.map((n, i) => <li key={i}>{n}</li>)}
-        </ul>
-      </div>
+      <Card style={{ background: '#fff', margin: '1em 0', padding: '1em 1.5em' }}>
+        <SectionTitle level={3}>Game Events</SectionTitle>
+        <List aria-label="Game events">
+          {notifications.map((n, i) => <List.Item key={i}>{n}</List.Item>)}
+        </List>
+      </Card>
     )}
-  </div>
+    <Button onClick={() => window.location.reload()} variant="secondary" style={{ marginTop: 24 }} aria-label="Return to Lobby">
+      Return to Lobby
+    </Button>
+  </Container>
 );
 
 const WaitingView: React.FC<{ gameState: any; user: any }> = ({ gameState, user }) => (
-  <div className="game-session-container">
-    <h2>Game Session</h2>
-    <div className="waiting-message">Waiting for your turn...</div>
+  <Container variant="full" dataTestId="game-session-container">
+    <SectionTitle level={2}>Game Session</SectionTitle>
+    <StatusMessage type="info">Waiting for your turn...</StatusMessage>
     <div>Watch your teammates and get ready!</div>
-    <hr />
-    <h4>Team Points</h4>
-    <table className="team-points-table">
-      <thead>
-        <tr><th>Player</th><th>Points</th></tr>
-      </thead>
-      <tbody>
-        {gameState?.players?.map((p: any) => (
-          <tr key={p.id} className={p.id === user.id ? 'current-user' : ''}>
-            <td>{p.username}</td>
-            <td>{p.points}</td>
-          </tr>
-        ))}
-      </tbody>
-    </table>
-  </div>
+    <SectionTitle level={3} style={{ marginTop: 16 }}>Team Points</SectionTitle>
+    <List aria-label="Team points">
+      {gameState?.players?.map((p: any) => (
+        <List.Item key={p.id} className={p.id === user.id ? 'current-user' : ''}>
+          <span className="ds-list-item__name">{p.username}</span>
+          <span style={{ color: '#1976d2', fontWeight: 600 }}>{p.points}</span>
+        </List.Item>
+      ))}
+    </List>
+    <Button onClick={() => window.location.reload()} variant="secondary" style={{ marginTop: 24 }} aria-label="Return to Lobby">
+      Return to Lobby
+    </Button>
+  </Container>
 );
 
 const ActiveGameView: React.FC<{
@@ -185,10 +180,10 @@ const ActiveGameView: React.FC<{
   submitAnswer: () => Promise<void>;
 }> = ({ puzzle, answer, feedback, loading, gameState, user, setAnswer, submitAnswer }) => {
   return (
-    <div className="game-session-container">
-      <h2>Game Session</h2>
-      <div className="puzzle-section">
-        <h3>Your Puzzle</h3>
+    <Container variant="full" dataTestId="game-session-container">
+      <SectionTitle level={2}>Game Session</SectionTitle>
+      <Card style={{ background: '#fff', margin: '1em 0', padding: '1em 1.5em' }}>
+        <SectionTitle level={3}>Your Puzzle</SectionTitle>
         <PuzzleRenderer
           puzzle={puzzle}
           answer={answer}
@@ -197,23 +192,18 @@ const ActiveGameView: React.FC<{
           loading={loading}
           feedback={feedback}
         />
-      </div>
-      <hr />
-      <h4>Team Points</h4>
-      <table className="team-points-table">
-        <thead>
-          <tr><th>Player</th><th>Points</th></tr>
-        </thead>
-        <tbody>
-          {gameState?.players?.map((p: any) => (
-            <tr key={p.id} className={p.id === user.id ? 'current-user' : ''}>
-              <td>{p.username}</td>
-              <td>{p.points}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
+        {feedback && <StatusMessage type={feedback === 'Correct!' ? 'success' : 'error'}>{feedback}</StatusMessage>}
+      </Card>
+      <SectionTitle level={3}>Team Points</SectionTitle>
+      <List aria-label="Team points">
+        {gameState?.players?.map((p: any) => (
+          <List.Item key={p.id} className={p.id === user.id ? 'current-user' : ''}>
+            <span className="ds-list-item__name">{p.username}</span>
+            <span style={{ color: '#1976d2', fontWeight: 600 }}>{p.points}</span>
+          </List.Item>
+        ))}
+      </List>
+    </Container>
   );
 };
 
