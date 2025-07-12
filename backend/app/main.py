@@ -43,6 +43,22 @@ def on_startup():
                             sessions = db.query(GameSession).filter(GameSession.team_id == user.team_id).all()
                             for session in sessions:
                                 sessions_to_update.add(session.id)
+                
+                # Check for game end conditions
+                active_sessions = db.query(GameSession).filter(GameSession.status == "active").all()
+                for session in active_sessions:
+                    team_users = db.query(User).filter(User.team_id == session.team_id).all()
+                    all_eliminated = all(user.points <= 0 for user in team_users)
+                    
+                    if all_eliminated and session.status == "active":
+                        # Game ended - calculate survival time
+                        from datetime import datetime
+                        session.status = "finished"
+                        session.ended_at = datetime.utcnow()
+                        if session.started_at:
+                            session.survival_time_seconds = int((session.ended_at - session.started_at).total_seconds())
+                        sessions_to_update.add(session.id)
+                
                 db.commit()
                 
                 # Broadcast updates to all affected sessions

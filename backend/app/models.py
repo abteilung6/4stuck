@@ -24,7 +24,10 @@ class GameSession(Base):
     __tablename__ = "game_sessions"
     id = Column(Integer, primary_key=True, index=True)
     team_id = Column(Integer, ForeignKey("teams.id"))
-    status = Column(String, default="active")  # e.g., active, finished
+    status = Column(String, default="lobby")  # lobby, countdown, active, finished
+    started_at = Column(DateTime, nullable=True)  # When game actually started (active state)
+    ended_at = Column(DateTime, nullable=True)    # When game ended (all players eliminated)
+    survival_time_seconds = Column(Integer, nullable=True)  # Total survival time
     team = relationship("Team", back_populates="game_sessions")
     puzzles = relationship("Puzzle", back_populates="game_session")
 

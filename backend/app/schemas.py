@@ -1,5 +1,6 @@
 from pydantic import BaseModel
 from typing import Optional, Any, List
+from datetime import datetime
 
 class UserBase(BaseModel):
     username: str
@@ -7,7 +8,7 @@ class UserBase(BaseModel):
 class UserCreate(UserBase):
     pass
 
-class UserOut(UserBase):
+class UserOut(BaseModel):
     id: int
     team_id: Optional[int]
     points: int
@@ -19,7 +20,7 @@ class TeamBase(BaseModel):
 class TeamCreate(TeamBase):
     pass
 
-class TeamOut(TeamBase):
+class TeamOut(BaseModel):
     id: int
     model_config = {'from_attributes': True}
 
@@ -29,10 +30,16 @@ class TeamWithMembersOut(TeamOut):
 class GameSessionCreate(BaseModel):
     team_id: int
 
+class GameSessionStateUpdate(BaseModel):
+    status: str  # lobby, countdown, active, finished
+
 class GameSessionOut(BaseModel):
     id: int
     team_id: int
     status: str
+    started_at: Optional[datetime] = None
+    ended_at: Optional[datetime] = None
+    survival_time_seconds: Optional[int] = None
     model_config = {'from_attributes': True}
 
 # Puzzle schemas
