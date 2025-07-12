@@ -366,6 +366,8 @@ export interface components {
         UserOut: {
             /** Id */
             id: number;
+            /** Username */
+            username: string;
             /** Team Id */
             team_id: number | null;
             /** Points */

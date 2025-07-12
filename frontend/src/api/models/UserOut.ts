@@ -4,6 +4,7 @@
 /* eslint-disable */
 export type UserOut = {
     id: number;
+    username: string;
     team_id: (number | null);
     points: number;
 };

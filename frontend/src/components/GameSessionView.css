@@ -7,6 +7,7 @@
   border-radius: 10px;
   background: #fff;
   box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  color: #e0e0e0;
 }
 .team-points-section {
   margin-bottom: 16px;
@@ -32,6 +33,7 @@
   font-weight: bold;
   font-size: 20px;
   margin-bottom: 16px;
+  color: #b0d0ff;
 }
 .return-to-lobby-button-container {
   margin-top: 24px;
@@ -44,12 +46,14 @@
   font-weight: bold;
   font-size: 20px;
   margin-bottom: 8px;
+  color: #b0d0ff;
 }
 .waiting-message {
   color: #888;
   font-weight: bold;
   font-size: 20px;
   margin-bottom: 8px;
+  color: #b0d0ff;
 }
 .game-events-section {
   margin-top: 16px;

@@ -10,6 +10,7 @@ class UserCreate(UserBase):
 
 class UserOut(BaseModel):
     id: int
+    username: str
     team_id: Optional[int]
     points: int
     model_config = {'from_attributes': True}

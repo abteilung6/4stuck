@@ -3,6 +3,7 @@ import { TeamService } from '../api/services/TeamService';
 import type { TeamWithMembersOut } from '../api/models/TeamWithMembersOut';
 import type { TeamCreate } from '../api/models/TeamCreate';
 import type { UserOut } from '../api/models/UserOut';
+import type { TeamOut } from '../api/models/TeamOut';
 import { GameService } from '../api/services/GameService';
 import type { GameSessionOut } from '../api/models/GameSessionOut';
 import GameSessionView from './GameSessionView';

@@ -1,0 +1,264 @@
+.results-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+  color: #e0e0e0;
+  font-family: 'Arial', sans-serif;
+  padding: 20px;
+}
+
+.results-content {
+  text-align: center;
+  max-width: 1000px;
+  background: rgba(0, 0, 0, 0.3);
+  border: 2px solid #4a90e2;
+  border-radius: 10px;
+  padding: 40px;
+  box-shadow: 0 0 30px rgba(74, 144, 226, 0.3);
+}
+
+.results-title {
+  font-size: 2.5rem;
+  font-weight: bold;
+  margin-bottom: 40px;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: #b0d0ff;
+  text-shadow: 0 0 10px rgba(74, 144, 226, 0.5);
+}
+
+.survival-summary {
+  margin: 40px 0;
+  padding: 30px;
+  background: rgba(74, 144, 226, 0.1);
+  border: 2px solid #4a90e2;
+  border-radius: 10px;
+  color: #b0d0ff;
+}
+
+.survival-time h2 {
+  font-size: 1.8rem;
+  color: #4a90e2;
+  margin-bottom: 20px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.time-display {
+  font-size: 4rem;
+  font-weight: bold;
+  margin: 20px 0;
+  text-shadow: 0 0 20px currentColor;
+  animation: glow 2s ease-in-out infinite alternate;
+}
+
+.survival-message {
+  font-size: 1.3rem;
+  color: #e0e0e0;
+  margin-top: 15px;
+  font-weight: bold;
+}
+
+.team-performance {
+  margin: 40px 0;
+}
+
+.team-performance h2 {
+  font-size: 1.8rem;
+  color: #4a90e2;
+  margin-bottom: 20px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.team-name {
+  font-size: 1.5rem;
+  color: #ff6b6b;
+  margin-bottom: 30px;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+.players-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
+  margin-top: 20px;
+}
+
+.player-result {
+  background: rgba(255, 107, 107, 0.1);
+  border: 1px solid #ff6b6b;
+  border-radius: 8px;
+  padding: 20px;
+  text-align: left;
+}
+
+.player-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 15px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid rgba(255, 107, 107, 0.3);
+}
+
+.player-number {
+  background: #ff6b6b;
+  color: white;
+  padding: 5px 10px;
+  border-radius: 15px;
+  font-weight: bold;
+  margin-right: 15px;
+  font-size: 0.9rem;
+}
+
+.player-name {
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: #ff6b6b;
+}
+
+.player-stats {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.stat {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+}
+
+.stat-label {
+  color: #b0b0b0;
+  font-size: 0.9rem;
+}
+
+.stat-value {
+  color: #ffffff;
+  font-weight: bold;
+  font-size: 1rem;
+}
+
+.results-actions {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  margin: 40px 0;
+  flex-wrap: wrap;
+}
+
+.action-button {
+  padding: 15px 30px;
+  font-size: 1.1rem;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  min-width: 150px;
+}
+
+.play-again {
+  background: #6bcf7f;
+  color: white;
+}
+
+.play-again:hover {
+  background: #5bbf6f;
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(107, 207, 127, 0.4);
+}
+
+.back-lobby {
+  background: #4a90e2;
+  color: white;
+}
+
+.back-lobby:hover {
+  background: #3a80d2;
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(74, 144, 226, 0.4);
+}
+
+.results-motivation {
+  margin-top: 40px;
+  padding: 20px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 5px;
+  font-style: italic;
+}
+
+.results-motivation p {
+  margin: 5px 0;
+  color: #b0b0b0;
+}
+
+.results-motivation p:first-child {
+  font-size: 1.1rem;
+  color: #e0e0e0;
+  font-weight: bold;
+}
+
+@keyframes glow {
+  from {
+    text-shadow: 0 0 20px currentColor;
+  }
+  to {
+    text-shadow: 0 0 30px currentColor, 0 0 40px currentColor;
+  }
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .results-content {
+    padding: 20px;
+    margin: 10px;
+  }
+  
+  .results-title {
+    font-size: 1.8rem;
+  }
+  
+  .time-display {
+    font-size: 3rem;
+  }
+  
+  .players-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .results-actions {
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .action-button {
+    width: 100%;
+    max-width: 250px;
+  }
+}
+
+@media (max-width: 480px) {
+  .results-title {
+    font-size: 1.5rem;
+  }
+  
+  .time-display {
+    font-size: 2.5rem;
+  }
+  
+  .survival-message {
+    font-size: 1.1rem;
+  }
+  
+  .player-result {
+    padding: 15px;
+  }
+} 

@@ -7,6 +7,7 @@
   border-radius: 10px;
   background: #fff;
   box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  color: #e0e0e0;
 }
 .username-input-container,
 .new-team-input-container {
@@ -43,7 +44,7 @@ button:focus {
 }
 .hello-message {
   margin-left: 16px;
-  color: #1976d2;
+  color: #b0d0ff;
   font-weight: 500;
 }
 .teams-list {
@@ -83,11 +84,11 @@ button:focus {
 .status-message {
   margin-top: 24px;
   min-height: 24px;
-  color: #b00;
+  color: #b0d0ff;
   font-weight: 500;
 }
 .error-message {
-  color: #b00;
+  color: #ffb3b3;
   font-weight: 500;
   margin-bottom: 8px;
 }

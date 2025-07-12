@@ -49,7 +49,13 @@ test.describe('Game Flow - User Journey', () => {
     await page.getByPlaceholder('New team name').fill(randomTeamName);
     await page.getByRole('button', { name: 'Create New Team' }).click();
     
-    // Wait for team to be created and joined
+    // Wait for team creation message
+    await expect(page.getByText(`Created team ${randomTeamName}`)).toBeVisible();
+    
+    // Join the team
+    await page.getByRole('button', { name: `Join team ${randomTeamName}` }).click();
+    
+    // Wait for team to be joined
     await expect(page.getByText(`Your Team: ${randomTeamName}`)).toBeVisible();
     
     // Start the game
@@ -238,19 +244,18 @@ test.describe('Game Flow - User Journey', () => {
   });
 
   test('should handle game session errors gracefully', async ({ page }) => {
-    // Try to start a game without proper setup
-    await page.getByRole('button', { name: 'Start Game' }).click();
-    
-    // Should show error message
+    // Try to create team without username (should show error)
+    await page.getByPlaceholder('New team name').fill('TestTeam');
+    await page.getByRole('button', { name: 'Create New Team' }).click();
     await expect(page.getByText('Set your username first.')).toBeVisible();
     
     // Set username but don't join team
     await page.getByPlaceholder('Username').fill('testuser');
     await page.getByRole('button', { name: 'Set Username' }).click();
-    await page.getByRole('button', { name: 'Start Game' }).click();
     
-    // Should show appropriate error
-    await expect(page.getByText(/Failed to start game session/)).toBeVisible();
+    // Try to start game without joining team (button should not exist or be disabled)
+    const startGameButton = page.getByRole('button', { name: 'Start Game' });
+    await expect(startGameButton).toBeDisabled();
   });
 
   test('should display loading states during transitions', async ({ page }) => {
