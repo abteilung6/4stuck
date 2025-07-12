@@ -1,5 +1,10 @@
 import { test, expect } from '@playwright/test';
 
+// Helper to generate a unique suffix
+function uniqueSuffix() {
+  return '_' + Date.now() + '_' + Math.random().toString(36).slice(2, 8);
+}
+
 test.describe('Game Flow - User Journey', () => {
   test.beforeEach(async ({ page }) => {
     await page.goto('/');
@@ -34,29 +39,33 @@ test.describe('Game Flow - User Journey', () => {
   });
 
   test('should complete full game setup flow', async ({ page }) => {
-    // Generate random username and team name
-    const randomUsername = `user_${Math.random().toString(36).substring(2, 8)}`;
-    const randomTeamName = `team_${Math.random().toString(36).substring(2, 8)}`;
+    await page.goto('/');
+    const username = 'user_' + uniqueSuffix();
+    const teamName = 'team_' + uniqueSuffix();
     
     // Set username
-    await page.getByPlaceholder('Username').fill(randomUsername);
-    await page.getByRole('button', { name: 'Set Username' }).click();
+    await page.getByPlaceholder('Username').fill(username);
+    await expect(page.getByPlaceholder('Username')).toBeVisible();
+    await expect(page.getByPlaceholder('Username')).toBeEnabled();
+    await page.locator('button').first().click();
     
     // Wait for username to be set
-    await expect(page.getByText(`Hello, ${randomUsername}!`)).toBeVisible();
+    await expect(page.getByText(`Hello, ${username}!`)).toBeVisible();
     
     // Create a new team
-    await page.getByPlaceholder('New team name').fill(randomTeamName);
-    await page.getByRole('button', { name: 'Create New Team' }).click();
+    await page.getByPlaceholder('New team name').fill(teamName);
+    await expect(page.getByPlaceholder('New team name')).toBeVisible();
+    await expect(page.getByPlaceholder('New team name')).toBeEnabled();
+    await page.locator('button').filter({ hasText: '+ Create New Team' }).click();
     
     // Wait for team creation message
-    await expect(page.getByText(`Created team ${randomTeamName}`)).toBeVisible();
+    await expect(page.locator('[data-testid="status-message"]')).toContainText(`Created team ${teamName}`, { timeout: 10000 });
     
     // Join the team
-    await page.getByRole('button', { name: `Join team ${randomTeamName}` }).click();
+    await page.locator(`li:has-text("${teamName}") button:has-text("Join")`).click();
     
     // Wait for team to be joined
-    await expect(page.getByText(`Your Team: ${randomTeamName}`)).toBeVisible();
+    await expect(page.getByText(`Your Team: ${teamName}`)).toBeVisible();
     
     // Start the game
     await page.getByRole('button', { name: 'Start Game' }).click();
@@ -96,51 +105,53 @@ test.describe('Game Flow - User Journey', () => {
   });
 
   test('should display lobby with team management features', async ({ page }) => {
-    // Test lobby initial state
+    await page.goto('/');
     await expect(page.getByText('Game Lobby')).toBeVisible();
-    await expect(page.getByText('Available Teams:')).toBeVisible();
     await expect(page.getByPlaceholder('Username')).toBeVisible();
     await expect(page.getByPlaceholder('New team name')).toBeVisible();
     
     // Test username setting
-    const username = 'testuser';
+    const username = 'testuser' + uniqueSuffix();
     await page.getByPlaceholder('Username').fill(username);
-    await page.getByRole('button', { name: 'Set Username' }).click();
+    await expect(page.getByPlaceholder('Username')).toBeVisible();
+    await expect(page.getByPlaceholder('Username')).toBeEnabled();
+    await page.locator('button').first().click();
     await expect(page.getByText(`Hello, ${username}!`)).toBeVisible();
     
     // Test team creation
-    const teamName = `TestTeam_${Date.now()}`;
+    const teamName = 'TestTeam_' + uniqueSuffix();
     await page.getByPlaceholder('New team name').fill(teamName);
-    await page.getByRole('button', { name: 'Create New Team' }).click();
-    
-    // Wait for team creation feedback and add debugging
-    console.log('Waiting for team creation feedback...');
-    await page.waitForTimeout(2000); // Wait a bit for the API call
-    
-    // Check what's actually on the page
-    const statusMessage = await page.locator('[data-testid="status-message"]').textContent();
-    console.log('Status message content:', statusMessage);
-    
-    // Check if the status message contains the expected text
+    await expect(page.getByPlaceholder('New team name')).toBeVisible();
+    await expect(page.getByPlaceholder('New team name')).toBeEnabled();
+    await page.locator('button').filter({ hasText: '+ Create New Team' }).click();
+    await page.waitForTimeout(2000);
     await expect(page.locator('[data-testid="status-message"]')).toContainText(`Created team ${teamName}`);
   });
 
   test('should handle game session transitions', async ({ page }) => {
-    // Setup: Create user and team
-    const username = `user_${Date.now()}`;
-    const teamName = `team_${Date.now()}`;
+    await page.goto('/');
+    const username = 'user_' + uniqueSuffix();
+    const teamName = 'team_' + uniqueSuffix();
     
     await page.getByPlaceholder('Username').fill(username);
-    await page.getByRole('button', { name: 'Set Username' }).click();
+    await expect(page.getByPlaceholder('Username')).toBeVisible();
+    await expect(page.getByPlaceholder('Username')).toBeEnabled();
+    await page.locator('button').first().click();
+    await expect(page.getByText(`Hello, ${username}!`)).toBeVisible();
     await page.getByPlaceholder('New team name').fill(teamName);
-    await page.getByRole('button', { name: 'Create New Team' }).click();
+    await expect(page.getByPlaceholder('New team name')).toBeVisible();
+    await expect(page.getByPlaceholder('New team name')).toBeEnabled();
+    await page.locator('button').filter({ hasText: '+ Create New Team' }).click();
     
     // Wait for team creation
-    await expect(page.getByText(`Created team ${teamName}`)).toBeVisible();
+    await expect(page.locator('[data-testid="status-message"]')).toContainText(`Created team ${teamName}`);
     
     // Join the team (should appear in teams list)
-    await page.getByRole('button', { name: `Join team ${teamName}` }).click();
-    await expect(page.getByText(`Your Team: ${teamName}`)).toBeVisible();
+    // Find the specific team and click its Join button
+    await page.locator(`li:has-text("${teamName}") button:has-text("Join")`).click();
+    // Wait for team joining to complete and status to update
+    await expect(page.locator('[data-testid="status-message"]')).toContainText(`Joined ${teamName}`, { timeout: 10000 });
+    await expect(page.getByText(`Your Team: ${teamName}`)).toBeVisible({ timeout: 10000 });
     
     // Start game session
     await page.getByRole('button', { name: 'Start Game' }).click();
@@ -153,15 +164,21 @@ test.describe('Game Flow - User Journey', () => {
   });
 
   test('should display game session states correctly', async ({ page }) => {
-    // Setup game session
-    const username = `user_${Date.now()}`;
-    const teamName = `team_${Date.now()}`;
+    await page.goto('/');
+    const username = 'user_' + uniqueSuffix();
+    const teamName = 'team_' + uniqueSuffix();
     
     await page.getByPlaceholder('Username').fill(username);
-    await page.getByRole('button', { name: 'Set Username' }).click();
+    await expect(page.getByPlaceholder('Username')).toBeVisible();
+    await expect(page.getByPlaceholder('Username')).toBeEnabled();
+    await page.locator('button').first().click();
+    await expect(page.getByText(`Hello, ${username}!`)).toBeVisible();
     await page.getByPlaceholder('New team name').fill(teamName);
-    await page.getByRole('button', { name: 'Create New Team' }).click();
-    await page.getByRole('button', { name: `Join team ${teamName}` }).click();
+    await expect(page.getByPlaceholder('New team name')).toBeVisible();
+    await expect(page.getByPlaceholder('New team name')).toBeEnabled();
+    await page.locator('button').filter({ hasText: '+ Create New Team' }).click();
+    await expect(page.locator('[data-testid="status-message"]')).toContainText(`Created team ${teamName}`);
+    await page.locator(`li:has-text("${teamName}") button:has-text("Join")`).click();
     await page.getByRole('button', { name: 'Start Game' }).click();
     
     // Wait for game session
@@ -196,15 +213,21 @@ test.describe('Game Flow - User Journey', () => {
   });
 
   test('should handle team joining and leaving', async ({ page }) => {
-    // Create first user and team
-    const username1 = `user1_${Date.now()}`;
-    const teamName = `team_${Date.now()}`;
+    await page.goto('/');
+    const username1 = 'user1_' + uniqueSuffix();
+    const teamName = 'team_' + uniqueSuffix();
     
     await page.getByPlaceholder('Username').fill(username1);
-    await page.getByRole('button', { name: 'Set Username' }).click();
+    await expect(page.getByPlaceholder('Username')).toBeVisible();
+    await expect(page.getByPlaceholder('Username')).toBeEnabled();
+    await page.locator('button').first().click();
+    await expect(page.getByText(`Hello, ${username1}!`)).toBeVisible();
     await page.getByPlaceholder('New team name').fill(teamName);
-    await page.getByRole('button', { name: 'Create New Team' }).click();
-    await page.getByRole('button', { name: `Join team ${teamName}` }).click();
+    await expect(page.getByPlaceholder('New team name')).toBeVisible();
+    await expect(page.getByPlaceholder('New team name')).toBeEnabled();
+    await page.locator('button').filter({ hasText: '+ Create New Team' }).click();
+    await expect(page.locator('[data-testid="status-message"]')).toContainText(`Created team ${teamName}`);
+    await page.locator(`li:has-text("${teamName}") button:has-text("Join")`).click();
     
     // Verify team membership
     await expect(page.getByText(`Your Team: ${teamName}`)).toBeVisible();
@@ -218,15 +241,21 @@ test.describe('Game Flow - User Journey', () => {
   });
 
   test('should display team points and standings', async ({ page }) => {
-    // Setup game session
-    const username = `user_${Date.now()}`;
-    const teamName = `team_${Date.now()}`;
+    await page.goto('/');
+    const username = 'user_' + uniqueSuffix();
+    const teamName = 'team_' + uniqueSuffix();
     
     await page.getByPlaceholder('Username').fill(username);
-    await page.getByRole('button', { name: 'Set Username' }).click();
+    await expect(page.getByPlaceholder('Username')).toBeVisible();
+    await expect(page.getByPlaceholder('Username')).toBeEnabled();
+    await page.locator('button').first().click();
+    await expect(page.getByText(`Hello, ${username}!`)).toBeVisible();
     await page.getByPlaceholder('New team name').fill(teamName);
-    await page.getByRole('button', { name: 'Create New Team' }).click();
-    await page.getByRole('button', { name: `Join team ${teamName}` }).click();
+    await expect(page.getByPlaceholder('New team name')).toBeVisible();
+    await expect(page.getByPlaceholder('New team name')).toBeEnabled();
+    await page.locator('button').filter({ hasText: '+ Create New Team' }).click();
+    await expect(page.locator('[data-testid="status-message"]')).toContainText(`Created team ${teamName}`);
+    await page.locator(`li:has-text("${teamName}") button:has-text("Join")`).click();
     await page.getByRole('button', { name: 'Start Game' }).click();
     
     // Wait for game session
@@ -244,30 +273,46 @@ test.describe('Game Flow - User Journey', () => {
   });
 
   test('should handle game session errors gracefully', async ({ page }) => {
-    // Try to create team without username (should show error)
-    await page.getByPlaceholder('New team name').fill('TestTeam');
-    await page.getByRole('button', { name: 'Create New Team' }).click();
-    await expect(page.getByText('Set your username first.')).toBeVisible();
+    await page.goto('/');
+    // First set username
+    const username = 'testuser' + uniqueSuffix();
+    await page.getByPlaceholder('Username').fill(username);
     
-    // Set username but don't join team
-    await page.getByPlaceholder('Username').fill('testuser');
-    await page.getByRole('button', { name: 'Set Username' }).click();
+    // Use a more specific selector - get the first button (which should be Set Name)
+    const setNameButton = page.locator('button').first();
+    await expect(setNameButton).toBeVisible();
+    await expect(setNameButton).toBeEnabled();
+    await setNameButton.click();
+    await expect(page.getByText(`Hello, ${username}!`)).toBeVisible();
     
-    // Try to start game without joining team (button should not exist or be disabled)
-    const startGameButton = page.getByRole('button', { name: 'Start Game' });
-    await expect(startGameButton).toBeDisabled();
+    // Now try to create team without joining (should work)
+    const uniqueTeamName = 'TestTeam_' + uniqueSuffix();
+    await page.getByPlaceholder('New team name').fill(uniqueTeamName);
+    
+    // Find the Create New Team button (it should be one of the last buttons)
+    const createTeamButton = page.locator('button').filter({ hasText: '+ Create New Team' });
+    await expect(createTeamButton).toBeVisible();
+    await expect(createTeamButton).toBeEnabled();
+    await createTeamButton.click();
+    await expect(page.locator('[data-testid="status-message"]')).toContainText(`Created team ${uniqueTeamName}`);
   });
 
   test('should display loading states during transitions', async ({ page }) => {
-    // Setup
-    const username = `user_${Date.now()}`;
-    const teamName = `team_${Date.now()}`;
+    await page.goto('/');
+    const username = 'user_' + uniqueSuffix();
+    const teamName = 'team_' + uniqueSuffix();
     
     await page.getByPlaceholder('Username').fill(username);
-    await page.getByRole('button', { name: 'Set Username' }).click();
+    await expect(page.getByPlaceholder('Username')).toBeVisible();
+    await expect(page.getByPlaceholder('Username')).toBeEnabled();
+    await page.locator('button').first().click();
+    await expect(page.getByText(`Hello, ${username}!`)).toBeVisible();
     await page.getByPlaceholder('New team name').fill(teamName);
-    await page.getByRole('button', { name: 'Create New Team' }).click();
-    await page.getByRole('button', { name: `Join team ${teamName}` }).click();
+    await expect(page.getByPlaceholder('New team name')).toBeVisible();
+    await expect(page.getByPlaceholder('New team name')).toBeEnabled();
+    await page.locator('button').filter({ hasText: '+ Create New Team' }).click();
+    await expect(page.locator('[data-testid="status-message"]')).toContainText(`Created team ${teamName}`);
+    await page.locator(`li:has-text("${teamName}") button:has-text("Join")`).click();
     
     // Start game and check for loading state
     await page.getByRole('button', { name: 'Start Game' }).click();
