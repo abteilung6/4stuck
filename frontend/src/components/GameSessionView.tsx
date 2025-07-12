@@ -25,12 +25,13 @@ const GameSessionView: React.FC<GameSessionViewProps> = ({ session, user, team }
   const [feedback, setFeedback] = useState<string>('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  const [players, setPlayers] = useState<GameState['players']>(team.members.map(m => ({ id: m.id, username: m.username, points: 0 })));
+  const [players, setPlayers] = useState<GameState['players']>([]);
   const [notifications, setNotifications] = useState<string[]>([]);
   const wsRef = useRef<WebSocket | null>(null);
   const [isEliminated, setIsEliminated] = useState(false);
   const [gameOver, setGameOver] = useState(false);
   const [finalStandings, setFinalStandings] = useState<GameState['players']>([]);
+  const [wsConnected, setWsConnected] = useState(false);
 
   // Fetch current puzzle for the user
   const fetchPuzzle = async () => {
@@ -54,12 +55,13 @@ const GameSessionView: React.FC<GameSessionViewProps> = ({ session, user, team }
     ws.onmessage = (event) => {
       const state: GameState = JSON.parse(event.data);
       setPlayers(state.players);
+      setWsConnected(true);
       // Detect elimination
       const me = state.players.find(p => p.id === user.id);
       if (me && me.points <= 0) setIsEliminated(true);
-      // Detect game over (all but one player/team with points)
+      // Detect game over (all players eliminated)
       const activePlayers = state.players.filter(p => p.points > 0);
-      if (activePlayers.length <= 1) {
+      if (activePlayers.length === 0) {
         setGameOver(true);
         setFinalStandings([...state.players].sort((a, b) => b.points - a.points));
       }
@@ -107,6 +109,16 @@ const GameSessionView: React.FC<GameSessionViewProps> = ({ session, user, team }
 
   // Determine if it's the user's turn (active puzzle assigned to them)
   const isMyTurn = !!puzzle && !isEliminated && !gameOver;
+
+  // Show loading state while waiting for WebSocket data
+  if (!wsConnected) {
+    return (
+      <div className="game-session-container">
+        <h2>Game Session</h2>
+        <div className="loading-message">Connecting to game...</div>
+      </div>
+    );
+  }
 
   // UI for eliminated player
   if (isEliminated && !gameOver) {
