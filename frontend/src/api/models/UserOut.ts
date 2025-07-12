@@ -3,7 +3,6 @@
 /* tslint:disable */
 /* eslint-disable */
 export type UserOut = {
-    username: string;
     id: number;
     team_id: (number | null);
     points: number;

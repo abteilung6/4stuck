@@ -22,6 +22,7 @@ class TeamCreate(TeamBase):
 
 class TeamOut(BaseModel):
     id: int
+    name: str
     model_config = {'from_attributes': True}
 
 class TeamWithMembersOut(TeamOut):

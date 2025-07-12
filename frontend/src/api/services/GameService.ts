@@ -4,6 +4,7 @@
 /* eslint-disable */
 import type { GameSessionCreate } from '../models/GameSessionCreate';
 import type { GameSessionOut } from '../models/GameSessionOut';
+import type { GameSessionStateUpdate } from '../models/GameSessionStateUpdate';
 import type { CancelablePromise } from '../core/CancelablePromise';
 import { OpenAPI } from '../core/OpenAPI';
 import { request as __request } from '../core/request';
@@ -42,6 +43,52 @@ export class GameService {
             path: {
                 'team_id': teamId,
             },
+            errors: {
+                422: `Validation Error`,
+            },
+        });
+    }
+    /**
+     * Start Game Session
+     * Start the game (transition from countdown to active)
+     * @param sessionId
+     * @returns GameSessionOut Successful Response
+     * @throws ApiError
+     */
+    public static startGameSessionGameSessionSessionIdStartPost(
+        sessionId: number,
+    ): CancelablePromise<GameSessionOut> {
+        return __request(OpenAPI, {
+            method: 'POST',
+            url: '/game/session/{session_id}/start',
+            path: {
+                'session_id': sessionId,
+            },
+            errors: {
+                422: `Validation Error`,
+            },
+        });
+    }
+    /**
+     * Update Game Session State
+     * Update game session state (lobby, countdown, active, finished)
+     * @param sessionId
+     * @param requestBody
+     * @returns GameSessionOut Successful Response
+     * @throws ApiError
+     */
+    public static updateGameSessionStateGameSessionSessionIdStatePost(
+        sessionId: number,
+        requestBody: GameSessionStateUpdate,
+    ): CancelablePromise<GameSessionOut> {
+        return __request(OpenAPI, {
+            method: 'POST',
+            url: '/game/session/{session_id}/state',
+            path: {
+                'session_id': sessionId,
+            },
+            body: requestBody,
+            mediaType: 'application/json',
             errors: {
                 422: `Validation Error`,
             },

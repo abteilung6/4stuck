@@ -2,8 +2,7 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-export type TeamOut = {
-    id: number;
-    name: string;
+export type GameSessionStateUpdate = {
+    status: string;
 };
 

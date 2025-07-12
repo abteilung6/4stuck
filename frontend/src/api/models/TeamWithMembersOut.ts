@@ -4,8 +4,8 @@
 /* eslint-disable */
 import type { UserOut } from './UserOut';
 export type TeamWithMembersOut = {
-    name: string;
     id: number;
+    name: string;
     members: Array<UserOut>;
 };
 

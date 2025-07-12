@@ -9,6 +9,7 @@ export type { OpenAPIConfig } from './core/OpenAPI';
 
 export type { GameSessionCreate } from './models/GameSessionCreate';
 export type { GameSessionOut } from './models/GameSessionOut';
+export type { GameSessionStateUpdate } from './models/GameSessionStateUpdate';
 export type { HTTPValidationError } from './models/HTTPValidationError';
 export type { PlayerPoints } from './models/PlayerPoints';
 export type { PuzzleAnswer } from './models/PuzzleAnswer';

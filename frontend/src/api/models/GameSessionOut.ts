@@ -6,5 +6,8 @@ export type GameSessionOut = {
     id: number;
     team_id: number;
     status: string;
+    started_at?: (string | null);
+    ended_at?: (string | null);
+    survival_time_seconds?: (number | null);
 };
 

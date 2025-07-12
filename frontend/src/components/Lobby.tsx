@@ -9,7 +9,7 @@ import GameSessionView from './GameSessionView';
 import { useRef } from 'react';
 import './Lobby.css'; // Add a CSS file for styles
 
-export const Lobby: React.FC = () => {
+const Lobby: React.FC = () => {
   const [teams, setTeams] = useState<TeamWithMembersOut[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -107,12 +107,17 @@ export const Lobby: React.FC = () => {
     setCreatingTeam(true);
     setStatus('Creating team...');
     try {
+      console.log('[Lobby] Creating team:', newTeamName);
       const created = await TeamService.createTeamTeamCreatePost({ name: newTeamName } as TeamCreate);
-      setStatus(`Created team ${created.name}. Now join it!`);
+      console.log('[Lobby] Team created successfully:', created);
+      const successMessage = `Created team ${created.name}. Now join it!`;
+      console.log('[Lobby] Setting status message:', successMessage);
+      setStatus(successMessage);
       setNewTeamName('');
       await fetchTeams();
       // Don't auto-join - let user manually join the team
     } catch (err: any) {
+      console.error('[Lobby] Failed to create team:', err);
       setStatus('Failed to create team. Name may already exist.');
     } finally {
       setCreatingTeam(false);
@@ -236,7 +241,9 @@ export const Lobby: React.FC = () => {
           )}
         </div>
       )}
-      <div className="status-message">{status}</div>
+      <div className="status-message" data-testid="status-message">
+        {status || 'No status message'}
+      </div>
       <button
         onClick={() => {
           setTimeout(() => window.location.reload(), 100); // 100ms delay

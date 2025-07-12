@@ -55,6 +55,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/team/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Teams */
+        get: operations["list_teams_team__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/game/session": {
         parameters: {
             query?: never;
@@ -83,6 +100,46 @@ export interface paths {
         get: operations["get_current_session_game_session__team_id__get"];
         put?: never;
         post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/game/session/{session_id}/start": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Start Game Session
+         * @description Start the game (transition from countdown to active)
+         */
+        post: operations["start_game_session_game_session__session_id__start_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/game/session/{session_id}/state": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Update Game Session State
+         * @description Update game session state (lobby, countdown, active, finished)
+         */
+        post: operations["update_game_session_state_game_session__session_id__state_post"];
         delete?: never;
         options?: never;
         head?: never;
@@ -208,6 +265,17 @@ export interface components {
             team_id: number;
             /** Status */
             status: string;
+            /** Started At */
+            started_at?: string | null;
+            /** Ended At */
+            ended_at?: string | null;
+            /** Survival Time Seconds */
+            survival_time_seconds?: number | null;
+        };
+        /** GameSessionStateUpdate */
+        GameSessionStateUpdate: {
+            /** Status */
+            status: string;
         };
         /** HTTPValidationError */
         HTTPValidationError: {
@@ -268,10 +336,10 @@ export interface components {
         };
         /** TeamOut */
         TeamOut: {
-            /** Name */
-            name: string;
             /** Id */
             id: number;
+            /** Name */
+            name: string;
         };
         /** TeamPoints */
         TeamPoints: {
@@ -280,6 +348,15 @@ export interface components {
             /** Players */
             players: components["schemas"]["PlayerPoints"][];
         };
+        /** TeamWithMembersOut */
+        TeamWithMembersOut: {
+            /** Id */
+            id: number;
+            /** Name */
+            name: string;
+            /** Members */
+            members: components["schemas"]["UserOut"][];
+        };
         /** UserCreate */
         UserCreate: {
             /** Username */
@@ -287,8 +364,6 @@ export interface components {
         };
         /** UserOut */
         UserOut: {
-            /** Username */
-            username: string;
             /** Id */
             id: number;
             /** Team Id */
@@ -412,6 +487,26 @@ export interface operations {
             };
         };
     };
+    list_teams_team__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TeamWithMembersOut"][];
+                };
+            };
+        };
+    };
     create_game_session_game_session_post: {
         parameters: {
             query?: never;
@@ -455,6 +550,72 @@ export interface operations {
             cookie?: never;
         };
         requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["GameSessionOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    start_game_session_game_session__session_id__start_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                session_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["GameSessionOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    update_game_session_state_game_session__session_id__state_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                session_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["GameSessionStateUpdate"];
+            };
+        };
         responses: {
             /** @description Successful Response */
             200: {
