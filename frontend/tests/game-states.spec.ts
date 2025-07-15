@@ -63,7 +63,8 @@ test.describe('Game States and UI Components', () => {
           await expect(page.locator('button').filter({ hasText: 'Create New Team' })).toBeEnabled();
     await page.locator('button').filter({ hasText: 'Create New Team' }).click();
     await expect(page.locator('[data-testid="status-message"]')).toContainText(`Created team ${teamName}`, { timeout: 10000 });
-      await expect(page.getByText(teamName)).toBeVisible();
+    // Use a more specific selector to target the team name in the team list
+    await expect(page.locator(`li:has-text("${teamName}") .ds-list-item__name`)).toBeVisible();
     });
 
     test('should handle team joining workflow', async ({ page }) => {

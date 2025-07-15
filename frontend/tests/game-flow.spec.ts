@@ -150,7 +150,8 @@ test.describe('Game Flow - User Journey', () => {
     // Find the specific team and click its Join button
     await page.locator(`li:has-text("${teamName}") button:has-text("Join")`).click();
     // Wait for team joining to complete and status to update
-    await expect(page.locator('[data-testid="status-message"]')).toContainText(`Joined ${teamName}`, { timeout: 10000 });
+    // Use a more specific selector to get the most recent status message
+    await expect(page.locator('[data-testid="status-message"]').last()).toContainText(`Joined ${teamName}`, { timeout: 10000 });
     await expect(page.getByText(`Your Team: ${teamName}`)).toBeVisible({ timeout: 10000 });
     
     // Start game session
