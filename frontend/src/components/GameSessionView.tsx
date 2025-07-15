@@ -14,6 +14,7 @@ import './design-system/Card.css';
 import './design-system/List.css';
 import CountdownView from './CountdownView';
 import './CountdownView.css';
+import GameResultsView from './GameResultsView';
 
 interface GameSessionViewProps {
   session: GameSessionOut;
@@ -67,7 +68,7 @@ const GameSessionView: React.FC<GameSessionViewProps> = ({ session, user, team }
 
   // Show game over state
   if (gameStatus?.status === 'gameOver') {
-    return <GameOverView gameStatus={gameStatus} user={user} />;
+    return <GameResultsView gameStatus={gameStatus} user={user} />;
   }
 
   // Show eliminated state

@@ -61,18 +61,18 @@ Complete the Team.försvarsmakten game according to the detailed specifications 
   - [x] Verify responsive design
 
 #### 1.5 Create Results Screen
-- [ ] **Build GameResultsView component**
-  - [ ] Create new component: `frontend/src/components/GameResultsView.tsx`
-  - [ ] Display team survival time prominently
-  - [ ] Show individual player statistics
-  - [ ] List puzzles solved per player
-  - [ ] Show points given/received per player
+- [x] **Build GameResultsView component**
+  - [x] Create new component: `frontend/src/components/GameResultsView.tsx`
+  - [x] Display team survival time prominently
+  - [x] Show individual player statistics
+  - [x] List puzzles solved per player
+  - [x] Show points given/received per player
 
-- [ ] **Add "Play Again" functionality**
-  - [ ] Add button to restart game session
-  - [ ] Reset all player points to starting values
-  - [ ] Clear previous game data
-  - [ ] Return to lobby state
+- [x] **Add "Play Again" functionality**
+  - [x] Add button to restart game session
+  - [x] Reset all player points to starting values
+  - [x] Clear previous game data
+  - [x] Return to lobby state
 
 #### 1.6 Fix Game State Machine
 - [ ] **Update GameSessionView routing**
@@ -453,8 +453,9 @@ Complete the Team.försvarsmakten game according to the detailed specifications 
 
 ### Day 4:
 - [x] Task completed: 1.4 - Integrate Countdown Component (all subtasks)
+- [x] Task completed: 1.5 - Create Results Screen (all subtasks)
 - [x] Issues encountered: Backend/flow edge cases, but integration logic is complete
-- [x] Next day plan: Proceed to results screen and full flow testing
+- [x] Next day plan: Proceed to game state machine fixes and full flow testing
 
 ### Day 5:
 - [ ] Task completed:
