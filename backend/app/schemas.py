@@ -32,6 +32,7 @@ class TeamWithMembersOut(TeamOut):
 class GameSessionCreate(BaseModel):
     team_id: int
 
+# TODO: Consider making 'status' a StrEnum for better type safety and autocompletion.
 class GameSessionStateUpdate(BaseModel):
     status: str  # lobby, countdown, active, finished
 

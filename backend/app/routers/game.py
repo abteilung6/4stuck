@@ -76,6 +76,22 @@ def update_game_session_state(session_id: int, state_update: schemas.GameSession
     if state_update.status not in valid_states:
         raise HTTPException(status_code=400, detail=f"Invalid state. Must be one of: {valid_states}")
     
+    # Validate state transitions
+    valid_transitions = {
+        "lobby": ["countdown"],
+        "countdown": ["active"],
+        "active": ["finished"],
+        "finished": []  # No transitions from finished state
+    }
+    
+    current_status = session.status
+    if state_update.status not in valid_transitions.get(current_status, []):
+        raise HTTPException(
+            status_code=400, 
+            detail=f"Invalid state transition from '{current_status}' to '{state_update.status}'. "
+                   f"Valid transitions from '{current_status}': {valid_transitions.get(current_status, [])}"
+        )
+    
     session.status = state_update.status
     
     # Set started_at when transitioning to active

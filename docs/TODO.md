@@ -12,8 +12,8 @@ Complete the Team.försvarsmakten game according to the detailed specifications 
 
 #### 1.1 Fix Game State Transitions
 - [ ] **Fix lobby → countdown transition**
-  - [ ] Ensure game session starts in "lobby" state
-  - [ ] Add endpoint to transition to "countdown" state
+  - [x] Ensure game session starts in "lobby" state
+  - [x] Add endpoint to transition to "countdown" state
   - [ ] Implement proper countdown duration (5 seconds)
   - [ ] Add validation for state transitions
 
@@ -432,9 +432,10 @@ Complete the Team.försvarsmakten game according to the detailed specifications 
 ## 🔄 Daily Progress Tracking
 
 ### Day 1:
-- [ ] Task completed:
-- [ ] Issues encountered:
-- [ ] Next day plan:
+- [x] Task completed: 1.1.1 - Ensure game session starts in "lobby" state
+- [x] Task completed: 1.1.2 - Add endpoint to transition to "countdown" state (with strict validation and tests)
+- [x] Issues encountered: None - task was already correctly implemented, validation and tests improved
+- [x] Next day plan: Continue with task 1.1.3 - Implement proper countdown duration (5 seconds)
 
 ### Day 2:
 - [ ] Task completed:

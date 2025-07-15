@@ -125,3 +125,39 @@ def test_game_session_state_transitions_and_survival_time():
     # Survival time should be at least 1 second
     assert session["survival_time_seconds"] >= 1
     tmp.close() 
+
+
+@pytest.mark.parametrize(
+    "transitions, should_succeed",
+    [
+        (["lobby", "active"], False),
+        (["lobby", "finished"], False),
+        (["lobby", "countdown"], True),
+        (["lobby", "countdown", "active"], True),
+        (["lobby", "countdown", "finished"], False),
+        (["lobby", "countdown", "active", "finished"], True),
+        (["lobby", "countdown", "finished"], False),
+    ]
+)
+def test_state_transition_paths(transitions, should_succeed):
+    client, tmp = create_test_app_and_client()
+    _, team_id = create_team_and_user(client)
+    # Create session (should start in lobby)
+    resp = client.post("/game/session", json={"team_id": team_id})
+    assert resp.status_code == 200
+    session = resp.json()
+    session_id = session["id"]
+    assert session["status"] == "lobby"
+
+    current_status = "lobby"
+    success = True
+    for next_status in transitions[1:]:
+        resp = client.post(f"/game/session/{session_id}/state", json={"status": next_status})
+        if resp.status_code == 200:
+            session = resp.json()
+            current_status = session["status"]
+        else:
+            success = False
+            break
+    assert success == should_succeed
+    tmp.close() 
