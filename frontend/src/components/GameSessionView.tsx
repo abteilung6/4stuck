@@ -57,32 +57,55 @@ const GameSessionView: React.FC<GameSessionViewProps> = ({ session, user, team }
       <Container variant="full" dataTestId="game-session-container">
         <SectionTitle level={2}>Game Session</SectionTitle>
         <StatusMessage type="error">Error: {error}</StatusMessage>
+        <Button 
+          onClick={() => window.location.reload()} 
+          variant="secondary" 
+          style={{ marginTop: 16 }}
+          aria-label="Retry Connection"
+        >
+          Retry Connection
+        </Button>
+      </Container>
+    );
+  }
+
+  // Show loading state while waiting for initial game state
+  if (!gameState || !gameStatus) {
+    return (
+      <Container variant="full" dataTestId="game-session-container">
+        <SectionTitle level={2}>Game Session</SectionTitle>
+        <StatusMessage type="info">Loading game state...</StatusMessage>
+        <div style={{ textAlign: 'center', marginTop: 16 }}>
+          <div style={{ fontSize: '1.2rem', color: '#666' }}>
+            Session ID: {session.id} | Status: {session.status}
+          </div>
+        </div>
       </Container>
     );
   }
 
   // Show countdown state
-  if (gameStatus?.status === 'countdown') {
+  if (gameStatus.status === 'countdown') {
     return <CountdownView onCountdownComplete={() => {}} initialCountdown={5} />;
   }
 
   // Show game over state
-  if (gameStatus?.status === 'gameOver') {
+  if (gameStatus.status === 'gameOver') {
     return <GameResultsView gameStatus={gameStatus} user={user} />;
   }
 
   // Show eliminated state
-  if (gameStatus?.status === 'eliminated') {
+  if (gameStatus.status === 'eliminated') {
     return <EliminatedView gameState={gameState} user={user} notifications={notifications} />;
   }
 
   // Show waiting state
-  if (gameStatus?.status === 'waiting') {
+  if (gameStatus.status === 'waiting') {
     return <WaitingView gameState={gameState} user={user} />;
   }
 
   // Show active game state
-  if (gameStatus?.status === 'active') {
+  if (gameStatus.status === 'active') {
     return (
       <ActiveGameView
         puzzle={puzzle}
@@ -97,11 +120,19 @@ const GameSessionView: React.FC<GameSessionViewProps> = ({ session, user, team }
     );
   }
 
-  // Fallback loading state
+  // Fallback loading state for unknown status
   return (
     <Container variant="full" dataTestId="game-session-container">
       <SectionTitle level={2}>Game Session</SectionTitle>
-      <div className="loading-message">Loading game...</div>
+      <StatusMessage type="info">Preparing game...</StatusMessage>
+      <div style={{ textAlign: 'center', marginTop: 16 }}>
+        <div style={{ fontSize: '1.2rem', color: '#666' }}>
+          Current Status: {gameStatus.status}
+        </div>
+        <div style={{ fontSize: '1rem', color: '#999', marginTop: 8 }}>
+          Active Players: {gameStatus.activePlayersCount}
+        </div>
+      </div>
     </Container>
   );
 };

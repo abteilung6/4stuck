@@ -56,23 +56,30 @@ export function useGameLogic({ sessionId, userId, initialTeam }: UseGameLogicPro
   // WebSocket callbacks
   const wsCallbacks: WebSocketCallbacks = {
     onStateUpdate: useCallback((state: GameState) => {
+      console.log('[useGameLogic] Received state update:', state.session.status);
       setGameState(state);
+      // Clear any previous errors when we receive a valid state update
+      setError('');
       // Do NOT setGameStatus here! Let the effect handle it.
     }, []),
     
     onError: useCallback((error: string) => {
+      console.error('[useGameLogic] WebSocket error:', error);
       setError(error);
       setNotifications(prev => [`WebSocket error: ${error}`, ...prev.slice(0, 4)]);
     }, []),
     
     onConnectionClosed: useCallback(() => {
+      console.log('[useGameLogic] WebSocket connection closed');
       setIsConnected(false);
-      setNotifications(prev => ['WebSocket closed', ...prev.slice(0, 4)]);
+      setNotifications(prev => ['WebSocket connection lost', ...prev.slice(0, 4)]);
     }, []),
     
     onConnected: useCallback(() => {
+      console.log('[useGameLogic] WebSocket connected');
       setIsConnected(true);
       setError('');
+      setNotifications(prev => ['Connected to game server', ...prev.slice(0, 4)]);
     }, [])
   };
 
@@ -169,7 +176,17 @@ export function useGameLogic({ sessionId, userId, initialTeam }: UseGameLogicPro
   useEffect(() => {
     if (gameState) {
       const status = calculateGameStatus(gameState, userId, puzzle, isConnected);
+      console.log('[useGameLogic] Game status calculated:', {
+        status: status.status,
+        sessionStatus: gameState.session.status,
+        activePlayers: status.activePlayersCount,
+        isEliminated: status.isEliminated,
+        isGameOver: status.isGameOver
+      });
       setGameStatus(status);
+    } else {
+      console.log('[useGameLogic] No game state available yet');
+      setGameStatus(null);
     }
   }, [gameState, userId, isConnected]); // Removed puzzle from dependencies
 

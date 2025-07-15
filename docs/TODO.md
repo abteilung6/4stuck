@@ -75,17 +75,17 @@ Complete the Team.försvarsmakten game according to the detailed specifications 
   - [x] Return to lobby state
 
 #### 1.6 Fix Game State Machine
-- [ ] **Update GameSessionView routing**
-  - [ ] Add countdown state handling
-  - [ ] Add results state handling
-  - [ ] Ensure proper state transitions
-  - [ ] Add loading states for transitions
+- [x] **Update GameSessionView routing**
+  - [x] Add countdown state handling
+  - [x] Add results state handling
+  - [x] Ensure proper state transitions
+  - [x] Add loading states for transitions
 
-- [ ] **Update useGameLogic hook**
-  - [ ] Add countdown state support
-  - [ ] Add results state support
-  - [ ] Handle game end state properly
-  - [ ] Update WebSocket callbacks for new states
+- [x] **Update useGameLogic hook**
+  - [x] Add countdown state support
+  - [x] Add results state support
+  - [x] Handle game end state properly
+  - [x] Update WebSocket callbacks for new states
 
 #### 1.7 Frontend Testing
 - [ ] **Test complete game flow**
@@ -454,8 +454,9 @@ Complete the Team.försvarsmakten game according to the detailed specifications 
 ### Day 4:
 - [x] Task completed: 1.4 - Integrate Countdown Component (all subtasks)
 - [x] Task completed: 1.5 - Create Results Screen (all subtasks)
+- [x] Task completed: 1.6 - Fix Game State Machine (all subtasks)
 - [x] Issues encountered: Backend/flow edge cases, but integration logic is complete
-- [x] Next day plan: Proceed to game state machine fixes and full flow testing
+- [x] Next day plan: Proceed to frontend testing and full flow validation
 
 ### Day 5:
 - [ ] Task completed:
