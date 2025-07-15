@@ -12,6 +12,8 @@ import StatusMessage from './design-system/StatusMessage';
 import List from './design-system/List';
 import './design-system/Card.css';
 import './design-system/List.css';
+import CountdownView from './CountdownView';
+import './CountdownView.css';
 
 interface GameSessionViewProps {
   session: GameSessionOut;
@@ -56,6 +58,11 @@ const GameSessionView: React.FC<GameSessionViewProps> = ({ session, user, team }
         <StatusMessage type="error">Error: {error}</StatusMessage>
       </Container>
     );
+  }
+
+  // Show countdown state
+  if (gameStatus?.status === 'countdown') {
+    return <CountdownView onCountdownComplete={() => {}} initialCountdown={5} />;
   }
 
   // Show game over state

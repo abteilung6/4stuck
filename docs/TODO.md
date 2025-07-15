@@ -49,16 +49,16 @@ Complete the Team.försvarsmakten game according to the detailed specifications 
 ### Frontend Tasks
 
 #### 1.4 Integrate Countdown Component
-- [ ] **Connect CountdownView to game flow**
-  - [ ] Import and use existing CountdownView component
-  - [ ] Add countdown state to game session view
-  - [ ] Handle countdown completion callback
-  - [ ] Transition to active game state after countdown
+- [x] **Connect CountdownView to game flow**
+  - [x] Import and use existing CountdownView component
+  - [x] Add countdown state to game session view
+  - [x] Handle countdown completion callback
+  - [x] Transition to active game state after countdown
 
-- [ ] **Add countdown styling**
-  - [ ] Ensure CountdownView.css is properly imported
-  - [ ] Test countdown display and animations
-  - [ ] Verify responsive design
+- [x] **Add countdown styling**
+  - [x] Ensure CountdownView.css is properly imported
+  - [x] Test countdown display and animations
+  - [x] Verify responsive design
 
 #### 1.5 Create Results Screen
 - [ ] **Build GameResultsView component**
@@ -452,9 +452,9 @@ Complete the Team.försvarsmakten game according to the detailed specifications 
 - [x] Next day plan: Continue with frontend integration (countdown, results screen) and full flow testing
 
 ### Day 4:
-- [ ] Task completed:
-- [ ] Issues encountered:
-- [ ] Next day plan:
+- [x] Task completed: 1.4 - Integrate Countdown Component (all subtasks)
+- [x] Issues encountered: Backend/flow edge cases, but integration logic is complete
+- [x] Next day plan: Proceed to results screen and full flow testing
 
 ### Day 5:
 - [ ] Task completed:

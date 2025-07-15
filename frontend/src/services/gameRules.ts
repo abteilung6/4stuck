@@ -67,6 +67,8 @@ export function calculateGameStatus(
   
   if (!wsConnected) {
     status = 'loading';
+  } else if (gameState.session.status === 'countdown') {
+    status = 'countdown';
   } else if (gameIsOver) {
     status = 'gameOver';
   } else if (isEliminated) {

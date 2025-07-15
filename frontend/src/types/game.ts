@@ -31,7 +31,7 @@ export interface GameState {
 }
 
 // Game status types
-export type GameStatus = 'loading' | 'waiting' | 'active' | 'eliminated' | 'gameOver';
+export type GameStatus = 'loading' | 'waiting' | 'active' | 'eliminated' | 'gameOver' | 'countdown';
 
 export interface GameStatusInfo {
   status: GameStatus;
