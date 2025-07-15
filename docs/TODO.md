@@ -14,7 +14,7 @@ Complete the Team.försvarsmakten game according to the detailed specifications 
 - [ ] **Fix lobby → countdown transition**
   - [x] Ensure game session starts in "lobby" state
   - [x] Add endpoint to transition to "countdown" state
-  - [ ] Implement proper countdown duration (5 seconds)
+  - [x] Implement proper countdown duration (5 seconds)
   - [ ] Add validation for state transitions
 
 - [ ] **Fix countdown → active transition**
@@ -438,7 +438,7 @@ Complete the Team.försvarsmakten game according to the detailed specifications 
 - [x] Next day plan: Continue with task 1.1.3 - Implement proper countdown duration (5 seconds)
 
 ### Day 2:
-- [ ] Task completed:
+- [x] Task completed: 1.1.3 - Implement proper countdown duration (5 seconds)
 - [ ] Issues encountered:
 - [ ] Next day plan:
 

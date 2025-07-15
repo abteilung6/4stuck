@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from .. import models, schemas, database
+from ..services.countdown_service import countdown_service
 
 router = APIRouter(prefix="/game", tags=["game"])
 
@@ -93,6 +94,12 @@ def update_game_session_state(session_id: int, state_update: schemas.GameSession
         )
     
     session.status = state_update.status
+    
+    # Start countdown when transitioning to countdown state
+    if state_update.status == "countdown":
+        if not countdown_service.start_countdown(session_id, duration_seconds=5):
+            # If countdown is already running, this is fine - just log it
+            print(f"Countdown already running for session {session_id}")
     
     # Set started_at when transitioning to active
     if state_update.status == "active" and not session.started_at:
