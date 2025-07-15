@@ -44,7 +44,7 @@ def create_team_and_users(TestingSessionLocal, team_name="TestTeam", user_count=
         # Create users
         users = []
         for i in range(user_count):
-            user = User(username=f"user{i+1}", team_id=team.id, points=15)
+            user = User(username=f"{team_name.lower()}_user{i+1}", team_id=team.id, points=15)
             db.add(user)
             users.append(user)
         

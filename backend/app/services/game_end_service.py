@@ -33,6 +33,10 @@ class GameEndService:
                 if self._should_end_game(session, db):
                     self._end_game_session(session, db)
                     updated_sessions.append(session.id)
+            
+            # Commit all changes
+            if updated_sessions:
+                db.commit()
                     
         except Exception as e:
             print(f"Error in game end detection: {e}")

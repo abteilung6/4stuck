@@ -23,22 +23,22 @@ Complete the Team.försvarsmakten game according to the detailed specifications 
   - [x] Broadcast state change to all connected clients
   - [x] Initialize all players with starting points (15)
 
-- [ ] **Fix active → finished transition**
-  - [ ] Improve game end detection logic
-  - [ ] Ensure all players eliminated triggers game end
-  - [ ] Set `ended_at` timestamp and calculate survival time
-  - [ ] Broadcast final state to all clients
+- [x] **Fix active → finished transition**
+  - [x] Improve game end detection logic
+  - [x] Ensure all players eliminated triggers game end
+  - [x] Set `ended_at` timestamp and calculate survival time
+  - [x] Broadcast final state to all clients
 
 #### 1.2 Enhance Game End Logic
-- [ ] **Improve survival time calculation**
-  - [ ] Fix survival time calculation in main.py decay loop
-  - [ ] Ensure accurate start/end time tracking
-  - [ ] Add survival time to game session response
+- [x] **Improve survival time calculation**
+  - [x] Fix survival time calculation in main.py decay loop
+  - [x] Ensure accurate start/end time tracking
+  - [x] Add survival time to game session response
 
-- [ ] **Add proper game end detection**
-  - [ ] Verify all players eliminated logic works correctly
-  - [ ] Add game end broadcast to WebSocket
-  - [ ] Ensure game session status updates properly
+- [x] **Add proper game end detection**
+  - [x] Verify all players eliminated logic works correctly
+  - [x] Add game end broadcast to WebSocket
+  - [x] Ensure game session status updates properly
 
 #### 1.3 Backend Testing
 - [ ] **Test game flow endpoints**
@@ -446,9 +446,10 @@ Complete the Team.försvarsmakten game according to the detailed specifications 
 - [x] Next day plan: Continue with task 1.3 - Fix active → finished transition (game end detection)
 
 ### Day 3:
-- [ ] Task completed:
-- [ ] Issues encountered:
-- [ ] Next day plan:
+- [x] Task completed: 1.3 - Fix active → finished transition (all subtasks)
+- [x] Task completed: 1.2 - Enhance game end logic (all subtasks)
+- [x] Issues encountered: Test bug (username uniqueness) and missing db.commit in service; both fixed
+- [x] Next day plan: Continue with frontend integration (countdown, results screen) and full flow testing
 
 ### Day 4:
 - [ ] Task completed:
