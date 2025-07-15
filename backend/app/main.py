@@ -5,6 +5,7 @@ from .routers.game import router as game_router
 from .routers.puzzle import router as puzzle_router
 from .routers.ws import router as ws_router
 from .utils.websocket_broadcast import broadcast_state
+from .services.game_end_service import game_end_service
 import threading
 import time
 from fastapi.middleware.cors import CORSMiddleware
@@ -44,20 +45,9 @@ def on_startup():
                             for session in sessions:
                                 sessions_to_update.add(session.id)
                 
-                # Check for game end conditions
-                active_sessions = db.query(GameSession).filter(GameSession.status == "active").all()
-                for session in active_sessions:
-                    team_users = db.query(User).filter(User.team_id == session.team_id).all()
-                    all_eliminated = all(user.points <= 0 for user in team_users)
-                    
-                    if all_eliminated and session.status == "active":
-                        # Game ended - calculate survival time
-                        from datetime import datetime
-                        session.status = "finished"
-                        session.ended_at = datetime.utcnow()
-                        if session.started_at:
-                            session.survival_time_seconds = int((session.ended_at - session.started_at).total_seconds())
-                        sessions_to_update.add(session.id)
+                # Use the game end service to check for game end conditions
+                ended_sessions = game_end_service.check_and_handle_game_end(db)
+                sessions_to_update.update(ended_sessions)
                 
                 db.commit()
                 

@@ -11,17 +11,17 @@ Complete the Team.försvarsmakten game according to the detailed specifications 
 ### Backend Tasks
 
 #### 1.1 Fix Game State Transitions
-- [ ] **Fix lobby → countdown transition**
+- [x] **Fix lobby → countdown transition**
   - [x] Ensure game session starts in "lobby" state
   - [x] Add endpoint to transition to "countdown" state
   - [x] Implement proper countdown duration (5 seconds)
   - [x] Add validation for state transitions
 
-- [ ] **Fix countdown → active transition**
-  - [ ] Ensure countdown completes properly
-  - [ ] Set `started_at` timestamp when transitioning to active
-  - [ ] Broadcast state change to all connected clients
-  - [ ] Initialize all players with starting points (15)
+- [x] **Fix countdown → active transition**
+  - [x] Ensure countdown completes properly
+  - [x] Set `started_at` timestamp when transitioning to active
+  - [x] Broadcast state change to all connected clients
+  - [x] Initialize all players with starting points (15)
 
 - [ ] **Fix active → finished transition**
   - [ ] Improve game end detection logic
@@ -440,8 +440,10 @@ Complete the Team.försvarsmakten game according to the detailed specifications 
 ### Day 2:
 - [x] Task completed: 1.1.3 - Implement proper countdown duration (5 seconds)
 - [x] Task completed: 1.1.4 - Add validation for state transitions
-- [ ] Issues encountered:
-- [ ] Next day plan:
+- [x] Task completed: 1.1 - Fix lobby → countdown transition (all subtasks)
+- [x] Task completed: 1.2 - Fix countdown → active transition (all subtasks)
+- [x] Issues encountered: None - all backend state transitions working correctly
+- [x] Next day plan: Continue with task 1.3 - Fix active → finished transition (game end detection)
 
 ### Day 3:
 - [ ] Task completed:
