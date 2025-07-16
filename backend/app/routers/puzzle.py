@@ -91,6 +91,10 @@ def create_puzzle(puzzle: schemas.PuzzleCreate, db: Session = Depends(get_db)):
         data, correct_answer = generate_text_puzzle()
     elif puzzle.type == "multiple_choice":
         data, correct_answer = generate_multiple_choice_puzzle()
+    elif puzzle.type == "spatial":
+        # Empty data for spatial puzzle - frontend handles everything
+        data = {}
+        correct_answer = "solved"
     else:
         raise HTTPException(status_code=400, detail=f"Puzzle type '{puzzle.type}' not supported")
     
@@ -144,7 +148,7 @@ async def submit_answer(answer: schemas.PuzzleAnswer, db: Session = Depends(get_
                 points_awarded = POINTS_AWARD
                 db.commit()
         # Assign new puzzle to solver (randomly choose puzzle type)
-        puzzle_types = ["text", "multiple_choice", "memory"]
+        puzzle_types = ["text", "multiple_choice", "memory", "spatial"]
         new_type = random.choice(puzzle_types)
         
         if new_type == "memory":
@@ -153,6 +157,9 @@ async def submit_answer(answer: schemas.PuzzleAnswer, db: Session = Depends(get_
             new_data, new_correct = generate_text_puzzle()
         elif new_type == "multiple_choice":
             new_data, new_correct = generate_multiple_choice_puzzle()
+        elif new_type == "spatial":
+            new_data = {}
+            new_correct = "solved"
         
         new_puzzle = models.Puzzle(
             type=new_type,

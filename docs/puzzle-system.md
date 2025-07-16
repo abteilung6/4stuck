@@ -75,8 +75,11 @@
 - **Skills tested:** Short-term memory, attention.
 
 ### 2. Spatial/Path Puzzle (Drag the Circle)
-- Players must drag a circle from one side to the other.
-- The path contains orange obstacles; players are not allowed to hit the orange objects.
+- Players must drag a blue circle from the **top side to the bottom side** of the play area.
+- The path contains **one orange obstacle (block)** that moves horizontally (left and right).
+- Players are not allowed to touch the orange obstacle; collision results in failure.
+- The puzzle layout (obstacle position, size, and movement) is currently fixed and handled entirely on the frontend.
+- The backend does not generate or randomize obstacle data; it simply signals the frontend to show the spatial puzzle.
 - **Skills tested:** Spatial reasoning, fine motor control, planning.
 
 ### 3. Concentration/Matching Puzzle (Color-Word Match)
