@@ -2,6 +2,7 @@ import React from 'react';
 import { TextPuzzle } from './TextPuzzle';
 import { MultipleChoicePuzzle } from './MultipleChoicePuzzle';
 import { MemoryPuzzle } from './MemoryPuzzle';
+import { SpatialPuzzle } from './SpatialPuzzle';
 import Card from '../design-system/Card';
 import SectionTitle from '../design-system/SectionTitle';
 import { BodyText } from '../design-system/Typography';
@@ -45,6 +46,17 @@ export const PuzzleRenderer: React.FC<PuzzleRendererProps> = ({
     case 'multiple_choice':
       return (
         <MultipleChoicePuzzle
+          puzzle={puzzle}
+          answer={answer}
+          setAnswer={setAnswer}
+          submitAnswer={submitAnswer}
+          loading={loading}
+          feedback={feedback}
+        />
+      );
+    case 'spatial':
+      return (
+        <SpatialPuzzle
           puzzle={puzzle}
           answer={answer}
           setAnswer={setAnswer}
