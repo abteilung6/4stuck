@@ -34,6 +34,7 @@ const GameSessionView: React.FC<GameSessionViewProps> = ({ session, user, team }
     notifications,
     setAnswer,
     submitAnswer,
+    submitAnswerWithAnswer,
     isConnected
   } = useGameLogic({
     sessionId: session.id,
@@ -116,6 +117,7 @@ const GameSessionView: React.FC<GameSessionViewProps> = ({ session, user, team }
         user={user}
         setAnswer={setAnswer}
         submitAnswer={submitAnswer}
+        submitAnswerWithAnswer={submitAnswerWithAnswer}
       />
     );
   }
@@ -217,7 +219,8 @@ const ActiveGameView: React.FC<{
   user: any;
   setAnswer: (answer: string) => void;
   submitAnswer: () => Promise<void>;
-}> = ({ puzzle, answer, feedback, loading, gameState, user, setAnswer, submitAnswer }) => {
+  submitAnswerWithAnswer: (answer: string) => Promise<void>;
+}> = ({ puzzle, answer, feedback, loading, gameState, user, setAnswer, submitAnswer, submitAnswerWithAnswer }) => {
   return (
     <Container variant="full" dataTestId="game-session-container">
       <SectionTitle level={2}>Game Session</SectionTitle>
@@ -228,6 +231,7 @@ const ActiveGameView: React.FC<{
           answer={answer}
           setAnswer={setAnswer}
           submitAnswer={submitAnswer}
+          submitAnswerWithAnswer={submitAnswerWithAnswer}
           loading={loading}
           feedback={feedback}
         />

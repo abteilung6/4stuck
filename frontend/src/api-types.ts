@@ -328,6 +328,8 @@ export interface components {
             data: unknown;
             /** Status */
             status: string;
+            /** Correct Answer */
+            correct_answer: string;
         };
         /** TeamCreate */
         TeamCreate: {

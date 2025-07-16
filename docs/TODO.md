@@ -115,17 +115,16 @@ Complete the Team.försvarsmakten game according to the detailed specifications 
   - [x] Ensure proper data structure
 
 #### 2.2 Implement Concentration Puzzle
-- [ ] **Add concentration puzzle generation**
-  - [ ] Create `generate_concentration_puzzle()` function
-  - [ ] Generate color-word mismatches (e.g., "red" text in blue color)
-  - [ ] Create multiple trials with correct/incorrect matches
-  - [ ] Return text, color, and correct answer
-  - [ ] Add timing for click validation
+- [x] **Add concentration puzzle generation**
+  - [x] Create `generate_concentration_puzzle()` function that generates a sequence of N color-word pairs (e.g., 10), only one of which is a correct match (text matches color).
+  - [x] Store the index of the correct pair as the correct answer.
+  - [x] Return the list of pairs and the correct index in the puzzle data.
+  - [x] Add validation for answer: player must click at the correct time (index), otherwise fail.
 
-- [ ] **Update puzzle creation endpoint**
-  - [ ] Add "concentration" to supported puzzle types
-  - [ ] Test concentration puzzle generation
-  - [ ] Ensure proper data structure
+- [x] **Update puzzle creation endpoint**
+  - [x] Add "concentration" to supported puzzle types
+  - [x] Test concentration puzzle generation
+  - [x] Ensure proper data structure (sequence, correct index, etc.)
 
 #### 2.3 Implement Multitasking Puzzle
 - [ ] **Add multitasking puzzle generation**
@@ -157,18 +156,19 @@ Complete the Team.försvarsmakten game according to the detailed specifications 
   - [x] Ensure responsive design
 
 #### 2.5 Create Concentration Puzzle Component
-- [ ] **Build ConcentrationPuzzle component**
-  - [ ] Create `frontend/src/components/puzzles/ConcentrationPuzzle.tsx`
-  - [ ] Display color-word combinations
-  - [ ] Implement click validation logic
-  - [ ] Add visual feedback for correct/incorrect clicks
-  - [ ] Add timing for response validation
+- [x] **Build ConcentrationPuzzle component**
+  - [x] Display a sequence of color-word pairs, each for 2 seconds
+  - [x] Allow player to click the circle at any time
+  - [x] If player clicks at the correct time (on the matching pair), solve the puzzle
+  - [x] If player clicks at the wrong time or never clicks, fail the puzzle
+  - [x] Add visual feedback for correct/incorrect clicks
+  - [x] Add timing for response validation
 
-- [ ] **Add concentration puzzle styling**
-  - [ ] Create `ConcentrationPuzzle.css` for styling
-  - [ ] Style color-word display
-  - [ ] Add visual feedback animations
-  - [ ] Ensure accessibility (color contrast)
+- [x] **Add concentration puzzle styling**
+  - [x] Create `ConcentrationPuzzle.css` for styling
+  - [x] Style color-word display
+  - [x] Add visual feedback animations
+  - [x] Ensure accessibility (color contrast)
 
 #### 2.6 Create Multitasking Puzzle Component
 - [ ] **Build MultitaskingPuzzle component**
@@ -465,4 +465,11 @@ Complete the Team.försvarsmakten game according to the detailed specifications 
 - [x] Task completed: 2.7 - Update Puzzle Renderer (all subtasks)
 - [x] Task completed: 2.8 - Frontend Testing (spatial puzzle and puzzle type switching)
 - [x] Issues encountered: Fixed React "Maximum update depth exceeded" error in SpatialPuzzle component, refactored game loop to use refs and memoization
-- [x] Next week plan: Continue with remaining puzzle types (concentration, multitasking) and backend puzzle generation 
+- [x] Next week plan: Continue with remaining puzzle types (concentration, multitasking) and backend puzzle generation
+
+### Day 6:
+- [x] Task completed: 2.2 - Implement Concentration Puzzle (all subtasks) - Backend puzzle generation and validation
+- [x] Task completed: 2.5 - Create Concentration Puzzle Component (all subtasks) - Frontend component with timing and click validation
+- [x] Task completed: 2.8 - Frontend Testing (concentration puzzle testing) - Component working correctly with proper answer submission
+- [x] Issues encountered: Fixed race condition in answer submission by implementing submitAnswerWithAnswer function
+- [x] Next week plan: Continue with multitasking puzzle implementation and visual design polish 

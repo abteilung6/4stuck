@@ -7,5 +7,6 @@ export type PuzzleState = {
     type: string;
     data: any;
     status: string;
+    correct_answer: string;
 };
 

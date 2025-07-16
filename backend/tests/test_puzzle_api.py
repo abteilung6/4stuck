@@ -142,4 +142,34 @@ def test_player_elimination_and_game_over():
     points_resp = client.get(f"/puzzle/points/{team_id}")
     points = points_resp.json()
     assert all(p["points"] == 0 for p in points["players"])
+    tmp.close()
+
+def test_create_concentration_puzzle():
+    client, tmp, _ = create_test_app_and_client()
+    user_id, team_id, session_id = create_team_user_session(client)
+    
+    # Create concentration puzzle
+    resp = client.post("/puzzle/create", json={"type": "concentration", "game_session_id": session_id, "user_id": user_id})
+    assert resp.status_code == 200
+    puzzle = resp.json()
+    assert puzzle["type"] == "concentration"
+    assert "color_word" in puzzle["data"]
+    assert "circle_color" in puzzle["data"]
+    assert "is_match" in puzzle["data"]
+    assert isinstance(puzzle["data"]["is_match"], bool)
+    assert puzzle["correct_answer"] in ["click", "wait"]
+    
+    # Test correct answer (when is_match is true, answer should be "click")
+    if puzzle["data"]["is_match"]:
+        answer_resp = client.post("/puzzle/answer", json={"puzzle_id": puzzle["id"], "answer": "click"})
+        assert answer_resp.status_code == 200
+        result = answer_resp.json()
+        assert result["correct"] is True
+    else:
+        # When is_match is false, answer should be "wait"
+        answer_resp = client.post("/puzzle/answer", json={"puzzle_id": puzzle["id"], "answer": "wait"})
+        assert answer_resp.status_code == 200
+        result = answer_resp.json()
+        assert result["correct"] is True
+    
     tmp.close() 

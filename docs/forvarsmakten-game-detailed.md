@@ -81,9 +81,12 @@ Team.försvarsmakten is a collaborative, team-based cognitive puzzle game inspir
 - **Skills:** Spatial reasoning, fine motor control, planning.
 
 ### 3. Concentration/Matching Puzzle (Color-Word Match)
-- Color name is displayed as text, and a colored circle is shown.
-- Click the circle only when the text matches the circle’s color.
-- **Skills:** Concentration, inhibition, pattern recognition.
+- The player is shown a sequence of color-word pairs (e.g., 10 pairs), each displayed for 2 seconds.
+- Only one pair in the sequence is a correct match (the color name matches the circle color).
+- The player must click the circle **only** when the text matches the color.
+- If the player clicks the circle at the correct time (on the matching pair), the puzzle is solved.
+- If the player clicks at the wrong time (on a mismatch), or never clicks (misses the correct one), the puzzle is failed.
+- **Skills:** Concentration, inhibition, pattern recognition, reaction timing.
 
 ### 4. Multitasking/Combined Puzzle (Find Numbers)
 - Grid or sequence of numbers is shown.

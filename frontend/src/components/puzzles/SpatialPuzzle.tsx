@@ -25,6 +25,7 @@ interface SpatialPuzzleProps {
   answer: string;
   setAnswer: (answer: string) => void;
   submitAnswer: () => void;
+  submitAnswerWithAnswer: (answer: string) => void;
   loading: boolean;
   feedback: string;
 }
@@ -36,6 +37,7 @@ export const SpatialPuzzle: React.FC<SpatialPuzzleProps> = ({
   answer,
   setAnswer,
   submitAnswer,
+  submitAnswerWithAnswer,
   loading,
   feedback,
 }) => {
@@ -74,7 +76,8 @@ export const SpatialPuzzle: React.FC<SpatialPuzzleProps> = ({
   });
   const callbacksRef = useRef({
     setAnswer,
-    submitAnswer
+    submitAnswer,
+    submitAnswerWithAnswer
   });
 
   // Update refs when state or callbacks change
@@ -91,9 +94,10 @@ export const SpatialPuzzle: React.FC<SpatialPuzzleProps> = ({
   useEffect(() => {
     callbacksRef.current = {
       setAnswer,
-      submitAnswer
+      submitAnswer,
+      submitAnswerWithAnswer
     };
-  }, [setAnswer, submitAnswer]);
+  }, [setAnswer, submitAnswer, submitAnswerWithAnswer]);
 
   // Simple game loop for obstacle animation
   const gameLoop = useCallback(() => {
@@ -124,7 +128,7 @@ export const SpatialPuzzle: React.FC<SpatialPuzzleProps> = ({
     )) {
       setGameLost(true);
       callbacks.setAnswer('collision'); // Send a non-matching answer to indicate failure
-      setTimeout(() => callbacks.submitAnswer(), 1000);
+      setTimeout(() => callbacks.submitAnswerWithAnswer('collision'), 1000);
       return;
     }
 
@@ -136,7 +140,7 @@ export const SpatialPuzzle: React.FC<SpatialPuzzleProps> = ({
     )) {
       setGameWon(true);
       callbacks.setAnswer('solved'); // This matches the backend's expected correct answer
-      setTimeout(() => callbacks.submitAnswer(), 500);
+      setTimeout(() => callbacks.submitAnswerWithAnswer('solved'), 500);
       return;
     }
 

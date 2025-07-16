@@ -82,6 +82,33 @@ def generate_multiple_choice_puzzle():
     }
     return data, puzzle["correct"]
 
+# Helper: Generate a concentration puzzle (color-word matching)
+def generate_concentration_puzzle(num_pairs: int = 10):
+    colors = ["red", "blue", "yellow", "green", "purple", "orange"]
+    pairs = []
+    correct_index = random.randint(0, num_pairs - 1)
+    for i in range(num_pairs):
+        if i == correct_index:
+            color_word = random.choice(colors)
+            circle_color = color_word
+            is_match = True
+        else:
+            color_word = random.choice(colors)
+            available_colors = [c for c in colors if c != color_word]
+            circle_color = random.choice(available_colors)
+            is_match = False
+        pairs.append({
+            "color_word": color_word,
+            "circle_color": circle_color,
+            "is_match": is_match
+        })
+    data = {
+        "pairs": pairs,
+        "duration": 2  # seconds per pair
+    }
+    correct_answer = str(correct_index)
+    return data, correct_answer
+
 @router.post("/create", response_model=schemas.PuzzleState)
 def create_puzzle(puzzle: schemas.PuzzleCreate, db: Session = Depends(get_db)):
     # Support multiple puzzle types
@@ -95,6 +122,8 @@ def create_puzzle(puzzle: schemas.PuzzleCreate, db: Session = Depends(get_db)):
         # Empty data for spatial puzzle - frontend handles everything
         data = {}
         correct_answer = "solved"
+    elif puzzle.type == "concentration":
+        data, correct_answer = generate_concentration_puzzle()
     else:
         raise HTTPException(status_code=400, detail=f"Puzzle type '{puzzle.type}' not supported")
     
@@ -126,7 +155,14 @@ async def submit_answer(answer: schemas.PuzzleAnswer, db: Session = Depends(get_
     user = db.query(models.User).filter(models.User.id == puzzle.user_id).first()
     if not user or user.points <= 0:
         raise HTTPException(status_code=400, detail="User not found or out of points")
-    correct = (answer.answer == puzzle.correct_answer)
+    # Special logic for concentration puzzle
+    if puzzle.type == "concentration":
+        if answer.answer == puzzle.correct_answer:
+            correct = True
+        else:
+            correct = False
+    else:
+        correct = (answer.answer == puzzle.correct_answer)
     awarded_to_user_id = None
     points_awarded = 0
     next_puzzle_id = None
@@ -148,7 +184,7 @@ async def submit_answer(answer: schemas.PuzzleAnswer, db: Session = Depends(get_
                 points_awarded = POINTS_AWARD
                 db.commit()
         # Assign new puzzle to solver (randomly choose puzzle type)
-        puzzle_types = ["text", "multiple_choice", "memory", "spatial"]
+        puzzle_types = ["text", "multiple_choice", "memory", "spatial", "concentration"]
         new_type = random.choice(puzzle_types)
         
         if new_type == "memory":
@@ -160,6 +196,8 @@ async def submit_answer(answer: schemas.PuzzleAnswer, db: Session = Depends(get_
         elif new_type == "spatial":
             new_data = {}
             new_correct = "solved"
+        elif new_type == "concentration":
+            new_data, new_correct = generate_concentration_puzzle()
         
         new_puzzle = models.Puzzle(
             type=new_type,

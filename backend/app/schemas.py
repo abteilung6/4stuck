@@ -56,6 +56,7 @@ class PuzzleState(BaseModel):
     type: str
     data: Any
     status: str
+    correct_answer: str
     model_config = {'from_attributes': True}
 
 class PuzzleAnswer(BaseModel):

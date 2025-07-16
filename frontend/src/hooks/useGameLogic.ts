@@ -28,6 +28,7 @@ export interface UseGameLogicReturn {
   // Actions
   setAnswer: (answer: string) => void;
   submitAnswer: () => Promise<void>;
+  submitAnswerWithAnswer: (answer: string) => Promise<void>;
   fetchPuzzle: () => Promise<void>;
   
   // Connection state
@@ -101,12 +102,10 @@ export function useGameLogic({ sessionId, userId, initialTeam }: UseGameLogicPro
       const data = await PuzzleService.getCurrentPuzzlePuzzleCurrentUserIdGet(userId);
       setPuzzle(data);
     } catch (err) {
-      console.log('[fetchPuzzle] No puzzle found, attempting to create one...');
       // If no puzzle exists, create one
       try {
-        const puzzleTypes = ['text', 'multiple_choice', 'memory'];
+        const puzzleTypes = ['text', 'multiple_choice', 'memory', 'spatial', 'concentration'];
         const randomType = puzzleTypes[Math.floor(Math.random() * puzzleTypes.length)];
-        console.log('[fetchPuzzle] Creating puzzle of type', randomType);
         await PuzzleService.createPuzzlePuzzleCreatePost({
           type: randomType,
           game_session_id: sessionId,
@@ -159,6 +158,41 @@ export function useGameLogic({ sessionId, userId, initialTeam }: UseGameLogicPro
     }
   }, [puzzle, answer, fetchPuzzle]);
 
+  // Submit answer with specific answer value
+  const submitAnswerWithAnswer = useCallback(async (specificAnswer: string) => {
+    if (!puzzle) return;
+    
+    setLoading(true);
+    setFeedback('');
+    try {
+      const result: PuzzleResult = await PuzzleService.submitAnswerPuzzleAnswerPost({
+        puzzle_id: puzzle.id,
+        answer: specificAnswer,
+      });
+      
+      if (result.correct) {
+        setFeedback('Correct!');
+      } else {
+        setFeedback('Incorrect.');
+      }
+      
+      setAnswer('');
+      // Refetch puzzle (next or same)
+      await fetchPuzzle();
+    } catch (err: any) {
+      console.error('[submitAnswerWithAnswer] Error:', err);
+      // Handle specific error for out of points
+      if (err?.response?.status === 400 && err?.response?.data?.detail?.includes('out of points')) {
+        setFeedback('You are out of points! Wait for your teammates to solve puzzles to receive points.');
+        setError('You are out of points and cannot submit answers.');
+      } else {
+        setFeedback('Failed to submit answer.');
+      }
+    } finally {
+      setLoading(false);
+    }
+  }, [puzzle, fetchPuzzle]);
+
   // Fetch puzzle on mount
   useEffect(() => {
     fetchPuzzle();
@@ -176,16 +210,8 @@ export function useGameLogic({ sessionId, userId, initialTeam }: UseGameLogicPro
   useEffect(() => {
     if (gameState) {
       const status = calculateGameStatus(gameState, userId, puzzle, isConnected);
-      console.log('[useGameLogic] Game status calculated:', {
-        status: status.status,
-        sessionStatus: gameState.session.status,
-        activePlayers: status.activePlayersCount,
-        isEliminated: status.isEliminated,
-        isGameOver: status.isGameOver
-      });
       setGameStatus(status);
     } else {
-      console.log('[useGameLogic] No game state available yet');
       setGameStatus(null);
     }
   }, [gameState, userId, isConnected]); // Removed puzzle from dependencies
@@ -206,6 +232,7 @@ export function useGameLogic({ sessionId, userId, initialTeam }: UseGameLogicPro
     // Actions
     setAnswer,
     submitAnswer,
+    submitAnswerWithAnswer,
     fetchPuzzle,
     
     // Connection state
