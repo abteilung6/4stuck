@@ -53,8 +53,8 @@ const CountdownView: React.FC<CountdownViewProps> = ({
         <h1 className="countdown-title">DO YOU HAVE WHAT IT TAKES?</h1>
         
         <div className="countdown-timer">
-          <div className="countdown-number">{countdown}</div>
-          <div className="countdown-text">{getCountdownText()}</div>
+          <div className="countdown-number animate-pulse">{countdown}</div>
+          <div className="countdown-text animate-glow">{getCountdownText()}</div>
         </div>
 
         <div className="countdown-rules">

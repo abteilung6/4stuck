@@ -1,0 +1,352 @@
+/* Team.försvarsmakten Design System */
+
+:root {
+  /* Color Palette */
+  --primary-blue: #4a90e2;
+  --primary-blue-light: #b0d0ff;
+  --primary-blue-dark: #2c5aa0;
+  --accent-red: #ff6b6b;
+  --accent-orange: #ff9800;
+  --accent-green: #4caf50;
+  --accent-yellow: #ffeb3b;
+  
+  /* Player Colors */
+  --player-yellow: #ffeb3b;
+  --player-red: #f44336;
+  --player-blue: #2196f3;
+  --player-green: #4caf50;
+  
+  /* Background Colors */
+  --bg-primary: #1a1a2e;
+  --bg-secondary: #16213e;
+  --bg-tertiary: #0f3460;
+  --bg-card: rgba(0, 0, 0, 0.3);
+  --bg-overlay: rgba(0, 0, 0, 0.7);
+  
+  /* Text Colors */
+  --text-primary: #e0e0e0;
+  --text-secondary: #b0b0b0;
+  --text-accent: #b0d0ff;
+  --text-warning: #ff6b6b;
+  --text-success: #4caf50;
+  
+  /* Border Colors */
+  --border-primary: #4a90e2;
+  --border-secondary: #2c5aa0;
+  --border-accent: #ff6b6b;
+  
+  /* Shadow Colors */
+  --shadow-primary: rgba(74, 144, 226, 0.3);
+  --shadow-accent: rgba(255, 107, 107, 0.3);
+  
+  /* Typography */
+  --font-family-primary: 'Arial', 'Helvetica', sans-serif;
+  --font-family-military: 'Courier New', 'Monaco', monospace;
+  
+  /* Spacing */
+  --spacing-xs: 0.25rem;
+  --spacing-sm: 0.5rem;
+  --spacing-md: 1rem;
+  --spacing-lg: 1.5rem;
+  --spacing-xl: 2rem;
+  --spacing-xxl: 3rem;
+  
+  /* Border Radius */
+  --border-radius-sm: 4px;
+  --border-radius-md: 8px;
+  --border-radius-lg: 12px;
+  --border-radius-xl: 16px;
+  
+  /* Transitions */
+  --transition-fast: 0.15s ease-in-out;
+  --transition-normal: 0.3s ease-in-out;
+  --transition-slow: 0.5s ease-in-out;
+}
+
+/* Global Styles */
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: var(--font-family-primary);
+  background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 50%, var(--bg-tertiary) 100%);
+  color: var(--text-primary);
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  line-height: 1.6;
+}
+
+/* Typography */
+.military-title {
+  font-family: var(--font-family-military);
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: var(--text-accent);
+  text-shadow: 0 0 10px var(--shadow-primary);
+}
+
+.military-subtitle {
+  font-family: var(--font-family-military);
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--primary-blue);
+}
+
+.military-text {
+  font-family: var(--font-family-military);
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Layout Components */
+.game-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: var(--spacing-lg);
+  min-height: 100vh;
+}
+
+.game-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 1fr;
+  gap: var(--spacing-lg);
+  height: 80vh;
+  margin: var(--spacing-lg) 0;
+}
+
+.game-quadrant {
+  background: var(--bg-card);
+  border: 2px solid var(--border-primary);
+  border-radius: var(--border-radius-lg);
+  padding: var(--spacing-lg);
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  box-shadow: 0 0 20px var(--shadow-primary);
+  transition: var(--transition-normal);
+}
+
+.game-quadrant:hover {
+  border-color: var(--primary-blue-light);
+  box-shadow: 0 0 30px var(--shadow-primary);
+}
+
+.game-quadrant.active {
+  border-color: var(--accent-green);
+  box-shadow: 0 0 30px rgba(76, 175, 80, 0.3);
+}
+
+.game-quadrant.eliminated {
+  border-color: var(--accent-red);
+  opacity: 0.6;
+  box-shadow: 0 0 20px var(--shadow-accent);
+}
+
+/* Player Indicators */
+.player-indicator {
+  position: absolute;
+  top: var(--spacing-sm);
+  left: var(--spacing-sm);
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 2px solid var(--text-primary);
+}
+
+.player-indicator.yellow { background-color: var(--player-yellow); }
+.player-indicator.red { background-color: var(--player-red); }
+.player-indicator.blue { background-color: var(--player-blue); }
+.player-indicator.green { background-color: var(--player-green); }
+
+/* Life Bar */
+.life-bar {
+  position: absolute;
+  bottom: var(--spacing-sm);
+  left: var(--spacing-sm);
+  right: var(--spacing-sm);
+  height: 8px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: var(--border-radius-sm);
+  overflow: hidden;
+}
+
+.life-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--accent-green) 0%, var(--accent-orange) 50%, var(--accent-red) 100%);
+  transition: width var(--transition-normal);
+}
+
+/* Buttons */
+.btn-military {
+  background: linear-gradient(135deg, var(--primary-blue) 0%, var(--primary-blue-dark) 100%);
+  color: var(--text-primary);
+  border: 2px solid var(--border-primary);
+  border-radius: var(--border-radius-md);
+  padding: var(--spacing-md) var(--spacing-lg);
+  font-family: var(--font-family-military);
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  cursor: pointer;
+  transition: var(--transition-normal);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+.btn-military:hover {
+  background: linear-gradient(135deg, var(--primary-blue-light) 0%, var(--primary-blue) 100%);
+  border-color: var(--primary-blue-light);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
+  transform: translateY(-2px);
+}
+
+.btn-military:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.btn-military.success {
+  background: linear-gradient(135deg, var(--accent-green) 0%, #388e3c 100%);
+  border-color: var(--accent-green);
+}
+
+.btn-military.danger {
+  background: linear-gradient(135deg, var(--accent-red) 0%, #d32f2f 100%);
+  border-color: var(--accent-red);
+}
+
+/* Cards */
+.card-military {
+  background: var(--bg-card);
+  border: 2px solid var(--border-primary);
+  border-radius: var(--border-radius-lg);
+  padding: var(--spacing-lg);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  transition: var(--transition-normal);
+}
+
+.card-military:hover {
+  border-color: var(--primary-blue-light);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
+}
+
+/* Status Messages */
+.status-message {
+  padding: var(--spacing-md);
+  border-radius: var(--border-radius-md);
+  font-weight: bold;
+  text-align: center;
+  margin: var(--spacing-md) 0;
+}
+
+.status-message.info {
+  background: rgba(74, 144, 226, 0.2);
+  border: 1px solid var(--primary-blue);
+  color: var(--primary-blue-light);
+}
+
+.status-message.success {
+  background: rgba(76, 175, 80, 0.2);
+  border: 1px solid var(--accent-green);
+  color: var(--accent-green);
+}
+
+.status-message.warning {
+  background: rgba(255, 152, 0, 0.2);
+  border: 1px solid var(--accent-orange);
+  color: var(--accent-orange);
+}
+
+.status-message.error {
+  background: rgba(255, 107, 107, 0.2);
+  border: 1px solid var(--accent-red);
+  color: var(--accent-red);
+}
+
+/* Animations */
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+
+@keyframes glow {
+  0% { box-shadow: 0 0 5px var(--shadow-primary); }
+  50% { box-shadow: 0 0 20px var(--shadow-primary), 0 0 30px var(--shadow-primary); }
+  100% { box-shadow: 0 0 5px var(--shadow-primary); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideIn {
+  from { transform: translateX(-100%); }
+  to { transform: translateX(0); }
+}
+
+.animate-pulse {
+  animation: pulse 2s ease-in-out infinite;
+}
+
+.animate-glow {
+  animation: glow 2s ease-in-out infinite;
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.5s ease-out;
+}
+
+.animate-slide-in {
+  animation: slideIn 0.3s ease-out;
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+  .game-grid {
+    grid-template-columns: 1fr;
+    grid-template-rows: repeat(4, 1fr);
+    height: auto;
+    min-height: 60vh;
+  }
+  
+  .game-quadrant {
+    min-height: 200px;
+  }
+}
+
+@media (max-width: 768px) {
+  .game-container {
+    padding: var(--spacing-md);
+  }
+  
+  .military-title {
+    font-size: 1.5rem;
+    letter-spacing: 1px;
+  }
+  
+  .btn-military {
+    padding: var(--spacing-sm) var(--spacing-md);
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .game-container {
+    padding: var(--spacing-sm);
+  }
+  
+  .game-quadrant {
+    padding: var(--spacing-md);
+  }
+  
+  .military-title {
+    font-size: 1.2rem;
+  }
+} 

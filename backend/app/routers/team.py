@@ -43,9 +43,16 @@ def join_team(username: str, team_id: int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="User not found")
     if not team:
         raise HTTPException(status_code=404, detail="Team not found")
+    
+    print(f"[Team Join] User {username} (ID: {user.id}) joining team {team.name} (ID: {team_id})")
     user.team_id = team_id
     db.commit()
     db.refresh(user)
+    
+    # Verify the join worked
+    updated_user = db.query(models.User).filter(models.User.username == username).first()
+    print(f"[Team Join] After join - User {username} team_id: {updated_user.team_id}")
+    
     return user
 
 @router.get("/", response_model=list[schemas.TeamWithMembersOut])

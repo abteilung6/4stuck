@@ -50,7 +50,7 @@ def test_create_game_session():
     assert resp.status_code == 200
     data = resp.json()
     assert data["team_id"] == team_id
-    assert data["status"] == "lobby"
+    assert data["status"] == "countdown"
 
     # Creating another session for the same team should fail
     resp2 = client.post("/game/session", json={"team_id": team_id})
@@ -71,7 +71,7 @@ def test_get_current_session():
     assert resp2.status_code == 200
     data = resp2.json()
     assert data["team_id"] == team_id
-    assert data["status"] == "lobby"
+    assert data["status"] == "countdown"
     tmp.close()
 
 def test_create_session_invalid_team():
@@ -86,21 +86,21 @@ def test_game_session_state_transitions_and_survival_time():
     import time as pytime
     client, tmp = create_test_app_and_client()
     _, team_id = create_team_and_user(client)
-    # Create session (should start in lobby)
+    # Create session (should start in countdown)
     resp = client.post("/game/session", json={"team_id": team_id})
     assert resp.status_code == 200
     session = resp.json()
     session_id = session["id"]
-    assert session["status"] == "lobby"
+    assert session["status"] == "countdown"
     assert session["started_at"] is None
     assert session["ended_at"] is None
     assert session["survival_time_seconds"] is None
 
-    # Move to countdown
-    resp = client.post(f"/game/session/{session_id}/state", json={"status": "countdown"})
-    assert resp.status_code == 200
-    session = resp.json()
-    assert session["status"] == "countdown"
+    # Session is already in countdown state, so skip this transition
+    # resp = client.post(f"/game/session/{session_id}/state", json={"status": "countdown"})
+    # assert resp.status_code == 200
+    # session = resp.json()
+    # assert session["status"] == "countdown"
 
     # Move to active (should set started_at)
     resp = client.post(f"/game/session/{session_id}/state", json={"status": "active"})
@@ -130,26 +130,22 @@ def test_game_session_state_transitions_and_survival_time():
 @pytest.mark.parametrize(
     "transitions, should_succeed",
     [
-        (["lobby", "active"], False),
-        (["lobby", "finished"], False),
-        (["lobby", "countdown"], True),
-        (["lobby", "countdown", "active"], True),
-        (["lobby", "countdown", "finished"], False),
-        (["lobby", "countdown", "active", "finished"], True),
-        (["lobby", "countdown", "finished"], False),
+        (["countdown", "active"], True),
+        (["countdown", "finished"], False),
+        (["countdown", "active", "finished"], True),
     ]
 )
 def test_state_transition_paths(transitions, should_succeed):
     client, tmp = create_test_app_and_client()
     _, team_id = create_team_and_user(client)
-    # Create session (should start in lobby)
+    # Create session (should start in countdown)
     resp = client.post("/game/session", json={"team_id": team_id})
     assert resp.status_code == 200
     session = resp.json()
     session_id = session["id"]
-    assert session["status"] == "lobby"
+    assert session["status"] == "countdown"
 
-    current_status = "lobby"
+    current_status = "countdown"
     success = True
     for next_status in transitions[1:]:
         resp = client.post(f"/game/session/{session_id}/state", json={"status": next_status})

@@ -61,15 +61,27 @@ def test_ws_connect_and_receive_state():
     with client.websocket_connect(f"/ws/game/{session_id}") as ws:
         # Receive initial state
         data = ws.receive_text()
-        state = json.loads(data)
+        message = json.loads(data)
+        assert "type" in message
+        assert message["type"] == "state_update"
+        assert "data" in message
+        
+        state = message["data"]
         assert "session" in state
         assert "team" in state
         assert "players" in state
         assert "puzzles" in state
+        assert state["session"]["id"] == session_id
+        assert state["team"]["id"] == team_id
+        assert len(state["players"]) == 1
+        assert len(state["puzzles"]) == 1
+        
         # Send a ping and receive another state update
         ws.send_text("ping")
         data2 = ws.receive_text()
-        state2 = json.loads(data2)
+        message2 = json.loads(data2)
+        assert message2["type"] == "state_update"
+        state2 = message2["data"]
         assert state2["session"]["id"] == session_id
     tmp.close()
 

@@ -1,0 +1,348 @@
+/* Team.försvarsmakten Animations */
+
+/* State Transitions */
+.fade-enter {
+  opacity: 0;
+  transform: translateY(20px);
+}
+
+.fade-enter-active {
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 0.3s ease-out, transform 0.3s ease-out;
+}
+
+.fade-exit {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.fade-exit-active {
+  opacity: 0;
+  transform: translateY(-20px);
+  transition: opacity 0.3s ease-in, transform 0.3s ease-in;
+}
+
+/* Slide Transitions */
+.slide-enter {
+  transform: translateX(-100%);
+}
+
+.slide-enter-active {
+  transform: translateX(0);
+  transition: transform 0.3s ease-out;
+}
+
+.slide-exit {
+  transform: translateX(0);
+}
+
+.slide-exit-active {
+  transform: translateX(100%);
+  transition: transform 0.3s ease-in;
+}
+
+/* Scale Transitions */
+.scale-enter {
+  opacity: 0;
+  transform: scale(0.8);
+}
+
+.scale-enter-active {
+  opacity: 1;
+  transform: scale(1);
+  transition: opacity 0.3s ease-out, transform 0.3s ease-out;
+}
+
+.scale-exit {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.scale-exit-active {
+  opacity: 0;
+  transform: scale(0.8);
+  transition: opacity 0.3s ease-in, transform 0.3s ease-in;
+}
+
+/* Loading Animations */
+.loading-spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid rgba(74, 144, 226, 0.3);
+  border-top: 4px solid var(--primary-blue);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin: 20px auto;
+}
+
+.loading-dots {
+  display: inline-block;
+  position: relative;
+  width: 80px;
+  height: 80px;
+}
+
+.loading-dots div {
+  position: absolute;
+  top: 33px;
+  width: 13px;
+  height: 13px;
+  border-radius: 50%;
+  background: var(--primary-blue);
+  animation-timing-function: cubic-bezier(0, 1, 1, 0);
+}
+
+.loading-dots div:nth-child(1) {
+  left: 8px;
+  animation: loading-dots1 0.6s infinite;
+}
+
+.loading-dots div:nth-child(2) {
+  left: 8px;
+  animation: loading-dots2 0.6s infinite;
+}
+
+.loading-dots div:nth-child(3) {
+  left: 32px;
+  animation: loading-dots2 0.6s infinite;
+}
+
+.loading-dots div:nth-child(4) {
+  left: 56px;
+  animation: loading-dots3 0.6s infinite;
+}
+
+/* Puzzle Completion Animations */
+.puzzle-success {
+  animation: puzzleSuccess 0.6s ease-out;
+}
+
+.puzzle-failure {
+  animation: puzzleFailure 0.6s ease-out;
+}
+
+.point-transfer {
+  animation: pointTransfer 1s ease-out;
+}
+
+.player-eliminated {
+  animation: playerEliminated 0.8s ease-out;
+}
+
+/* Button Animations */
+.btn-press {
+  animation: buttonPress 0.15s ease-out;
+}
+
+.btn-hover {
+  animation: buttonHover 0.2s ease-out;
+}
+
+/* Keyframe Animations */
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes loading-dots1 {
+  0% { transform: scale(0); }
+  100% { transform: scale(1); }
+}
+
+@keyframes loading-dots3 {
+  0% { transform: scale(1); }
+  100% { transform: scale(0); }
+}
+
+@keyframes loading-dots2 {
+  0% { transform: translate(0, 0); }
+  100% { transform: translate(24px, 0); }
+}
+
+@keyframes puzzleSuccess {
+  0% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(76, 175, 80, 0.7);
+  }
+  50% {
+    transform: scale(1.05);
+    box-shadow: 0 0 0 10px rgba(76, 175, 80, 0.3);
+  }
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(76, 175, 80, 0);
+  }
+}
+
+@keyframes puzzleFailure {
+  0% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(255, 107, 107, 0.7);
+  }
+  25% {
+    transform: scale(1.02) translateX(-5px);
+  }
+  50% {
+    transform: scale(1.02) translateX(5px);
+  }
+  75% {
+    transform: scale(1.02) translateX(-5px);
+  }
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(255, 107, 107, 0);
+  }
+}
+
+@keyframes pointTransfer {
+  0% {
+    transform: scale(1) translateY(0);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.2) translateY(-20px);
+    opacity: 0.8;
+  }
+  100% {
+    transform: scale(0.8) translateY(-40px);
+    opacity: 0;
+  }
+}
+
+@keyframes playerEliminated {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.1);
+    opacity: 0.8;
+  }
+  100% {
+    transform: scale(0.9);
+    opacity: 0.6;
+  }
+}
+
+@keyframes buttonPress {
+  0% { transform: scale(1); }
+  50% { transform: scale(0.95); }
+  100% { transform: scale(1); }
+}
+
+@keyframes buttonHover {
+  0% { transform: translateY(0); }
+  100% { transform: translateY(-2px); }
+}
+
+/* Countdown Animations */
+.countdown-number {
+  animation: countdownPulse 1s ease-in-out;
+}
+
+.countdown-text {
+  animation: countdownGlow 1s ease-in-out;
+}
+
+@keyframes countdownPulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+  100% { transform: scale(1); }
+}
+
+@keyframes countdownGlow {
+  0% { text-shadow: 0 0 5px var(--shadow-primary); }
+  50% { text-shadow: 0 0 20px var(--shadow-primary), 0 0 30px var(--shadow-primary); }
+  100% { text-shadow: 0 0 5px var(--shadow-primary); }
+}
+
+/* Game State Transitions */
+.game-state-transition {
+  transition: all 0.5s ease-in-out;
+}
+
+.game-state-lobby {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.game-state-countdown {
+  opacity: 1;
+  transform: scale(1.05);
+}
+
+.game-state-active {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.game-state-results {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Notification Animations */
+.notification-enter {
+  opacity: 0;
+  transform: translateX(100%);
+}
+
+.notification-enter-active {
+  opacity: 1;
+  transform: translateX(0);
+  transition: opacity 0.3s ease-out, transform 0.3s ease-out;
+}
+
+.notification-exit {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.notification-exit-active {
+  opacity: 0;
+  transform: translateX(100%);
+  transition: opacity 0.3s ease-in, transform 0.3s ease-in;
+}
+
+/* WebSocket Connection Animations */
+.connection-status {
+  transition: all 0.3s ease-in-out;
+}
+
+.connection-connected {
+  background: rgba(76, 175, 80, 0.2);
+  border-color: var(--accent-green);
+}
+
+.connection-disconnected {
+  background: rgba(255, 107, 107, 0.2);
+  border-color: var(--accent-red);
+}
+
+.connection-connecting {
+  background: rgba(255, 152, 0, 0.2);
+  border-color: var(--accent-orange);
+  animation: connectingPulse 2s ease-in-out infinite;
+}
+
+@keyframes connectingPulse {
+  0% { opacity: 1; }
+  50% { opacity: 0.5; }
+  100% { opacity: 1; }
+}
+
+/* Performance Optimizations */
+.animation-reduced {
+  animation-duration: 0.1s !important;
+  transition-duration: 0.1s !important;
+}
+
+/* Accessibility */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+} 

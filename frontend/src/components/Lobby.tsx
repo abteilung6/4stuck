@@ -70,6 +70,29 @@ const Lobby: React.FC = () => {
     // eslint-disable-next-line
   }, [currentTeam]);
 
+  // Poll session state every second if in a team but not yet in a session
+  useEffect(() => {
+    if (!currentTeam || session) return;
+    let interval: NodeJS.Timeout | null = null;
+    let cancelled = false;
+    interval = setInterval(async () => {
+      if (cancelled) return;
+      try {
+        const data = await GameService.getCurrentSessionGameSessionTeamIdGet(currentTeam.id);
+        // If session exists and is not in 'lobby', set it and transition
+        if (data && data.status && data.status !== 'lobby') {
+          setSession(data);
+        }
+      } catch (err: any) {
+        // Ignore 404 (no session yet)
+      }
+    }, 1000);
+    return () => {
+      cancelled = true;
+      if (interval) clearInterval(interval);
+    };
+  }, [currentTeam, session]);
+
   const handleSetName = async () => {
     if (username.trim()) {
       setCurrentName(username.trim());
@@ -97,9 +120,17 @@ const Lobby: React.FC = () => {
     try {
       await TeamService.joinTeamTeamJoinPost(currentName, team.id);
       setStatus(`Joined ${team.name}`);
+      
+      // Fetch updated teams and set currentTeam to the fresh data
       await fetchTeams();
-      // Set currentTeam to the team we just joined
-      setCurrentTeam(team);
+      const updatedTeams = await TeamService.listTeamsTeamGet();
+      const updatedTeam = updatedTeams.find(t => t.id === team.id);
+      if (updatedTeam) {
+        setCurrentTeam(updatedTeam);
+        console.log('[Lobby] Updated currentTeam after join:', updatedTeam);
+      } else {
+        setStatus('Failed to get updated team data.');
+      }
     } catch (err: any) {
       setStatus('Failed to join team.');
     }
@@ -169,16 +200,30 @@ const Lobby: React.FC = () => {
   // Find the current user object from the team members
   const currentUser = currentTeam?.members?.find(m => m.username === currentName) || null;
 
-  // If a session is active, show the game session view
-  if (session && currentTeam && currentUser) {
+  // If a session is active (not in 'lobby'), show the game session view
+  if (session && currentTeam && session.status !== 'lobby') {
+    if (!currentUser) {
+      // Debug log if currentUser is not found
+      console.warn('[Lobby] currentUser not found in team members:', { currentName, currentTeam });
+      return (
+        <Container variant="full">
+          <StatusMessage type="error">
+            You are not recognized as a member of this team. Please rejoin or refresh.<br />
+            (Debug: username <b>{currentName}</b> not in team members)
+          </StatusMessage>
+        </Container>
+      );
+    }
     console.log('[Lobby] Rendering GameSessionView', { session, currentTeam, currentUser });
     return <GameSessionView session={session} user={currentUser} team={currentTeam} />;
   }
 
   return (
     <Container variant="full">
-      <Card>
-        <SectionTitle level={2}>Game Lobby</SectionTitle>
+      <Card className="card-military animate-fade-in">
+        <h1 className="military-title" style={{ textAlign: 'center', marginBottom: '2rem' }}>
+          DO YOU HAVE WHAT IT TAKES?
+        </h1>
         <div className="username-input-container" style={{ display: 'flex', gap: 8, alignItems: 'center', marginBottom: 16 }}>
           <Input
             type="text"
@@ -189,14 +234,19 @@ const Lobby: React.FC = () => {
             aria-label="Enter your username"
             style={{ maxWidth: 180 }}
           />
-          <Button onClick={handleSetName} disabled={!!currentName} aria-label="Set Username">
+          <button 
+            className="btn-military" 
+            onClick={handleSetName} 
+            disabled={!!currentName} 
+            aria-label="Set Username"
+          >
             Set Username
-          </Button>
+          </button>
           {currentName && <span className="hello-message" style={{ marginLeft: 8 }}>Hello, <b>{currentName}</b>!</span>}
         </div>
       </Card>
-      <Card>
-        <SectionTitle level={3}>Available Teams:</SectionTitle>
+      <Card className="card-military animate-fade-in">
+        <h2 className="military-subtitle">Available Teams:</h2>
         {loading ? (
           <div className="loading-spinner"></div>
         ) : error ? (
@@ -209,15 +259,15 @@ const Lobby: React.FC = () => {
                 <span aria-label={`${team.members.length} members`} style={{ color: '#444', fontWeight: 400, fontSize: '0.98em' }}>
                   {team.members.length} members
                 </span>
-                <Button
+                <button
+                  className="btn-military"
                   onClick={() => handleJoinTeam(team)}
                   disabled={!!currentTeam && currentTeam.id === team.id || !currentName}
                   aria-label={`Join team ${team.name}`}
-                  variant="secondary"
                   style={{ minWidth: 70 }}
                 >
                   Join
-                </Button>
+                </button>
               </List.Item>
             ))}
           </List>
@@ -232,31 +282,57 @@ const Lobby: React.FC = () => {
             aria-label="Enter new team name"
             style={{ maxWidth: 180 }}
           />
-          <Button onClick={handleCreateTeam} disabled={creatingTeam || !currentName} aria-label="Create New Team">
+          <button 
+            className="btn-military" 
+            onClick={handleCreateTeam} 
+            disabled={creatingTeam || !currentName} 
+            aria-label="Create New Team"
+          >
             + Create New Team
-          </Button>
+          </button>
         </div>
       </Card>
       {currentTeam && (
-        <Card>
-          <SectionTitle level={3}>Your Team: {currentTeam.name}</SectionTitle>
+        <Card className="card-military animate-fade-in">
+          <h2 className="military-subtitle">Your Team: {currentTeam.name}</h2>
           <ul className="team-members-list" style={{ listStyle: 'none', padding: 0, marginBottom: 12 }}>
             {currentTeam.members.map((member) => (
               <li key={member.id}>{member.username}</li>
             ))}
           </ul>
           <div style={{ display: 'flex', gap: 12 }}>
-            <Button onClick={handleLeaveTeam} variant="secondary" aria-label="Leave Team">
+            <button 
+              className="btn-military danger" 
+              onClick={handleLeaveTeam} 
+              aria-label="Leave Team"
+            >
               Leave Team
-            </Button>
-            <Button
+            </button>
+            <button
+              className="btn-military success"
               onClick={handleStartGame}
               disabled={sessionLoading || !!session}
-              variant="primary"
               aria-label="Start Game"
             >
               {sessionLoading ? 'Starting...' : session ? 'Game In Progress' : 'Start Game'}
-            </Button>
+            </button>
+            <button
+              className="btn-military"
+              onClick={async () => {
+                if (currentTeam) {
+                  await fetchTeams();
+                  const updatedTeams = await TeamService.listTeamsTeamGet();
+                  const updatedTeam = updatedTeams.find(t => t.id === currentTeam.id);
+                  if (updatedTeam) {
+                    setCurrentTeam(updatedTeam);
+                    setStatus('Team data refreshed.');
+                  }
+                }
+              }}
+              aria-label="Refresh Team Data"
+            >
+              Refresh
+            </button>
           </div>
           {session && (
             <StatusMessage type="info" style={{ marginTop: 12 }}>
@@ -266,20 +342,20 @@ const Lobby: React.FC = () => {
         </Card>
       )}
       {status && (
-        <StatusMessage type={status?.toLowerCase().includes('fail') ? 'error' : 'info'}>
+        <div className={`status-message ${status?.toLowerCase().includes('fail') ? 'error' : 'info'}`}>
           {status}
-        </StatusMessage>
+        </div>
       )}
-      <Button
+      <button
+        className="btn-military"
         onClick={() => {
           setTimeout(() => window.location.reload(), 100);
         }}
-        variant="secondary"
         style={{ marginTop: 24 }}
         aria-label="Return to Lobby"
       >
         Return to Lobby
-      </Button>
+      </button>
     </Container>
   );
 };

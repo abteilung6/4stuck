@@ -24,10 +24,29 @@ def create_game_session(session: schemas.GameSessionCreate, db: Session = Depend
     ).first()
     if existing_session:
         raise HTTPException(status_code=400, detail="Game session already exists for this team")
-    new_session = models.GameSession(team_id=team.id, status="lobby")
+    
+    # Create session and immediately transition to countdown
+    new_session = models.GameSession(team_id=team.id, status="countdown")
     db.add(new_session)
     db.commit()
     db.refresh(new_session)
+    
+    # Start the countdown automatically
+    session_id = new_session.id
+    if not countdown_service.start_countdown(session_id, duration_seconds=5):
+        print(f"Countdown already running for session {session_id}")
+    
+    # Broadcast state update to all connected clients
+    from ..utils.websocket_broadcast import broadcast_state
+    import asyncio
+    try:
+        loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
+        loop.run_until_complete(broadcast_state(session_id, db))
+        loop.close()
+    except Exception as e:
+        print(f"Failed to broadcast session creation for session {session_id}: {e}")
+    
     return new_session
 
 @router.get("/session/{team_id}", response_model=schemas.GameSessionOut)

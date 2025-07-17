@@ -209,51 +209,51 @@ Complete the Team.försvarsmakten game according to the detailed specifications 
 ### Backend Tasks
 
 #### 3.1 Enhanced WebSocket Support
-- [ ] **Extend WebSocket message types**
-  - [ ] Add mouse position broadcasting
-  - [ ] Add puzzle interaction events
-  - [ ] Add player activity status updates
-  - [ ] Add team communication events
+- [x] **Extend WebSocket message types**
+  - [x] Add mouse position broadcasting
+  - [x] Add puzzle interaction events
+  - [x] Add player activity status updates
+  - [x] Add team communication events
 
-- [ ] **Implement real-time player tracking**
-  - [ ] Track mouse movements and clicks
-  - [ ] Monitor puzzle interaction patterns
-  - [ ] Track player focus and attention areas
-  - [ ] Store temporary player activity data
+- [x] **Implement real-time player tracking**
+  - [x] Track mouse movements and clicks
+  - [x] Monitor puzzle interaction patterns
+  - [x] Track player focus and attention areas
+  - [x] Store temporary player activity data
 
-- [ ] **Add collaborative game state**
-  - [ ] Share puzzle progress across team
-  - [ ] Broadcast teammate achievements
-  - [ ] Sync team strategy indicators
-  - [ ] Handle spectator mode data
+- [x] **Add collaborative game state**
+  - [x] Share puzzle progress across team
+  - [x] Broadcast teammate achievements
+  - [x] Sync team strategy indicators
+  - [x] Handle spectator mode data
 
 ### Frontend Tasks
 
 #### 3.2 Match Design Assets
-- [ ] **Implement design from screenshots**
-  - [ ] Analyze screenshots in `docs/images/`
-  - [ ] Update color scheme to match design
-  - [ ] Implement proper typography
-  - [ ] Add game title and branding
+- [x] **Implement design from screenshots**
+  - [x] Analyze screenshots in `docs/images/`
+  - [x] Update color scheme to match design
+  - [x] Implement proper typography
+  - [x] Add game title and branding
 
-- [ ] **Create responsive layout**
-  - [ ] Ensure mobile-friendly design
-  - [ ] Test on different screen sizes
-  - [ ] Add proper breakpoints
-  - [ ] Optimize for tablet and desktop
+- [x] **Create responsive layout**
+  - [x] Ensure mobile-friendly design
+  - [x] Test on different screen sizes
+  - [x] Add proper breakpoints
+  - [x] Optimize for tablet and desktop
 
 #### 3.3 Add Animations & Transitions
-- [ ] **Implement smooth state transitions**
-  - [ ] Add CSS transitions between game states
-  - [ ] Implement fade in/out animations
-  - [ ] Add loading animations
-  - [ ] Smooth puzzle transitions
+- [x] **Implement smooth state transitions**
+  - [x] Add CSS transitions between game states
+  - [x] Implement fade in/out animations
+  - [x] Add loading animations
+  - [x] Smooth puzzle transitions
 
-- [ ] **Add puzzle completion animations**
-  - [ ] Success animation for correct answers
-  - [ ] Failure animation for incorrect answers
-  - [ ] Point transfer visual feedback
-  - [ ] Player elimination animations
+- [x] **Add puzzle completion animations**
+  - [x] Success animation for correct answers
+  - [x] Failure animation for incorrect answers
+  - [x] Point transfer visual feedback
+  - [x] Player elimination animations
 
 #### 3.4 Enhance Team Coordination UI
 - [ ] **Add visual indicators for point transfers**

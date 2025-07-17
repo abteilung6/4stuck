@@ -46,8 +46,11 @@ const GameSessionView: React.FC<GameSessionViewProps> = ({ session, user, team }
   if (!isConnected) {
     return (
       <Container variant="full" dataTestId="game-session-container">
-        <SectionTitle level={2}>Game Session</SectionTitle>
-        <StatusMessage type="info">Connecting to game...</StatusMessage>
+        <div className="game-state-transition game-state-lobby">
+          <SectionTitle level={2}>Game Session</SectionTitle>
+          <div className="loading-spinner"></div>
+          <StatusMessage type="info">Connecting to game...</StatusMessage>
+        </div>
       </Container>
     );
   }
@@ -87,7 +90,11 @@ const GameSessionView: React.FC<GameSessionViewProps> = ({ session, user, team }
 
   // Show countdown state
   if (gameStatus.status === 'countdown') {
-    return <CountdownView onCountdownComplete={() => {}} initialCountdown={5} />;
+    return (
+      <div className="game-state-transition game-state-countdown">
+        <CountdownView onCountdownComplete={() => {}} initialCountdown={5} />
+      </div>
+    );
   }
 
   // Show game over state
@@ -108,17 +115,19 @@ const GameSessionView: React.FC<GameSessionViewProps> = ({ session, user, team }
   // Show active game state
   if (gameStatus.status === 'active') {
     return (
-      <ActiveGameView
-        puzzle={puzzle}
-        answer={answer}
-        feedback={feedback}
-        loading={loading}
-        gameState={gameState}
-        user={user}
-        setAnswer={setAnswer}
-        submitAnswer={submitAnswer}
-        submitAnswerWithAnswer={submitAnswerWithAnswer}
-      />
+      <div className="game-state-transition game-state-active">
+        <ActiveGameView
+          puzzle={puzzle}
+          answer={answer}
+          feedback={feedback}
+          loading={loading}
+          gameState={gameState}
+          user={user}
+          setAnswer={setAnswer}
+          submitAnswer={submitAnswer}
+          submitAnswerWithAnswer={submitAnswerWithAnswer}
+        />
+      </div>
     );
   }
 

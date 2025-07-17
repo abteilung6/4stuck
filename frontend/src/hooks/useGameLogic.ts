@@ -64,6 +64,24 @@ export function useGameLogic({ sessionId, userId, initialTeam }: UseGameLogicPro
       // Do NOT setGameStatus here! Let the effect handle it.
     }, []),
     
+    onPuzzleInteraction: useCallback((interaction: any) => {
+      console.log('[useGameLogic] Received puzzle interaction:', interaction);
+      // Handle puzzle interaction events (e.g., show teammate activity)
+      setNotifications(prev => [`Teammate interaction: ${interaction.interaction_type}`, ...prev.slice(0, 4)]);
+    }, []),
+    
+    onTeamCommunication: useCallback((communication: any) => {
+      console.log('[useGameLogic] Received team communication:', communication);
+      // Handle team communication events (e.g., emoji reactions, stress indicators)
+      setNotifications(prev => [`Team message: ${communication.message_type}`, ...prev.slice(0, 4)]);
+    }, []),
+    
+    onAchievement: useCallback((achievement: any) => {
+      console.log('[useGameLogic] Received achievement:', achievement);
+      // Handle achievement events (e.g., puzzle solved, fast solve)
+      setNotifications(prev => [`Achievement: ${achievement.achievement_type}`, ...prev.slice(0, 4)]);
+    }, []),
+    
     onError: useCallback((error: string) => {
       console.error('[useGameLogic] WebSocket error:', error);
       setError(error);
