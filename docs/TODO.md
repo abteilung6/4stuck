@@ -127,17 +127,16 @@ Complete the Team.försvarsmakten game according to the detailed specifications 
   - [x] Ensure proper data structure (sequence, correct index, etc.)
 
 #### 2.3 Implement Multitasking Puzzle
-- [ ] **Add multitasking puzzle generation**
-  - [ ] Create `generate_multitasking_puzzle()` function
-  - [ ] Generate number grid (e.g., 3x3 grid with numbers)
-  - [ ] Create multiple tasks (find 6, find numbers in order)
-  - [ ] Return grid and task instructions
-  - [ ] Add validation for multiple correct answers
+- [ ] **Add multitasking puzzle support**
+  - [ ] Add "multitasking" to supported puzzle types in backend
+  - [ ] Return basic puzzle configuration (rows, digits per row, time limit)
+  - [ ] Frontend will handle grid generation and 6 positioning
+  - [ ] No complex backend validation needed (frontend tracks clicks)
 
 - [ ] **Update puzzle creation endpoint**
   - [ ] Add "multitasking" to supported puzzle types
-  - [ ] Test multitasking puzzle generation
-  - [ ] Ensure proper data structure
+  - [ ] Return simple configuration object
+  - [ ] Ensure proper data structure for frontend consumption
 
 ### Frontend Tasks
 
@@ -173,16 +172,20 @@ Complete the Team.försvarsmakten game according to the detailed specifications 
 #### 2.6 Create Multitasking Puzzle Component
 - [ ] **Build MultitaskingPuzzle component**
   - [ ] Create `frontend/src/components/puzzles/MultitaskingPuzzle.tsx`
-  - [ ] Display number grid
-  - [ ] Implement multiple task handling
-  - [ ] Add visual search functionality
-  - [ ] Add progress tracking for multiple tasks
+  - [ ] Generate grid with 3-4 rows of 9-digit numbers (one 6 per row, randomly positioned)
+  - [ ] Display number grid in a clean layout
+  - [ ] Implement click detection on individual digits
+  - [ ] Highlight found 6s in red when clicked
+  - [ ] Add progress tracking with illuminated dots
+  - [ ] Implement 10-second time limit with countdown
+  - [ ] Track completion when all 6s are found and submit answer
 
 - [ ] **Add multitasking puzzle styling**
   - [ ] Create `MultitaskingPuzzle.css` for styling
-  - [ ] Style number grid layout
-  - [ ] Add visual feedback for selections
-  - [ ] Ensure clear task instructions
+  - [ ] Style number grid with proper spacing and typography
+  - [ ] Add visual feedback for found 6s (red highlighting)
+  - [ ] Style progress dots and timer display
+  - [ ] Ensure clear task instructions and accessibility
 
 #### 2.7 Update Puzzle Renderer
 - [x] **Add new puzzle types to renderer**

@@ -88,11 +88,14 @@ Team.försvarsmakten is a collaborative, team-based cognitive puzzle game inspir
 - If the player clicks at the wrong time (on a mismatch), or never clicks (misses the correct one), the puzzle is failed.
 - **Skills:** Concentration, inhibition, pattern recognition, reaction timing.
 
-### 4. Multitasking/Combined Puzzle (Find Numbers)
-- Grid or sequence of numbers is shown.
-- Task: Find and click on the number six, or all numbers in order as prompted.
-- May be combined with other tasks, requiring focus switching.
-- **Skills:** Multitasking, visual search, adaptability.
+### 4. Multitasking/Combined Puzzle (Find All Sixes)
+- Multiple rows of numbers are displayed (typically 3-4 rows of 9 digits each).
+- All numbers are 9s except for one 6 per row.
+- Task: Find and click on all the 6s in the grid (one per row).
+- When a 6 is clicked, it becomes highlighted in red to show it has been found.
+- Progress is tracked with illuminated dots (e.g., 3 out of 10 dots lit indicates 3 sixes found).
+- Time limit: 10 seconds to find all sixes.
+- **Skills:** Visual search, pattern recognition, speed, attention to detail.
 
 ---
 
