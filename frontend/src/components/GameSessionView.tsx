@@ -15,6 +15,7 @@ import './design-system/List.css';
 import CountdownView from './CountdownView';
 import './CountdownView.css';
 import GameResultsView from './GameResultsView';
+import TeamCoordinationView from './TeamCoordinationView';
 
 interface GameSessionViewProps {
   session: GameSessionOut;
@@ -109,7 +110,7 @@ const GameSessionView: React.FC<GameSessionViewProps> = ({ session, user, team }
 
   // Show waiting state
   if (gameStatus.status === 'waiting') {
-    return <WaitingView gameState={gameState} user={user} />;
+    return <WaitingView gameState={gameState} user={user} notifications={notifications} />;
   }
 
   // Show active game state
@@ -126,6 +127,7 @@ const GameSessionView: React.FC<GameSessionViewProps> = ({ session, user, team }
           setAnswer={setAnswer}
           submitAnswer={submitAnswer}
           submitAnswerWithAnswer={submitAnswerWithAnswer}
+          notifications={notifications}
         />
       </div>
     );
@@ -176,43 +178,33 @@ const EliminatedView: React.FC<{ gameState: any; user: any; notifications: strin
     <SectionTitle level={2}>Game Session</SectionTitle>
     <StatusMessage type="error">You have been eliminated.</StatusMessage>
     <div>Thank you for playing! Please wait for the game to finish.</div>
-    <SectionTitle level={3} style={{ marginTop: 16 }}>Team Points</SectionTitle>
-    <List aria-label="Team points">
-      {gameState?.players?.map((p: any) => (
-        <List.Item key={p.id} className={p.id === user.id ? 'current-user' : ''}>
-          <span className="ds-list-item__name">{p.username}</span>
-          <span style={{ color: '#1976d2', fontWeight: 600 }}>{p.points}</span>
-        </List.Item>
-      ))}
-    </List>
-    {notifications.length > 0 && (
-      <Card style={{ background: '#fff', margin: '1em 0', padding: '1em 1.5em' }}>
-        <SectionTitle level={3}>Game Events</SectionTitle>
-        <List aria-label="Game events">
-          {notifications.map((n, i) => <List.Item key={i}>{n}</List.Item>)}
-        </List>
-      </Card>
-    )}
+    
+    {/* Enhanced Team Coordination View */}
+    <TeamCoordinationView 
+      players={gameState?.players || []}
+      currentUserId={user.id}
+      notifications={notifications}
+    />
+    
     <Button onClick={() => window.location.reload()} variant="secondary" style={{ marginTop: 24 }} aria-label="Return to Lobby">
       Return to Lobby
     </Button>
   </Container>
 );
 
-const WaitingView: React.FC<{ gameState: any; user: any }> = ({ gameState, user }) => (
+const WaitingView: React.FC<{ gameState: any; user: any; notifications: string[] }> = ({ gameState, user, notifications }) => (
   <Container variant="full" dataTestId="game-session-container">
     <SectionTitle level={2}>Game Session</SectionTitle>
     <StatusMessage type="info">Waiting for your turn...</StatusMessage>
     <div>Watch your teammates and get ready!</div>
-    <SectionTitle level={3} style={{ marginTop: 16 }}>Team Points</SectionTitle>
-    <List aria-label="Team points">
-      {gameState?.players?.map((p: any) => (
-        <List.Item key={p.id} className={p.id === user.id ? 'current-user' : ''}>
-          <span className="ds-list-item__name">{p.username}</span>
-          <span style={{ color: '#1976d2', fontWeight: 600 }}>{p.points}</span>
-        </List.Item>
-      ))}
-    </List>
+    
+    {/* Enhanced Team Coordination View */}
+    <TeamCoordinationView 
+      players={gameState?.players || []}
+      currentUserId={user.id}
+      notifications={notifications}
+    />
+    
     <Button onClick={() => window.location.reload()} variant="secondary" style={{ marginTop: 24 }} aria-label="Return to Lobby">
       Return to Lobby
     </Button>
@@ -229,7 +221,8 @@ const ActiveGameView: React.FC<{
   setAnswer: (answer: string) => void;
   submitAnswer: () => Promise<void>;
   submitAnswerWithAnswer: (answer: string) => Promise<void>;
-}> = ({ puzzle, answer, feedback, loading, gameState, user, setAnswer, submitAnswer, submitAnswerWithAnswer }) => {
+  notifications: string[];
+}> = ({ puzzle, answer, feedback, loading, gameState, user, setAnswer, submitAnswer, submitAnswerWithAnswer, notifications }) => {
   return (
     <Container variant="full" dataTestId="game-session-container">
       <SectionTitle level={2}>Game Session</SectionTitle>
@@ -246,15 +239,13 @@ const ActiveGameView: React.FC<{
         />
         {feedback && <StatusMessage type={feedback === 'Correct!' ? 'success' : 'error'}>{feedback}</StatusMessage>}
       </Card>
-      <SectionTitle level={3}>Team Points</SectionTitle>
-      <List aria-label="Team points">
-        {gameState?.players?.map((p: any) => (
-          <List.Item key={p.id} className={p.id === user.id ? 'current-user' : ''}>
-            <span className="ds-list-item__name">{p.username}</span>
-            <span style={{ color: '#1976d2', fontWeight: 600 }}>{p.points}</span>
-          </List.Item>
-        ))}
-      </List>
+      
+      {/* Enhanced Team Coordination View */}
+      <TeamCoordinationView 
+        players={gameState?.players || []}
+        currentUserId={user.id}
+        notifications={notifications}
+      />
     </Container>
   );
 };

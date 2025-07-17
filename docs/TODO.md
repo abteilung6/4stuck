@@ -256,17 +256,17 @@ Complete the Team.försvarsmakten game according to the detailed specifications 
   - [x] Player elimination animations
 
 #### 3.4 Enhance Team Coordination UI
-- [ ] **Add visual indicators for point transfers**
-  - [ ] Show who received points from whom
-  - [ ] Add point transfer animations
-  - [ ] Display point transfer history
-  - [ ] Visual feedback for team coordination
+- [x] **Add visual indicators for point transfers**
+  - [x] Show who received points from whom
+  - [x] Add point transfer animations
+  - [x] Display point transfer history
+  - [x] Visual feedback for team coordination
 
-- [ ] **Add player status indicators**
-  - [ ] Show active/eliminated status
-  - [ ] Add ready/not ready indicators
-  - [ ] Display current puzzle type per player
-  - [ ] Show player performance indicators
+- [x] **Add player status indicators**
+  - [x] Show active/eliminated status
+  - [x] Add ready/not ready indicators
+  - [x] Display current puzzle type per player
+  - [x] Show player performance indicators
 
 #### 3.5 Real-Time Multiplayer Features
 - [ ] **Implement real-time player activity visualization**

@@ -1,0 +1,291 @@
+.team-coordination-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin: 1rem 0;
+}
+
+/* Team Status Grid */
+.team-status-card {
+  background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+  border: 2px solid #444;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+.team-status-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.player-status-item {
+  background: linear-gradient(135deg, #2a2a2a 0%, #3a3a3a 100%);
+  border: 1px solid #555;
+  border-radius: 8px;
+  padding: 1rem;
+  position: relative;
+  transition: all 0.3s ease;
+  min-height: 120px;
+}
+
+.player-status-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
+}
+
+.player-status-item.current-user {
+  border-color: #4CAF50;
+  box-shadow: 0 0 10px rgba(76, 175, 80, 0.3);
+}
+
+.player-status-item.eliminated {
+  border-color: #f44336;
+  background: linear-gradient(135deg, #2a1a1a 0%, #3a2a2a 100%);
+  opacity: 0.7;
+}
+
+.player-status-item.active {
+  border-color: #4CAF50;
+  animation: pulse-active 2s infinite;
+}
+
+.player-status-item.thinking {
+  border-color: #ff9800;
+  animation: pulse-thinking 2s infinite;
+}
+
+@keyframes pulse-active {
+  0%, 100% { box-shadow: 0 0 5px rgba(76, 175, 80, 0.3); }
+  50% { box-shadow: 0 0 15px rgba(76, 175, 80, 0.6); }
+}
+
+@keyframes pulse-thinking {
+  0%, 100% { box-shadow: 0 0 5px rgba(255, 152, 0, 0.3); }
+  50% { box-shadow: 0 0 15px rgba(255, 152, 0, 0.6); }
+}
+
+.player-status-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.player-name {
+  font-weight: 600;
+  color: #fff;
+  font-size: 1rem;
+}
+
+.status-icon {
+  font-size: 1.2rem;
+  filter: drop-shadow(0 0 2px rgba(255, 255, 255, 0.3));
+}
+
+.player-points {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.points-value {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #4CAF50;
+  text-shadow: 0 0 5px rgba(76, 175, 80, 0.5);
+}
+
+.points-label {
+  font-size: 0.8rem;
+  color: #aaa;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.player-activity {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.puzzle-type {
+  font-size: 0.8rem;
+  color: #ddd;
+  background: rgba(255, 255, 255, 0.1);
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  display: inline-block;
+  width: fit-content;
+}
+
+.progress-bar {
+  width: 100%;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #4CAF50, #8BC34A);
+  transition: width 0.3s ease;
+  border-radius: 2px;
+}
+
+.eliminated-badge {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  background: #f44336;
+  color: white;
+  font-size: 0.7rem;
+  font-weight: 600;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  animation: fade-in-out 2s infinite;
+}
+
+@keyframes fade-in-out {
+  0%, 100% { opacity: 0.7; }
+  50% { opacity: 1; }
+}
+
+/* Point Transfers */
+.point-transfers-card {
+  background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+  border: 2px solid #444;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+.point-transfers-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+.point-transfer-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 6px;
+  border-left: 4px solid #666;
+  transition: all 0.3s ease;
+  animation: slide-in 0.5s ease;
+}
+
+.point-transfer-item.puzzle_solved {
+  border-left-color: #4CAF50;
+  background: rgba(76, 175, 80, 0.1);
+}
+
+.point-transfer-item.point_decay {
+  border-left-color: #ff9800;
+  background: rgba(255, 152, 0, 0.1);
+}
+
+.point-transfer-item.elimination {
+  border-left-color: #f44336;
+  background: rgba(244, 67, 54, 0.1);
+}
+
+@keyframes slide-in {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.transfer-icon {
+  font-size: 1.2rem;
+  filter: drop-shadow(0 0 2px rgba(255, 255, 255, 0.3));
+}
+
+.transfer-details {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.transfer-text {
+  color: #fff;
+  font-size: 0.9rem;
+}
+
+.transfer-text strong {
+  color: #4CAF50;
+  font-weight: 600;
+}
+
+.transfer-time {
+  font-size: 0.7rem;
+  color: #aaa;
+  font-family: 'Courier New', monospace;
+}
+
+/* Notifications */
+.notifications-card {
+  background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+  border: 2px solid #444;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+.notification-item {
+  color: #fff;
+  font-size: 0.9rem;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.notification-item:last-child {
+  border-bottom: none;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .team-status-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .player-status-item {
+    min-height: 100px;
+  }
+  
+  .points-value {
+    font-size: 1.2rem;
+  }
+  
+  .transfer-text {
+    font-size: 0.8rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .team-coordination-container {
+    gap: 0.5rem;
+  }
+  
+  .player-status-item {
+    padding: 0.75rem;
+  }
+  
+  .player-name {
+    font-size: 0.9rem;
+  }
+  
+  .points-value {
+    font-size: 1.1rem;
+  }
+} 
