@@ -105,7 +105,7 @@ export function useGameLogic({ sessionId, userId, initialTeam }: UseGameLogicPro
     } catch (err) {
       // If no puzzle exists, create one
       try {
-        const puzzleTypes = ['text', 'multiple_choice', 'memory', 'spatial', 'concentration'];
+        const puzzleTypes = ['memory', 'spatial', 'concentration', 'multitasking'];
         const randomType = puzzleTypes[Math.floor(Math.random() * puzzleTypes.length)];
         console.log('[fetchPuzzle] No puzzle found, creating new puzzle of type:', randomType);
         await PuzzleService.createPuzzlePuzzleCreatePost({

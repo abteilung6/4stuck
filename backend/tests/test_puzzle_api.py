@@ -153,23 +153,20 @@ def test_create_concentration_puzzle():
     assert resp.status_code == 200
     puzzle = resp.json()
     assert puzzle["type"] == "concentration"
-    assert "color_word" in puzzle["data"]
-    assert "circle_color" in puzzle["data"]
-    assert "is_match" in puzzle["data"]
-    assert isinstance(puzzle["data"]["is_match"], bool)
-    assert puzzle["correct_answer"] in ["click", "wait"]
+    assert "pairs" in puzzle["data"]
+    assert "duration" in puzzle["data"]
+    assert isinstance(puzzle["data"]["pairs"], list)
+    assert len(puzzle["data"]["pairs"]) > 0
+    assert "color_word" in puzzle["data"]["pairs"][0]
+    assert "circle_color" in puzzle["data"]["pairs"][0]
+    assert "is_match" in puzzle["data"]["pairs"][0]
+    assert isinstance(puzzle["data"]["pairs"][0]["is_match"], bool)
+    assert puzzle["correct_answer"].isdigit()  # Should be the index as string
     
-    # Test correct answer (when is_match is true, answer should be "click")
-    if puzzle["data"]["is_match"]:
-        answer_resp = client.post("/puzzle/answer", json={"puzzle_id": puzzle["id"], "answer": "click"})
-        assert answer_resp.status_code == 200
-        result = answer_resp.json()
-        assert result["correct"] is True
-    else:
-        # When is_match is false, answer should be "wait"
-        answer_resp = client.post("/puzzle/answer", json={"puzzle_id": puzzle["id"], "answer": "wait"})
-        assert answer_resp.status_code == 200
-        result = answer_resp.json()
-        assert result["correct"] is True
+    # Test correct answer (submit the correct index)
+    answer_resp = client.post("/puzzle/answer", json={"puzzle_id": puzzle["id"], "answer": puzzle["correct_answer"]})
+    assert answer_resp.status_code == 200
+    result = answer_resp.json()
+    assert result["correct"] is True
     
     tmp.close() 

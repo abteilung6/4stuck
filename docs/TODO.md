@@ -497,7 +497,7 @@ Complete the Team.försvarsmakten game according to the detailed specifications 
 4. ✅ **Test all components** (2.8)
 
 ### Success Criteria for Phase 2:
-- ✅ All puzzle types working: memory, text, multiple choice, spatial, concentration, multitasking
+- ✅ All puzzle types working: memory, spatial, concentration, multitasking
 - ✅ Frontend components properly styled and responsive
 - ✅ Backend supports all puzzle types
 - ✅ Game flow works with puzzle rotation
@@ -565,4 +565,12 @@ Complete the Team.försvarsmakten game according to the detailed specifications 
 - [x] Task completed: 2.6 - Create Multitasking Puzzle Component (all subtasks) - Complete component with timer, progress tracking, and styling
 - [x] Task completed: 2.8 - Frontend Testing (multitasking puzzle testing) - Component working correctly with proper answer submission
 - [x] Issues encountered: None - implementation went smoothly with frontend-only grid generation approach
-- [x] Next week plan: Phase 2 complete! Ready for Phase 3 (visual design polish) or deployment 
+- [x] Next week plan: Phase 2 complete! Ready for Phase 3 (visual design polish) or deployment
+
+### Day 8:
+- [x] Task completed: Remove non-original puzzle types (text, multiple choice) - Backend and frontend components removed
+- [x] Task completed: Update puzzle type lists to only include original 4 types (memory, spatial, concentration, multitasking)
+- [x] Task completed: Fix backend test for concentration puzzle data structure
+- [x] Task completed: Update documentation to reflect current puzzle types
+- [x] Issues encountered: None - clean removal of non-original puzzle types
+- [x] Next week plan: Phase 2 fully complete with authentic puzzle types! Ready for Phase 3 (visual design polish) 

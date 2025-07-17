@@ -1,6 +1,5 @@
 import React from 'react';
-import { TextPuzzle } from './TextPuzzle';
-import { MultipleChoicePuzzle } from './MultipleChoicePuzzle';
+
 import { MemoryPuzzle } from './MemoryPuzzle';
 import { SpatialPuzzle } from './SpatialPuzzle';
 import ConcentrationPuzzle from './ConcentrationPuzzle';
@@ -48,17 +47,7 @@ export const PuzzleRenderer: React.FC<PuzzleRendererProps> = ({
           feedback={feedback}
         />
       );
-    case 'multiple_choice':
-      return (
-        <MultipleChoicePuzzle
-          puzzle={puzzle}
-          answer={answer}
-          setAnswer={setAnswer}
-          submitAnswer={submitAnswer}
-          loading={loading}
-          feedback={feedback}
-        />
-      );
+
     case 'spatial':
       return (
         <SpatialPuzzle
@@ -101,17 +90,12 @@ export const PuzzleRenderer: React.FC<PuzzleRendererProps> = ({
           submitAnswerWithAnswer={submitAnswerWithAnswer}
         />
       );
-    case 'text':
     default:
       return (
-        <TextPuzzle
-          puzzle={puzzle}
-          answer={answer}
-          setAnswer={setAnswer}
-          submitAnswer={submitAnswer}
-          loading={loading}
-          feedback={feedback}
-        />
+        <Card>
+          <SectionTitle level={2}>Unknown Puzzle Type</SectionTitle>
+          <BodyText color="secondary">Puzzle type '{puzzle.type}' is not supported.</BodyText>
+        </Card>
       );
   }
 }; 

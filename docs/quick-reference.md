@@ -119,7 +119,7 @@ npm run lint
 ## 🎯 **Current Phase: Phase 2**
 
 ### **Priority Tasks:**
-1. ✅ All puzzle types implemented (memory, text, multiple choice, spatial, concentration, multitasking)
+1. ✅ All puzzle types implemented (memory, spatial, concentration, multitasking)
 2. ✅ Frontend components created and integrated
 3. ✅ Backend puzzle generation and validation
 4. ✅ Complete game flow with all puzzle types

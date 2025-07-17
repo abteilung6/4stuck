@@ -211,7 +211,7 @@ test.describe('Game States and UI Components', () => {
       try {
         await expect(page.getByText('Your Puzzle')).toBeVisible({ timeout: 2000 });
         // Should have puzzle input or puzzle display
-        await expect(page.locator('input[type="text"], .puzzle-content')).toBeVisible();
+        await expect(page.locator('.puzzle-content')).toBeVisible();
       } catch {
         // If not in active state, might be in waiting state, which is also valid
         console.log('Not in active state, might be in waiting state');
