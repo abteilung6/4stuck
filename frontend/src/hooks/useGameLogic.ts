@@ -100,12 +100,14 @@ export function useGameLogic({ sessionId, userId, initialTeam }: UseGameLogicPro
     setError('');
     try {
       const data = await PuzzleService.getCurrentPuzzlePuzzleCurrentUserIdGet(userId);
+      console.log('[fetchPuzzle] Got puzzle:', data?.id, data?.type);
       setPuzzle(data);
     } catch (err) {
       // If no puzzle exists, create one
       try {
         const puzzleTypes = ['text', 'multiple_choice', 'memory', 'spatial', 'concentration'];
         const randomType = puzzleTypes[Math.floor(Math.random() * puzzleTypes.length)];
+        console.log('[fetchPuzzle] No puzzle found, creating new puzzle of type:', randomType);
         await PuzzleService.createPuzzlePuzzleCreatePost({
           type: randomType,
           game_session_id: sessionId,
@@ -113,6 +115,7 @@ export function useGameLogic({ sessionId, userId, initialTeam }: UseGameLogicPro
         });
         // Now fetch the newly created puzzle
         const data = await PuzzleService.getCurrentPuzzlePuzzleCurrentUserIdGet(userId);
+        console.log('[fetchPuzzle] Created and got puzzle:', data?.id, data?.type);
         setPuzzle(data);
       } catch (createErr) {
         console.error('[fetchPuzzle] Failed to create initial puzzle:', createErr);
@@ -165,17 +168,17 @@ export function useGameLogic({ sessionId, userId, initialTeam }: UseGameLogicPro
     setLoading(true);
     setFeedback('');
     try {
+      console.log('[submitAnswerWithAnswer] Submitting answer for puzzle', puzzle.id, puzzle.type, 'answer:', specificAnswer);
       const result: PuzzleResult = await PuzzleService.submitAnswerPuzzleAnswerPost({
         puzzle_id: puzzle.id,
         answer: specificAnswer,
       });
-      
+      console.log('[submitAnswerWithAnswer] Result:', result);
       if (result.correct) {
         setFeedback('Correct!');
       } else {
         setFeedback('Incorrect.');
       }
-      
       setAnswer('');
       // Refetch puzzle (next or same)
       await fetchPuzzle();

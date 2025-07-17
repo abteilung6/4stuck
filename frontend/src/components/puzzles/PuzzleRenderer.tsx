@@ -4,6 +4,7 @@ import { MultipleChoicePuzzle } from './MultipleChoicePuzzle';
 import { MemoryPuzzle } from './MemoryPuzzle';
 import { SpatialPuzzle } from './SpatialPuzzle';
 import ConcentrationPuzzle from './ConcentrationPuzzle';
+import MultitaskingPuzzle from './MultitaskingPuzzle';
 import Card from '../design-system/Card';
 import SectionTitle from '../design-system/SectionTitle';
 import { BodyText } from '../design-system/Typography';
@@ -86,6 +87,18 @@ export const PuzzleRenderer: React.FC<PuzzleRendererProps> = ({
             // Submit the answer directly without relying on state
             submitAnswerWithAnswer(answer);
           }}
+        />
+      );
+    case 'multitasking':
+      return (
+        <MultitaskingPuzzle
+          onSubmitAnswer={(answer) => {
+            console.log('Multitasking puzzle onSubmitAnswer called with:', answer);
+            setAnswer(answer);
+            // Submit the answer directly without relying on state
+            submitAnswerWithAnswer(answer);
+          }}
+          submitAnswerWithAnswer={submitAnswerWithAnswer}
         />
       );
     case 'text':

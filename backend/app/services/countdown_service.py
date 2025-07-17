@@ -83,6 +83,13 @@ class CountdownService:
                 # Transition to active state
                 session.status = "active"
                 session.started_at = datetime.utcnow()
+                
+                # Initialize all players with starting points (15)
+                team_users = db.query(models.User).filter(models.User.team_id == session.team_id).all()
+                for user in team_users:
+                    user.points = 15  # Reset to starting points
+                print(f"Initialized {len(team_users)} players with 15 points for session {session_id}")
+                
                 db.commit()
                 
                 print(f"Countdown completed for session {session_id}, transitioned to active")

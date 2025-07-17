@@ -105,6 +105,12 @@ def update_game_session_state(session_id: int, state_update: schemas.GameSession
     if state_update.status == "active" and not session.started_at:
         from datetime import datetime
         session.started_at = datetime.utcnow()
+        
+        # Initialize all players with starting points (15)
+        team_users = db.query(models.User).filter(models.User.team_id == session.team_id).all()
+        for user in team_users:
+            user.points = 15  # Reset to starting points
+        print(f"Initialized {len(team_users)} players with 15 points for session {session_id}")
     
     # Set ended_at when transitioning to finished
     if state_update.status == "finished" and not session.ended_at:
