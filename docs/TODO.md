@@ -206,9 +206,30 @@ Complete the Team.försvarsmakten game according to the detailed specifications 
 ## 📋 Phase 3: Visual Design & UI Polish (Week 3)
 **Priority: MEDIUM** - User experience improvements
 
+### Backend Tasks
+
+#### 3.1 Enhanced WebSocket Support
+- [ ] **Extend WebSocket message types**
+  - [ ] Add mouse position broadcasting
+  - [ ] Add puzzle interaction events
+  - [ ] Add player activity status updates
+  - [ ] Add team communication events
+
+- [ ] **Implement real-time player tracking**
+  - [ ] Track mouse movements and clicks
+  - [ ] Monitor puzzle interaction patterns
+  - [ ] Track player focus and attention areas
+  - [ ] Store temporary player activity data
+
+- [ ] **Add collaborative game state**
+  - [ ] Share puzzle progress across team
+  - [ ] Broadcast teammate achievements
+  - [ ] Sync team strategy indicators
+  - [ ] Handle spectator mode data
+
 ### Frontend Tasks
 
-#### 3.1 Match Design Assets
+#### 3.2 Match Design Assets
 - [ ] **Implement design from screenshots**
   - [ ] Analyze screenshots in `docs/images/`
   - [ ] Update color scheme to match design
@@ -221,7 +242,7 @@ Complete the Team.försvarsmakten game according to the detailed specifications 
   - [ ] Add proper breakpoints
   - [ ] Optimize for tablet and desktop
 
-#### 3.2 Add Animations & Transitions
+#### 3.3 Add Animations & Transitions
 - [ ] **Implement smooth state transitions**
   - [ ] Add CSS transitions between game states
   - [ ] Implement fade in/out animations
@@ -234,7 +255,7 @@ Complete the Team.försvarsmakten game according to the detailed specifications 
   - [ ] Point transfer visual feedback
   - [ ] Player elimination animations
 
-#### 3.3 Enhance Team Coordination UI
+#### 3.4 Enhance Team Coordination UI
 - [ ] **Add visual indicators for point transfers**
   - [ ] Show who received points from whom
   - [ ] Add point transfer animations
@@ -247,7 +268,57 @@ Complete the Team.försvarsmakten game according to the detailed specifications 
   - [ ] Display current puzzle type per player
   - [ ] Show player performance indicators
 
-#### 3.4 Improve Accessibility
+#### 3.5 Real-Time Multiplayer Features
+- [ ] **Implement real-time player activity visualization**
+  - [ ] Show mouse cursor positions of other players in real-time
+  - [ ] Display which puzzle each teammate is currently solving
+  - [ ] Show real-time progress indicators for each player's current puzzle
+  - [ ] Add visual feedback when teammates solve puzzles
+
+- [ ] **Add collaborative puzzle elements**
+  - [ ] Show teammate interactions with puzzle elements (clicks, drags, etc.)
+  - [ ] Display shared puzzle state when applicable
+  - [ ] Add visual indicators for teammate focus/attention areas
+  - [ ] Show real-time puzzle completion progress across team
+
+- [ ] **Implement team communication features**
+  - [ ] Add simple emoji reactions for team coordination
+  - [ ] Show "player is thinking" indicators
+  - [ ] Display teammate stress/performance indicators
+  - [ ] Add visual cues for team strategy coordination
+
+- [ ] **Add spectator mode for eliminated players**
+  - [ ] Allow eliminated players to watch remaining teammates
+  - [ ] Show eliminated player's view of active gameplay
+  - [ ] Add cheering/encouragement features for eliminated players
+  - [ ] Display team survival statistics in real-time
+
+#### 3.6 Game Layout & Multiplayer UI
+- [ ] **Implement 4-player grid layout**
+  - [ ] Create 2x2 grid layout for 4 players (like original game)
+  - [ ] Each player gets their own puzzle area/quadrant
+  - [ ] Show individual player life bars under each quadrant
+  - [ ] Display player colors/identifiers consistently
+
+- [ ] **Add player color assignment system**
+  - [ ] Assign unique colors to each player (yellow, red, blue, green)
+  - [ ] Show color-coded mouse cursors for each player
+  - [ ] Display player colors in team list and game UI
+  - [ ] Maintain color consistency throughout the game session
+
+- [ ] **Implement "AWAITING PARTICIPANTS" system**
+  - [ ] Show waiting message when team is incomplete
+  - [ ] Display countdown for auto-start when team is full
+  - [ ] Add invite link sharing functionality
+  - [ ] Show real-time player join/leave notifications
+
+- [ ] **Add voice/audio feedback system**
+  - [ ] Implement metallic voice announcements
+  - [ ] Add audio cues for puzzle instructions
+  - [ ] Include sound effects for point transfers
+  - [ ] Add audio feedback for game state changes
+
+#### 3.7 Improve Accessibility
 - [ ] **Add high contrast design**
   - [ ] Ensure sufficient color contrast
   - [ ] Add focus indicators
@@ -259,6 +330,19 @@ Complete the Team.försvarsmakten game according to the detailed specifications 
   - [ ] Alt text for images
   - [ ] Semantic HTML structure
   - [ ] Voice command support (optional)
+
+#### 3.8 Performance & Average Comparison
+- [ ] **Implement performance benchmarking**
+  - [ ] Calculate and display team performance vs average
+  - [ ] Show "below average" / "above average" indicators
+  - [ ] Store historical performance data
+  - [ ] Display percentile rankings
+
+- [ ] **Add performance feedback system**
+  - [ ] Show motivational messages based on performance
+  - [ ] Display improvement suggestions
+  - [ ] Add performance trends over time
+  - [ ] Include team vs individual performance metrics
 
 ---
 
