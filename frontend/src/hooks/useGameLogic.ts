@@ -112,8 +112,8 @@ export function useGameLogic({ sessionId, userId, initialTeam }: UseGameLogicPro
     };
   }, [sessionId]);
 
-  // Fetch puzzle
-  const fetchPuzzle = useCallback(async () => {
+  // Fetch puzzle with retry for initial puzzle creation
+  const fetchPuzzle = useCallback(async (retryCount = 0) => {
     setLoading(true);
     setError('');
     try {
@@ -121,29 +121,21 @@ export function useGameLogic({ sessionId, userId, initialTeam }: UseGameLogicPro
       console.log('[fetchPuzzle] Got puzzle:', data?.id, data?.type);
       setPuzzle(data);
     } catch (err) {
-      // If no puzzle exists, create one
-      try {
-        const puzzleTypes = ['memory', 'spatial', 'concentration', 'multitasking'];
-        const randomType = puzzleTypes[Math.floor(Math.random() * puzzleTypes.length)];
-        console.log('[fetchPuzzle] No puzzle found, creating new puzzle of type:', randomType);
-        await PuzzleService.createPuzzlePuzzleCreatePost({
-          type: randomType,
-          game_session_id: sessionId,
-          user_id: userId
-        });
-        // Now fetch the newly created puzzle
-        const data = await PuzzleService.getCurrentPuzzlePuzzleCurrentUserIdGet(userId);
-        console.log('[fetchPuzzle] Created and got puzzle:', data?.id, data?.type);
-        setPuzzle(data);
-      } catch (createErr) {
-        console.error('[fetchPuzzle] Failed to create initial puzzle:', createErr);
-        setError('Failed to create initial puzzle.');
-        setPuzzle(null);
+      // If no puzzle exists and we're in an active game, retry a few times
+      if (retryCount < 3 && gameState?.session?.status === 'active') {
+        console.log(`[fetchPuzzle] No puzzle found, retrying in 0.5s... (attempt ${retryCount + 1}/3)`);
+        setTimeout(() => fetchPuzzle(retryCount + 1), 500);
+        return;
       }
+      
+      // If no puzzle exists, wait for the backend to create one
+      console.log('[fetchPuzzle] No puzzle found, waiting for backend to create initial puzzle...');
+      setPuzzle(null);
+      // Don't set error - this is expected when game first starts
     } finally {
       setLoading(false);
     }
-  }, [userId, sessionId]);
+  }, [userId, sessionId, gameState?.session?.status]);
 
   // Submit answer
   const submitAnswer = useCallback(async () => {
@@ -194,12 +186,20 @@ export function useGameLogic({ sessionId, userId, initialTeam }: UseGameLogicPro
       console.log('[submitAnswerWithAnswer] Result:', result);
       if (result.correct) {
         setFeedback('Correct!');
+        // Use the next puzzle from the response if available
+        if (result.next_puzzle) {
+          console.log('[submitAnswerWithAnswer] Setting next puzzle from response:', result.next_puzzle);
+          setPuzzle(result.next_puzzle);
+        } else {
+          // Fallback to fetching if next puzzle not in response
+          await fetchPuzzle();
+        }
       } else {
         setFeedback('Incorrect.');
+        // Refetch puzzle (same puzzle for retry)
+        await fetchPuzzle();
       }
       setAnswer('');
-      // Refetch puzzle (next or same)
-      await fetchPuzzle();
     } catch (err: any) {
       console.error('[submitAnswerWithAnswer] Error:', err);
       // Handle specific error for out of points
@@ -232,10 +232,16 @@ export function useGameLogic({ sessionId, userId, initialTeam }: UseGameLogicPro
     if (gameState) {
       const status = calculateGameStatus(gameState, userId, puzzle, isConnected);
       setGameStatus(status);
+      
+      // If game just became active and we don't have a puzzle, fetch it
+      if (gameState.session.status === 'active' && !puzzle && status.status === 'waiting') {
+        console.log('[useGameLogic] Game became active, fetching puzzle...');
+        fetchPuzzle();
+      }
     } else {
       setGameStatus(null);
     }
-  }, [gameState, userId, isConnected]); // Removed puzzle from dependencies
+  }, [gameState, userId, isConnected, puzzle, fetchPuzzle]); // Removed puzzle from dependencies
 
   return {
     // Game state

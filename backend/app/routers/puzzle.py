@@ -174,13 +174,50 @@ async def submit_answer(answer: schemas.PuzzleAnswer, db: Session = Depends(get_
         puzzle.status = "failed"
         db.commit()
         
+        # Create a new puzzle for the user to try again (same as correct answer logic)
+        puzzle_types = ["memory", "spatial", "concentration", "multitasking"]
+        new_type = random.choice(puzzle_types)
+        
+        if new_type == "memory":
+            new_data, new_correct = generate_memory_puzzle()
+        elif new_type == "spatial":
+            new_data = {}
+            new_correct = "solved"
+        elif new_type == "concentration":
+            new_data, new_correct = generate_concentration_puzzle()
+        elif new_type == "multitasking":
+            new_data = {}
+            new_correct = "solved"
+        
+        new_puzzle = models.Puzzle(
+            type=new_type,
+            data=new_data,
+            correct_answer=new_correct,
+            status="active",
+            game_session_id=puzzle.game_session_id,
+            user_id=user.id
+        )
+        db.add(new_puzzle)
+        db.commit()
+        db.refresh(new_puzzle)
+        next_puzzle_id = new_puzzle.id
+        
         # Broadcast updated state to all connected clients
         await broadcast_state(int(puzzle.game_session_id), db)
+    
+    # Return the new puzzle data if one was created
+    next_puzzle_data = None
+    if next_puzzle_id:
+        next_puzzle = db.query(models.Puzzle).filter(models.Puzzle.id == next_puzzle_id).first()
+        if next_puzzle:
+            next_puzzle_data = schemas.PuzzleState.from_orm(next_puzzle)
+    
     return schemas.PuzzleResult(
         correct=correct,
         awarded_to_user_id=awarded_to_user_id,
         points_awarded=points_awarded,
-        next_puzzle_id=next_puzzle_id
+        next_puzzle_id=next_puzzle_id,
+        next_puzzle=next_puzzle_data
     )
 
 @router.get("/points/{team_id}", response_model=schemas.TeamPoints)

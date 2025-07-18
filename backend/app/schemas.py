@@ -68,6 +68,7 @@ class PuzzleResult(BaseModel):
     awarded_to_user_id: Optional[int]
     points_awarded: int
     next_puzzle_id: Optional[int]
+    next_puzzle: Optional[PuzzleState] = None
 
 # Player points reporting
 class PlayerPoints(BaseModel):

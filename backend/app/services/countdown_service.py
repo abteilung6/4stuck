@@ -90,12 +90,47 @@ class CountdownService:
                     user.points = 15  # Reset to starting points
                 print(f"Initialized {len(team_users)} players with 15 points for session {session_id}")
                 
+                # Create initial puzzles for all players
+                import random
+                puzzle_types = ["memory", "spatial", "concentration", "multitasking"]
+                for user in team_users:
+                    # Randomly select puzzle type
+                    puzzle_type = random.choice(puzzle_types)
+                    
+                    # Generate puzzle data based on type
+                    if puzzle_type == "memory":
+                        from ..routers.puzzle import generate_memory_puzzle
+                        data, correct_answer = generate_memory_puzzle()
+                    elif puzzle_type == "spatial":
+                        data = {}
+                        correct_answer = "solved"
+                    elif puzzle_type == "concentration":
+                        from ..routers.puzzle import generate_concentration_puzzle
+                        data, correct_answer = generate_concentration_puzzle()
+                    elif puzzle_type == "multitasking":
+                        data = {}
+                        correct_answer = "solved"
+                    
+                    # Create the puzzle
+                    new_puzzle = models.Puzzle(
+                        type=puzzle_type,
+                        data=data,
+                        correct_answer=correct_answer,
+                        status="active",
+                        game_session_id=session_id,
+                        user_id=user.id
+                    )
+                    db.add(new_puzzle)
+                
+                print(f"Created initial puzzles for {len(team_users)} players in session {session_id}")
+                
+                # Commit all changes (session status, player points, and puzzles)
                 db.commit()
                 
                 print(f"Countdown completed for session {session_id}, transitioned to active")
                 
-                # Broadcast the state change to all connected clients
-                # Note: We'll handle broadcasting separately to avoid asyncio issues
+                # Broadcast the state change to all connected clients AFTER committing
+                # This ensures puzzles are available when frontend receives the state
                 try:
                     # Create a new event loop for this thread if needed
                     try:
@@ -104,7 +139,9 @@ class CountdownService:
                         loop = asyncio.new_event_loop()
                         asyncio.set_event_loop(loop)
                     
+                    # Broadcast state AFTER commit to ensure puzzles are available
                     loop.run_until_complete(broadcast_state(session_id, db))
+                    print(f"Successfully broadcasted active state with puzzles for session {session_id}")
                 except Exception as e:
                     print(f"Failed to broadcast state change for session {session_id}: {e}")
                 

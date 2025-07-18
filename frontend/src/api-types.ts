@@ -317,6 +317,7 @@ export interface components {
             points_awarded: number;
             /** Next Puzzle Id */
             next_puzzle_id: number | null;
+            next_puzzle?: components["schemas"]["PuzzleState"] | null;
         };
         /** PuzzleState */
         PuzzleState: {
