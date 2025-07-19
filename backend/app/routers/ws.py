@@ -5,7 +5,7 @@ from ..utils.websocket_broadcast import (
     add_connection, remove_connection, broadcast_state,
     update_player_activity, update_mouse_position,
     broadcast_puzzle_interaction, broadcast_team_communication,
-    broadcast_achievement
+    broadcast_achievement, broadcast_mouse_cursor
 )
 import json
 import logging
@@ -56,7 +56,11 @@ async def websocket_endpoint(websocket: WebSocket, session_id: int, db: Session 
                         
                         if user_id and x is not None and y is not None:
                             update_mouse_position(session_id, user_id, x, y, puzzle_area)
-                            # Broadcast to other players
+                            # Get user color for cursor broadcasting
+                            user = db.query(models.User).filter(models.User.id == user_id).first()
+                            if user and user.color:
+                                await broadcast_mouse_cursor(session_id, user_id, x, y, user.color)
+                            # Also broadcast state update
                             await broadcast_state(session_id, db)
                     
                     elif message_type == "puzzle_interaction":

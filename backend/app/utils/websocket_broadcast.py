@@ -167,4 +167,14 @@ async def broadcast_achievement(session_id: int, user_id: int, achievement_type:
         "achievement_type": achievement_type,  # "puzzle_solved", "fast_solve", "team_support"
         "achievement_data": achievement_data,
         "timestamp": datetime.utcnow().isoformat()
+    })
+
+async def broadcast_mouse_cursor(session_id: int, user_id: int, x: int, y: int, color: str):
+    """Broadcast mouse cursor position to all players in the session"""
+    await broadcast_message(session_id, "mouse_cursor", {
+        "user_id": user_id,
+        "x": x,
+        "y": y,
+        "color": color,
+        "timestamp": datetime.utcnow().isoformat()
     }) 

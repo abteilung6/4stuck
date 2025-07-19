@@ -18,6 +18,7 @@ class User(Base):
     team_id = Column(Integer, ForeignKey("teams.id"), nullable=True)
     team = relationship("Team", back_populates="users")
     points = Column(Integer, default=15)  # Starting points, configurable
+    color = Column(String, nullable=True)  # Player color: red, blue, yellow, green
     puzzles = relationship("Puzzle", back_populates="user")
 
 class GameSession(Base):

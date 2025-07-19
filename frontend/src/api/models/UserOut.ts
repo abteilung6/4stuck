@@ -7,5 +7,6 @@ export type UserOut = {
     username: string;
     team_id: (number | null);
     points: number;
+    color?: (string | null);
 };
 

@@ -19,6 +19,7 @@ export interface WebSocketService {
   sendTeamCommunication(userId: number, messageType: string, messageData?: any): void;
   sendPlayerActivity(userId: number, activityData: any): void;
   sendAchievement(userId: number, achievementType: string, achievementData?: any): void;
+  getWebSocket(): WebSocket | null;
 }
 
 export class GameWebSocketService implements WebSocketService {
@@ -106,6 +107,10 @@ export class GameWebSocketService implements WebSocketService {
       achievement_type: achievementType,
       achievement_data: achievementData || {}
     });
+  }
+
+  getWebSocket(): WebSocket | null {
+    return this.ws;
   }
 
   private setupEventHandlers(): void {

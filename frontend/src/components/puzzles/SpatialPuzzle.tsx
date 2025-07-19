@@ -65,7 +65,7 @@ export const SpatialPuzzle: React.FC<SpatialPuzzleProps> = ({
   const [isDragging, setIsDragging] = useState(false);
   const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
   
-  const animationRef = useRef<number>();
+  const animationRef = useRef<number | undefined>(undefined);
   const gameContainerRef = useRef<HTMLDivElement>(null);
   const gameStateRef = useRef({
     circlePosition,
