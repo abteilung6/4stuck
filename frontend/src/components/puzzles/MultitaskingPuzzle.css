@@ -35,10 +35,31 @@
   border: 2px solid #ff6b6b;
 }
 
+.instructions {
+  text-align: center;
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.1);
+  padding: 15px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.instructions p {
+  margin: 5px 0;
+  font-size: 1rem;
+}
+
+.progress-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
 .progress-dots {
   display: flex;
   gap: 8px;
-  margin-bottom: 20px;
+  margin-bottom: 10px;
 }
 
 .progress-dot {
@@ -56,6 +77,12 @@
   box-shadow: 0 0 10px #ffd93d;
 }
 
+.progress-text {
+  font-size: 1rem;
+  color: #ffffff;
+  font-weight: bold;
+}
+
 .number-grid {
   display: flex;
   flex-direction: column;
@@ -69,7 +96,7 @@
   justify-content: center;
 }
 
-.grid-cell {
+.grid-digit {
   width: 50px;
   height: 50px;
   border: 2px solid rgba(255, 255, 255, 0.3);
@@ -85,17 +112,19 @@
   justify-content: center;
 }
 
-.grid-cell:hover:not(:disabled) {
+/* All digits (6s and 9s) have the same base style */
+.grid-digit:hover:not(:disabled) {
   background: #3a3a3a;
   border-color: #ffd93d;
   transform: scale(1.05);
 }
 
-.grid-cell:active:not(:disabled) {
+.grid-digit:active:not(:disabled) {
   transform: scale(0.95);
 }
 
-.grid-cell.found {
+/* Only 6s that are found get the special styling */
+.grid-digit.found {
   background: #ff6b6b;
   border-color: #ffd93d;
   color: #fff;
@@ -103,9 +132,16 @@
   animation: foundPulse 0.5s ease;
 }
 
-.grid-cell:disabled {
+/* Disabled digits (9s) should look identical to enabled digits (6s) */
+.grid-digit:disabled {
   cursor: not-allowed;
-  opacity: 0.7;
+  /* Override browser defaults to ensure visual consistency */
+  background: #2a2a2a !important;
+  color: #ffffff !important;
+  border-color: rgba(255, 255, 255, 0.3) !important;
+  opacity: 1 !important;
+  /* Remove any browser-applied grey styling */
+  filter: none !important;
 }
 
 @keyframes foundPulse {
@@ -120,23 +156,49 @@
   }
 }
 
-.puzzle-instructions {
+.game-over {
   text-align: center;
-  color: #ffffff;
-  background: rgba(255, 255, 255, 0.1);
   padding: 15px;
   border-radius: 10px;
+  background: rgba(255, 255, 255, 0.1);
   border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
-.puzzle-instructions p {
-  margin: 5px 0;
-  font-size: 1rem;
+.success {
+  color: #4ecdc4;
+  font-weight: bold;
+  font-size: 1.2rem;
+  margin-bottom: 10px;
 }
 
-.puzzle-instructions p:first-child {
+.time-up {
+  color: #ff6b6b;
   font-weight: bold;
+  font-size: 1.2rem;
+  margin-bottom: 10px;
+}
+
+.loading {
   color: #ffd93d;
+  font-weight: bold;
+  font-size: 1.1rem;
+  margin-bottom: 10px;
+}
+
+.feedback {
+  color: #ffffff;
+  font-size: 1rem;
+  margin-top: 10px;
+}
+
+.error-message {
+  color: #ff6b6b;
+  font-weight: bold;
+  text-align: center;
+  padding: 20px;
+  background: rgba(255, 107, 107, 0.1);
+  border-radius: 10px;
+  border: 1px solid #ff6b6b;
 }
 
 /* Responsive design */
@@ -155,7 +217,7 @@
     padding: 6px 12px;
   }
 
-  .grid-cell {
+  .grid-digit {
     width: 40px;
     height: 40px;
     font-size: 1.2rem;
@@ -168,7 +230,7 @@
 }
 
 @media (max-width: 400px) {
-  .grid-cell {
+  .grid-digit {
     width: 35px;
     height: 35px;
     font-size: 1rem;

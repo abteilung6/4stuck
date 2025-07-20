@@ -65,6 +65,8 @@ def generate_concentration_puzzle(num_pairs: int = 10):
     correct_answer = str(correct_index)
     return data, correct_answer
 
+
+
 @router.post("/create", response_model=schemas.PuzzleState)
 def create_puzzle(puzzle: schemas.PuzzleCreate, db: Session = Depends(get_db)):
     # Support multiple puzzle types

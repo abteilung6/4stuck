@@ -1,147 +1,119 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React from 'react';
+import { extractMultitaskingPuzzleData, formatTime } from '../../utils/multitaskingPuzzleUtils';
+import { useMultitaskingGameState } from '../../hooks/useMultitaskingGameState';
 import './MultitaskingPuzzle.css';
-import { generateMultitaskingGrid, isSixCellClicked } from '../../services/multitaskingPuzzleLogic';
-import type { GridCell, SixPosition } from '../../services/multitaskingPuzzleLogic';
 
 interface MultitaskingPuzzleProps {
-  onSubmitAnswer: (answer: string) => void;
-  submitAnswerWithAnswer?: (answer: string) => void;
-  puzzle?: {
-    type: string;
-    data: any;
-  };
+  puzzle: any;
+  answer: string;
+  setAnswer: (answer: string) => void;
+  submitAnswer: () => Promise<void>;
+  submitAnswerWithAnswer: (answer: string) => Promise<void>;
+  loading: boolean;
+  feedback: string;
 }
 
-const MultitaskingPuzzle: React.FC<MultitaskingPuzzleProps> = ({ 
-  onSubmitAnswer, 
+const MultitaskingPuzzle: React.FC<MultitaskingPuzzleProps> = ({
+  puzzle,
   submitAnswerWithAnswer,
-  puzzle
+  loading,
+  feedback
 }) => {
-  const rows = 3;
-  const cols = 9;
-  const [grid, setGrid] = useState<GridCell[][]>([]);
-  const [foundSix, setFoundSix] = useState<string | null>(null);
-  const [sixPosition, setSixPosition] = useState<SixPosition | null>(null);
-  const [timeLeft, setTimeLeft] = useState(10);
-  const [isComplete, setIsComplete] = useState(false);
-  const [hasSubmitted, setHasSubmitted] = useState(false);
-  const [puzzleSolved, setPuzzleSolved] = useState(false);
+  // Memoize puzzle data extraction to prevent re-rendering with new 6 positions
+  const puzzleData = React.useMemo(() => {
+    return extractMultitaskingPuzzleData(puzzle?.data);
+  }, [puzzle?.data]);
 
-  // Generate the grid with only one 6 in the entire grid
-  const generateGrid = useCallback(() => {
-    const { grid: newGrid, sixPosition: newSixPosition } = generateMultitaskingGrid(rows, cols);
-    setSixPosition(newSixPosition);
-    setGrid(newGrid);
-    setFoundSix(null);
-    setIsComplete(false);
-    setTimeLeft(10);
-    setHasSubmitted(false);
-    setPuzzleSolved(false);
-  }, [rows, cols]);
+  const handleComplete = React.useCallback((foundPositions: number[]) => {
+    const answer = foundPositions.join(',');
+    submitAnswerWithAnswer(answer);
+  }, [submitAnswerWithAnswer]);
 
-  // Initialize grid on component mount
-  useEffect(() => {
-    generateGrid();
-  }, [generateGrid]);
+  const handleTimeUp = React.useCallback(() => {
+    // Time's up - submit empty answer to indicate failure
+    submitAnswerWithAnswer('');
+  }, [submitAnswerWithAnswer]);
 
-  // Reset state when puzzle changes
-  useEffect(() => {
-    generateGrid();
-  }, [puzzle, generateGrid]);
+  const {
+    grid,
+    foundPositions,
+    timeRemaining,
+    isComplete,
+    isTimeUp,
+    progress,
+    handleDigitClick
+  } = useMultitaskingGameState(puzzleData, handleComplete, handleTimeUp);
 
-  // Timer countdown
-  useEffect(() => {
-    if (timeLeft <= 0 || isComplete || hasSubmitted) {
-      return;
-    }
-    const timer = setInterval(() => {
-      setTimeLeft(prev => {
-        if (prev <= 1) {
-          setIsComplete(true);
-          return 0;
-        }
-        return prev - 1;
-      });
-    }, 1000);
-    return () => clearInterval(timer);
-  }, [timeLeft, isComplete, hasSubmitted]);
+  if (!puzzleData) {
+    return (
+      <div className="multitasking-puzzle">
+        <div className="error-message">
+          ❌ Invalid puzzle data
+        </div>
+      </div>
+    );
+  }
 
-  // Handle cell click
-  const handleCellClick = useCallback((row: number, col: number) => {
-    if (isComplete || timeLeft <= 0 || hasSubmitted) return;
-    if (isSixCellClicked(row, col, sixPosition)) {
-      setFoundSix(`${row}-${col}`);
-      setGrid(prev => prev.map((rowData, r) =>
-        rowData.map((cellData, c) =>
-          r === row && c === col ? { ...cellData, isFound: true } : cellData
-        )
-      ));
-      setPuzzleSolved(true);
-      setIsComplete(true);
-    }
-  }, [isComplete, timeLeft, hasSubmitted, sixPosition]);
-
-  // Submit answer when puzzle is completed (either found or time out)
-  useEffect(() => {
-    if (!isComplete || hasSubmitted) {
-      return;
-    }
-    
-    // Set hasSubmitted immediately to prevent multiple submissions
-    setHasSubmitted(true);
-    
-    const answer = foundSix ? 'solved' : 'failed';
-    
-    try {
-      if (submitAnswerWithAnswer) {
-        submitAnswerWithAnswer(answer);
-      } else {
-        onSubmitAnswer(answer);
-      }
-    } catch (error) {
-      console.error('[MultitaskingPuzzle] Error submitting answer:', error);
-    }
-  }, [isComplete, foundSix, onSubmitAnswer, submitAnswerWithAnswer, hasSubmitted]);
-
-  // Format time display
-  const formatTime = (seconds: number) => {
-    return `${Math.floor(seconds / 60)}:${(seconds % 60).toString().padStart(2, '0')}`;
-  };
+  const isGameOver = isComplete || isTimeUp || loading;
 
   return (
     <div className="multitasking-puzzle">
       <div className="puzzle-header">
-        <h3>FIND THE SIX</h3>
+        <h3>Find All Sixes</h3>
         <div className="timer">
-          {puzzleSolved ? 'SOLVED!' : `Time: ${formatTime(timeLeft)}`}
+          Time: {formatTime(timeRemaining)}
         </div>
       </div>
 
-      <div className="progress-dots">
-        <div className={`progress-dot ${foundSix ? 'found' : ''}`} />
+      <div className="instructions">
+        <p>Find and click on all the 6s in the grid. One 6 per row!</p>
+      </div>
+
+      <div className="progress-container">
+        <div className="progress-dots">
+          {Array.from({ length: puzzleData.rows }, (_, index) => (
+            <div
+              key={index}
+              className={`progress-dot ${foundPositions[index] !== undefined ? 'found' : ''}`}
+            />
+          ))}
+        </div>
+        <div className="progress-text">
+          {foundPositions.length} of {puzzleData.rows} found
+        </div>
       </div>
 
       <div className="number-grid">
         {grid.map((row, rowIndex) => (
           <div key={rowIndex} className="grid-row">
-            {row.map((cell, colIndex) => (
-              <button
-                key={`${rowIndex}-${colIndex}`}
-                className={`grid-cell ${cell.isFound ? 'found' : ''}`}
-                onClick={() => handleCellClick(rowIndex, colIndex)}
-                disabled={isComplete || timeLeft <= 0}
-              >
-                {cell.value}
-              </button>
-            ))}
+            {row.map((digit, colIndex) => {
+              const isFound = foundPositions[rowIndex] === colIndex;
+              const isClickable = !isGameOver && digit === '6';
+              
+              return (
+                <button
+                  key={colIndex}
+                  className={`grid-digit ${isFound ? 'found' : ''} ${isClickable ? 'clickable' : ''}`}
+                  onClick={() => handleDigitClick(rowIndex, colIndex)}
+                  disabled={!isClickable || isGameOver}
+                  aria-label={`Row ${rowIndex + 1}, Column ${colIndex + 1}: ${digit}`}
+                >
+                  {digit}
+                </button>
+              );
+            })}
           </div>
         ))}
       </div>
 
-      <div className="puzzle-instructions">
-        <p>Click on the only 6 in the grid. You have 10 seconds!</p>
-        <p>{foundSix ? 'You found the 6!' : 'Not found yet.'}</p>
-      </div>
+      {isGameOver && (
+        <div className="game-over">
+          {isComplete && <div className="success">✅ All 6s found!</div>}
+          {isTimeUp && <div className="time-up">⏰ Time's up!</div>}
+          {loading && <div className="loading">Submitting...</div>}
+          {feedback && <div className="feedback">{feedback}</div>}
+        </div>
+      )}
     </div>
   );
 };
