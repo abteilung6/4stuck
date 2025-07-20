@@ -30,6 +30,17 @@ class TeamOut(BaseModel):
 class TeamWithMembersOut(TeamOut):
     members: list[UserOut]
 
+class AvailableTeamOut(BaseModel):
+    id: int
+    name: str
+    members: list[UserOut]
+    player_count: int
+    max_players: int = 4
+    status: str  # "available", "full", "in_game"
+    game_session_id: Optional[int] = None
+    game_status: Optional[str] = None  # lobby, countdown, active, finished
+    model_config = {'from_attributes': True}
+
 class GameSessionCreate(BaseModel):
     team_id: int
 

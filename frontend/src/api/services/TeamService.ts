@@ -2,6 +2,7 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
+import type { AvailableTeamOut } from '../models/AvailableTeamOut';
 import type { TeamCreate } from '../models/TeamCreate';
 import type { TeamOut } from '../models/TeamOut';
 import type { TeamWithMembersOut } from '../models/TeamWithMembersOut';
@@ -73,7 +74,24 @@ export class TeamService {
         });
     }
     /**
+     * Get Available Teams
+     * Get only teams that are available for players to join.
+     * A team is available if:
+     * 1. It has fewer than 4 players
+     * 2. It has no active game session (lobby, countdown, active)
+     * @returns AvailableTeamOut Successful Response
+     * @throws ApiError
+     */
+    public static getAvailableTeamsTeamAvailableGet(): CancelablePromise<Array<AvailableTeamOut>> {
+        return __request(OpenAPI, {
+            method: 'GET',
+            url: '/team/available',
+        });
+    }
+    /**
      * List Teams
+     * List all teams (for admin/debug purposes).
+     * For user-facing team listing, use /team/available instead.
      * @returns TeamWithMembersOut Successful Response
      * @throws ApiError
      */

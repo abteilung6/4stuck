@@ -1,8 +1,10 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
+from sqlalchemy import and_, or_
 from .. import models, schemas, database
 from ..utils.websocket_broadcast import cache_user_color
 from fastapi.middleware.cors import CORSMiddleware
+from typing import Optional
 
 router = APIRouter(prefix="/team", tags=["team"])
 
@@ -13,6 +15,30 @@ def get_db():
         yield db
     finally:
         db.close()
+
+def get_team_availability_status(team: models.Team, db: Session) -> tuple[str, Optional[int], Optional[str]]:
+    """
+    Determine team availability status.
+    Returns: (status, game_session_id, game_status)
+    """
+    # Check if team has an active game session
+    active_session = db.query(models.GameSession).filter(
+        and_(
+            models.GameSession.team_id == team.id,
+            models.GameSession.status.in_(["lobby", "countdown", "active"])
+        )
+    ).first()
+    
+    if active_session:
+        return "in_game", active_session.id, active_session.status
+    
+    # Check if team is full (4 players) - regardless of game status
+    member_count = len(team.users)
+    if member_count >= 4:
+        return "full", None, None
+    
+    # Team is available (has fewer than 4 players and no active game)
+    return "available", None, None
 
 @router.post("/register", response_model=schemas.UserOut)
 def register_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
@@ -86,10 +112,45 @@ def join_team(username: str, team_id: int, db: Session = Depends(get_db)):
     
     return user
 
+@router.get("/available", response_model=list[schemas.AvailableTeamOut])
+def get_available_teams(db: Session = Depends(get_db)):
+    """
+    Get only teams that are available for players to join.
+    A team is available if:
+    1. It has fewer than 4 players
+    2. It has no active game session (lobby, countdown, active)
+    """
+    teams = db.query(models.Team).all()
+    available_teams = []
+    
+    for team in teams:
+        status, game_session_id, game_status = get_team_availability_status(team, db)
+        
+        # Only include available teams
+        if status == "available":
+            members = [schemas.UserOut.model_validate(user) for user in team.users]
+            team_out = schemas.AvailableTeamOut(
+                id=team.id,
+                name=team.name,
+                members=members,
+                player_count=len(team.users),
+                status=status,
+                game_session_id=game_session_id,
+                game_status=game_status
+            )
+            available_teams.append(team_out)
+    
+    return available_teams
+
 @router.get("/", response_model=list[schemas.TeamWithMembersOut])
 def list_teams(db: Session = Depends(get_db)):
+    """
+    List all teams (for admin/debug purposes).
+    For user-facing team listing, use /team/available instead.
+    """
     teams = db.query(models.Team).all()
     result = []
+    
     for team in teams:
         members = [schemas.UserOut.model_validate(user) for user in team.users]
         team_out = schemas.TeamWithMembersOut(
@@ -98,4 +159,5 @@ def list_teams(db: Session = Depends(get_db)):
             members=members
         )
         result.append(team_out)
+    
     return result 

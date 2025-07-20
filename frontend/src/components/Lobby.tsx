@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { TeamService } from '../api/services/TeamService';
 import type { TeamWithMembersOut } from '../api/models/TeamWithMembersOut';
+import type { AvailableTeamOut } from '../api/models/AvailableTeamOut';
 import type { TeamCreate } from '../api/models/TeamCreate';
 import type { UserOut } from '../api/models/UserOut';
 import type { TeamOut } from '../api/models/TeamOut';
@@ -21,12 +22,12 @@ import { MouseCursorOverlay } from './MouseCursorOverlay';
 import { useMouseTracking } from '../hooks/useMouseTracking';
 
 const Lobby: React.FC = () => {
-  const [teams, setTeams] = useState<TeamWithMembersOut[]>([]);
+  const [teams, setTeams] = useState<AvailableTeamOut[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [username, setUsername] = useState('');
   const [currentName, setCurrentName] = useState('');
-  const [currentTeam, setCurrentTeam] = useState<TeamWithMembersOut | null>(null);
+  const [currentTeam, setCurrentTeam] = useState<AvailableTeamOut | null>(null);
   const [newTeamName, setNewTeamName] = useState('');
   const [creatingTeam, setCreatingTeam] = useState(false);
   const [session, setSession] = useState<GameSessionOut | null>(null);
@@ -36,10 +37,10 @@ const Lobby: React.FC = () => {
 
   const fetchTeams = async () => {
     try {
-      const data = await TeamService.listTeamsTeamGet();
+      const data = await TeamService.getAvailableTeamsTeamAvailableGet();
       setTeams(data);
     } catch (err) {
-      setError('Failed to fetch teams.');
+      setError('Failed to fetch available teams.');
     } finally {
       setLoading(false);
     }
@@ -113,7 +114,7 @@ const Lobby: React.FC = () => {
     }
   };
 
-  const handleJoinTeam = async (team: TeamWithMembersOut) => {
+  const handleJoinTeam = async (team: AvailableTeamOut) => {
     if (!currentName) {
       setStatus('Set your username first.');
       return;
@@ -125,7 +126,7 @@ const Lobby: React.FC = () => {
       
       // Fetch updated teams and set currentTeam to the fresh data
       await fetchTeams();
-      const updatedTeams = await TeamService.listTeamsTeamGet();
+      const updatedTeams = await TeamService.getAvailableTeamsTeamAvailableGet();
       const updatedTeam = updatedTeams.find(t => t.id === team.id);
       if (updatedTeam) {
         setCurrentTeam(updatedTeam);
@@ -285,14 +286,18 @@ const Lobby: React.FC = () => {
           <div className="loading-spinner"></div>
         ) : error ? (
           <StatusMessage type="error">{error}</StatusMessage>
+        ) : teams.length === 0 ? (
+          <StatusMessage type="info">No available teams. Create a new team to get started!</StatusMessage>
         ) : (
           <List aria-label="Available teams" className="teams-list">
             {teams.map(team => (
               <List.Item key={team.id}>
-                <span className="ds-list-item__name">{team.name}</span>
-                <span aria-label={`${team.members.length} members`} style={{ color: '#444', fontWeight: 400, fontSize: '0.98em' }}>
-                  {team.members.length} members
-                </span>
+                <div style={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
+                  <span className="ds-list-item__name">{team.name}</span>
+                  <span aria-label={`${team.player_count} of ${team.max_players} members`} style={{ color: '#666', fontWeight: 400, fontSize: '0.9em' }}>
+                    {team.player_count}/{team.max_players} players
+                  </span>
+                </div>
                 <button
                   className="btn-military"
                   onClick={() => handleJoinTeam(team)}
@@ -355,7 +360,7 @@ const Lobby: React.FC = () => {
               onClick={async () => {
                 if (currentTeam) {
                   await fetchTeams();
-                  const updatedTeams = await TeamService.listTeamsTeamGet();
+                  const updatedTeams = await TeamService.getAvailableTeamsTeamAvailableGet();
                   const updatedTeam = updatedTeams.find(t => t.id === currentTeam.id);
                   if (updatedTeam) {
                     setCurrentTeam(updatedTeam);

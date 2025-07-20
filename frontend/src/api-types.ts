@@ -55,6 +55,29 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/team/available": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Available Teams
+         * @description Get only teams that are available for players to join.
+         *     A team is available if:
+         *     1. It has fewer than 4 players
+         *     2. It has no active game session (lobby, countdown, active)
+         */
+        get: operations["get_available_teams_team_available_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/team/": {
         parameters: {
             query?: never;
@@ -62,7 +85,11 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** List Teams */
+        /**
+         * List Teams
+         * @description List all teams (for admin/debug purposes).
+         *     For user-facing team listing, use /team/available instead.
+         */
         get: operations["list_teams_team__get"];
         put?: never;
         post?: never;
@@ -252,6 +279,28 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        /** AvailableTeamOut */
+        AvailableTeamOut: {
+            /** Id */
+            id: number;
+            /** Name */
+            name: string;
+            /** Members */
+            members: components["schemas"]["UserOut"][];
+            /** Player Count */
+            player_count: number;
+            /**
+             * Max Players
+             * @default 4
+             */
+            max_players: number;
+            /** Status */
+            status: string;
+            /** Game Session Id */
+            game_session_id?: number | null;
+            /** Game Status */
+            game_status?: string | null;
+        };
         /** GameSessionCreate */
         GameSessionCreate: {
             /** Team Id */
@@ -490,6 +539,26 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_available_teams_team_available_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AvailableTeamOut"][];
                 };
             };
         };

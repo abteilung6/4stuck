@@ -7,6 +7,7 @@ export { CancelablePromise, CancelError } from './core/CancelablePromise';
 export { OpenAPI } from './core/OpenAPI';
 export type { OpenAPIConfig } from './core/OpenAPI';
 
+export type { AvailableTeamOut } from './models/AvailableTeamOut';
 export type { GameSessionCreate } from './models/GameSessionCreate';
 export type { GameSessionOut } from './models/GameSessionOut';
 export type { GameSessionStateUpdate } from './models/GameSessionStateUpdate';
