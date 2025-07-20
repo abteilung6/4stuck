@@ -20,6 +20,42 @@ export interface GameConfig {
   obstacleSpeed: number;
 }
 
+export interface GameResult {
+  type: 'won' | 'lost' | null;
+  reason?: string;
+}
+
+/**
+ * Validate game configuration
+ */
+export function validateGameConfig(config: GameConfig): { isValid: boolean; errors: string[] } {
+  const errors: string[] = [];
+  
+  if (config.gameWidth <= 0) errors.push('Game width must be positive');
+  if (config.gameHeight <= 0) errors.push('Game height must be positive');
+  if (config.circleRadius <= 0) errors.push('Circle radius must be positive');
+  if (config.obstacleWidth <= 0) errors.push('Obstacle width must be positive');
+  if (config.obstacleHeight <= 0) errors.push('Obstacle height must be positive');
+  if (config.obstacleSpeed <= 0) errors.push('Obstacle speed must be positive');
+  
+  if (config.circleRadius * 2 > config.gameWidth) {
+    errors.push('Circle diameter cannot exceed game width');
+  }
+  
+  if (config.circleRadius * 2 > config.gameHeight) {
+    errors.push('Circle diameter cannot exceed game height');
+  }
+  
+  if (config.obstacleWidth > config.gameWidth) {
+    errors.push('Obstacle width cannot exceed game width');
+  }
+  
+  return {
+    isValid: errors.length === 0,
+    errors
+  };
+}
+
 /**
  * Check collision between circle and obstacle
  */
@@ -40,10 +76,11 @@ export function checkCollision(
   const obstacleTop = obstaclePos.y;
   const obstacleBottom = obstaclePos.y + obstacleHeight;
 
-  return !(circleLeft > obstacleRight || 
-           circleRight < obstacleLeft || 
-           circleTop > obstacleBottom || 
-           circleBottom < obstacleTop);
+  // Check if rectangles overlap
+  return !(circleLeft >= obstacleRight || 
+           circleRight <= obstacleLeft || 
+           circleTop >= obstacleBottom || 
+           circleBottom <= obstacleTop);
 }
 
 /**
@@ -164,14 +201,14 @@ export function processGameTick(
 ): { 
   newState: GameState; 
   shouldEndGame: boolean; 
-  gameResult: 'won' | 'lost' | null 
+  gameResult: GameResult 
 } {
   // Don't process if game is already over
   if (currentState.gameWon || currentState.gameLost) {
     return {
       newState: currentState,
       shouldEndGame: false,
-      gameResult: null
+      gameResult: { type: null }
     };
   }
 
@@ -200,7 +237,7 @@ export function processGameTick(
         gameLost: true
       },
       shouldEndGame: true,
-      gameResult: 'lost'
+      gameResult: { type: 'lost', reason: 'collision' }
     };
   }
 
@@ -218,7 +255,7 @@ export function processGameTick(
         gameWon: true
       },
       shouldEndGame: true,
-      gameResult: 'won'
+      gameResult: { type: 'won', reason: 'reached_bottom' }
     };
   }
 
@@ -230,6 +267,54 @@ export function processGameTick(
       obstacleDirection: newDirection
     },
     shouldEndGame: false,
-    gameResult: null
+    gameResult: { type: null }
+  };
+}
+
+/**
+ * Get default game configuration
+ */
+export function getDefaultGameConfig(): GameConfig {
+  return {
+    gameWidth: 400,
+    gameHeight: 600,
+    circleRadius: 20,
+    obstacleWidth: 80,
+    obstacleHeight: 30,
+    obstacleSpeed: 10.0
+  };
+}
+
+/**
+ * Calculate game statistics
+ */
+export function calculateGameStats(
+  gameState: GameState,
+  config: GameConfig
+): {
+  progress: number; // 0-100
+  distanceToGoal: number;
+  isInDangerZone: boolean;
+} {
+  const maxProgress = config.gameHeight - config.circleRadius * 2 - 20;
+  const currentProgress = Math.max(0, Math.min(maxProgress, gameState.circlePosition.y - 20)); // Adjust for start position
+  const progress = maxProgress > 0 ? (currentProgress / maxProgress) * 100 : 0;
+  
+  const distanceToGoal = maxProgress - currentProgress;
+  
+  // Check if circle is near obstacle (danger zone)
+  const dangerZoneMargin = config.circleRadius * 2;
+  const isInDangerZone = checkCollision(
+    gameState.circlePosition,
+    gameState.obstaclePosition,
+    config.circleRadius + dangerZoneMargin,
+    config.obstacleWidth + dangerZoneMargin,
+    config.obstacleHeight + dangerZoneMargin
+  );
+  
+  return {
+    progress,
+    distanceToGoal,
+    isInDangerZone
   };
 } 

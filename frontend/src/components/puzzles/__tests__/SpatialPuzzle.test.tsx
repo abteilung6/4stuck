@@ -22,6 +22,15 @@ vi.mock('../../../services/spatialPuzzleLogic', () => ({
     gameLost: false,
   })),
   processGameTick: vi.fn(),
+  getDefaultGameConfig: vi.fn(() => ({
+    gameWidth: 400,
+    gameHeight: 600,
+    circleRadius: 20,
+    obstacleWidth: 80,
+    obstacleHeight: 30,
+    obstacleSpeed: 10.0
+  })),
+  validateGameConfig: vi.fn(() => ({ isValid: true, errors: [] })),
 }));
 
 // Mock the design system components
@@ -35,6 +44,43 @@ vi.mock('../../design-system/SectionTitle', () => ({
 
 vi.mock('../../design-system/Typography', () => ({
   BodyText: ({ children }: { children: React.ReactNode }) => <p data-testid="body-text">{children}</p>,
+}));
+
+// Mock the custom hooks
+vi.mock('../../../hooks/useSpatialGameState', () => ({
+  useSpatialGameState: vi.fn(() => ({
+    gameState: {
+      circlePosition: { x: 200, y: 50 },
+      obstaclePosition: { x: 160, y: 300 },
+      obstacleDirection: 'right' as const,
+      gameWon: false,
+      gameLost: false,
+    },
+    isGameActive: true,
+    setCirclePosition: vi.fn(),
+    setObstaclePosition: vi.fn(),
+    setObstacleDirection: vi.fn(),
+    setGameWon: vi.fn(),
+    setGameLost: vi.fn(),
+  })),
+}));
+
+vi.mock('../../../hooks/useSpatialGameLoop', () => ({
+  useSpatialGameLoop: vi.fn(() => ({
+    startGameLoop: vi.fn(),
+    stopGameLoop: vi.fn(),
+  })),
+}));
+
+vi.mock('../../../hooks/useSpatialMouseHandling', () => ({
+  useSpatialMouseHandling: vi.fn(() => ({
+    containerRef: { current: null },
+    isDragging: false,
+    handleMouseDown: vi.fn(),
+    handleMouseMove: vi.fn(),
+    handleMouseUp: vi.fn(),
+    handleMouseLeave: vi.fn(),
+  })),
 }));
 
 // Mock requestAnimationFrame
@@ -53,6 +99,7 @@ Object.defineProperty(window, 'cancelAnimationFrame', {
 
 describe('SpatialPuzzle', () => {
   const mockPuzzle = {
+    id: 1,
     type: 'spatial',
     data: {},
   };
@@ -116,19 +163,11 @@ describe('SpatialPuzzle', () => {
     expect(screen.getByText(feedback)).toBeInTheDocument();
   });
 
-  it('cancels animation frame on unmount', () => {
-    // Mock that requestAnimationFrame returns an ID
-    mockRequestAnimationFrame.mockReturnValue(123);
-    
+  it('handles unmount gracefully', () => {
     const { unmount } = render(<SpatialPuzzle {...mockProps} />);
 
-    // Simulate that the component started an animation frame
-    expect(mockRequestAnimationFrame).toHaveBeenCalled();
-
-    unmount();
-
-    // Should cancel the animation frame
-    expect(mockCancelAnimationFrame).toHaveBeenCalledWith(123);
+    // Should not crash on unmount
+    expect(() => unmount()).not.toThrow();
   });
 
   it('handles mouse events correctly', () => {
@@ -161,14 +200,14 @@ describe('SpatialPuzzle', () => {
     expect(gameArea).toBeInTheDocument();
   });
 
-  it('resets game state when puzzle prop changes', () => {
+  it('should reset game state when puzzle changes', () => {
     const { rerender } = render(<SpatialPuzzle {...mockProps} />);
 
-    // Change the puzzle prop
-    const newPuzzle = { type: 'spatial', data: { someNewData: true } };
+    // Change puzzle
+    const newPuzzle = { id: 3, type: 'spatial', data: { someNewData: true } };
     rerender(<SpatialPuzzle {...mockProps} puzzle={newPuzzle} />);
 
-    // Should not crash and should render correctly
+    // Should render without errors
     expect(screen.getByTestId('section-title')).toHaveTextContent('Navigate the Circle');
   });
 
@@ -201,15 +240,16 @@ describe('SpatialPuzzle', () => {
     });
   });
 
-  it('handles different puzzle data gracefully', () => {
+  it('should handle different puzzle data gracefully', () => {
     const puzzleWithData = {
+      id: 2,
       type: 'spatial',
-      data: { customData: 'test' },
+      data: { someCustomData: 'value' },
     };
 
     render(<SpatialPuzzle {...mockProps} puzzle={puzzleWithData} />);
 
-    // Should render without crashing
+    // Should render without errors
     expect(screen.getByTestId('section-title')).toHaveTextContent('Navigate the Circle');
   });
 }); 

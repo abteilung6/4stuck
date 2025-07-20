@@ -320,7 +320,7 @@ describe('spatialPuzzleLogic', () => {
       const result = processGameTick(currentState, testConfig);
       
       expect(result.shouldEndGame).toBe(false);
-      expect(result.gameResult).toBe(null);
+      expect(result.gameResult.type).toBe(null);
       expect(result.newState.gameWon).toBe(false);
       expect(result.newState.gameLost).toBe(false);
       expect(result.newState.obstaclePosition.x).toBe(102); // 100 + 2
@@ -338,7 +338,7 @@ describe('spatialPuzzleLogic', () => {
       const result = processGameTick(currentState, testConfig);
       
       expect(result.shouldEndGame).toBe(true);
-      expect(result.gameResult).toBe('lost');
+      expect(result.gameResult.type).toBe('lost');
       expect(result.newState.gameLost).toBe(true);
     });
 
@@ -354,7 +354,7 @@ describe('spatialPuzzleLogic', () => {
       const result = processGameTick(currentState, testConfig);
       
       expect(result.shouldEndGame).toBe(true);
-      expect(result.gameResult).toBe('won');
+      expect(result.gameResult.type).toBe('won');
       expect(result.newState.gameWon).toBe(true);
     });
 
@@ -370,7 +370,7 @@ describe('spatialPuzzleLogic', () => {
       const result = processGameTick(currentState, testConfig);
       
       expect(result.shouldEndGame).toBe(false);
-      expect(result.gameResult).toBe(null);
+      expect(result.gameResult.type).toBe(null);
       expect(result.newState).toEqual(currentState);
     });
 
@@ -386,7 +386,7 @@ describe('spatialPuzzleLogic', () => {
       const result = processGameTick(currentState, testConfig);
       
       expect(result.shouldEndGame).toBe(false);
-      expect(result.gameResult).toBe(null);
+      expect(result.gameResult.type).toBe(null);
       expect(result.newState).toEqual(currentState);
     });
   });

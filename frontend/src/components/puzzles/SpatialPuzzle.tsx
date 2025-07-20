@@ -1,24 +1,16 @@
-import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
+import React, { useMemo, useEffect, useCallback } from 'react';
 import Card from '../design-system/Card';
 import SectionTitle from '../design-system/SectionTitle';
 import { BodyText } from '../design-system/Typography';
-import {
-  checkCollision,
-  checkWinCondition,
-  updateObstaclePosition,
-  calculateCirclePosition,
-  isMouseInCircle,
-  calculateDragOffset,
-  getInitialGameState,
-  processGameTick,
-  type Position,
-  type GameConfig,
-  type GameState
-} from '../../services/spatialPuzzleLogic';
+import { getDefaultGameConfig, validateGameConfig } from '../../services/spatialPuzzleLogic';
+import { useSpatialGameState } from '../../hooks/useSpatialGameState';
+import { useSpatialGameLoop } from '../../hooks/useSpatialGameLoop';
+import { useSpatialMouseHandling } from '../../hooks/useSpatialMouseHandling';
 import './SpatialPuzzle.css';
 
 interface SpatialPuzzleProps {
   puzzle: {
+    id: number;
     type: string;
     data: any; // Empty object from backend
   };
@@ -30,8 +22,6 @@ interface SpatialPuzzleProps {
   feedback: string;
 }
 
-
-
 export const SpatialPuzzle: React.FC<SpatialPuzzleProps> = ({
   puzzle,
   answer,
@@ -41,228 +31,98 @@ export const SpatialPuzzle: React.FC<SpatialPuzzleProps> = ({
   loading,
   feedback,
 }) => {
-  // Game configuration - memoized to prevent recreation
-  const gameConfig: GameConfig = useMemo(() => ({
-    gameWidth: 400,
-    gameHeight: 600,
-    circleRadius: 20,
-    obstacleWidth: 80,
-    obstacleHeight: 30,
-    obstacleSpeed: 10.0
-  }), []);
-  
-  // Get initial game state
-  const initialGameState = getInitialGameState(gameConfig);
-  
-  // Game state
-  const [circlePosition, setCirclePosition] = useState<Position>(initialGameState.circlePosition);
-  const [obstaclePosition, setObstaclePosition] = useState<Position>(initialGameState.obstaclePosition);
-  const [gameWon, setGameWon] = useState(initialGameState.gameWon);
-  const [gameLost, setGameLost] = useState(initialGameState.gameLost);
-  const [obstacleDirection, setObstacleDirection] = useState<'left' | 'right'>(initialGameState.obstacleDirection);
-  
-  // Drag state
-  const [isDragging, setIsDragging] = useState(false);
-  const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
-  
-  // Track puzzle type to prevent double resets
-  const [lastPuzzleType, setLastPuzzleType] = useState<string | null>(null);
-  
-  const animationRef = useRef<number | undefined>(undefined);
-  const gameContainerRef = useRef<HTMLDivElement>(null);
-  const gameStateRef = useRef({
-    circlePosition,
-    obstaclePosition,
-    obstacleDirection,
-    gameWon,
-    gameLost
+  // Game configuration with validation
+  const gameConfig = useMemo(() => {
+    const config = getDefaultGameConfig();
+    const validation = validateGameConfig(config);
+    
+    if (!validation.isValid) {
+      console.error('Invalid game config:', validation.errors);
+    }
+    
+    return config;
+  }, []);
+
+  // Game state management
+  const {
+    gameState,
+    isGameActive,
+    resetCounter,
+    setCirclePosition,
+    setObstaclePosition,
+    setObstacleDirection,
+    setGameWon,
+    setGameLost,
+    resetGame
+  } = useSpatialGameState({
+    gameConfig,
+    puzzleType: puzzle?.type || null,
+    puzzleId: puzzle?.id || null
   });
-  const callbacksRef = useRef({
+
+  // Handle retry button click
+  const handleRetry = useCallback(() => {
+    resetGame();
+  }, [resetGame]);
+
+  // Game callbacks
+  const gameCallbacks = useMemo(() => ({
     setAnswer,
     submitAnswer,
     submitAnswerWithAnswer
+  }), [setAnswer, submitAnswer, submitAnswerWithAnswer]);
+
+  // State setters for game loop
+  const stateSetters = useMemo(() => ({
+    setObstaclePosition,
+    setObstacleDirection,
+    setGameWon,
+    setGameLost
+  }), [setObstaclePosition, setObstacleDirection, setGameWon, setGameLost]);
+
+  // Game loop management
+  const { startGameLoop, stopGameLoop } = useSpatialGameLoop({
+    gameState,
+    gameConfig,
+    callbacks: gameCallbacks,
+    stateSetters,
+    isActive: isGameActive
   });
 
-  // Update refs when state or callbacks change
+  // Mouse handling
+  const {
+    containerRef,
+    isDragging,
+    handleMouseDown,
+    handleMouseMove,
+    handleMouseUp,
+    handleMouseLeave
+  } = useSpatialMouseHandling({
+    gameConfig,
+    circlePosition: gameState.circlePosition,
+    isGameActive,
+    onCirclePositionChange: setCirclePosition
+  });
+
+  // Start game loop when component mounts or game becomes active
   useEffect(() => {
-    gameStateRef.current = {
-      circlePosition,
-      obstaclePosition,
-      obstacleDirection,
-      gameWon,
-      gameLost
-    };
-  }, [circlePosition, obstaclePosition, obstacleDirection, gameWon, gameLost]);
-
-  useEffect(() => {
-    callbacksRef.current = {
-      setAnswer,
-      submitAnswer,
-      submitAnswerWithAnswer
-    };
-  }, [setAnswer, submitAnswer, submitAnswerWithAnswer]);
-
-  // Simple game loop for obstacle animation
-  const gameLoop = useCallback(() => {
-    const currentState = gameStateRef.current;
-    const callbacks = callbacksRef.current;
-    
-    if (currentState.gameWon || currentState.gameLost) return;
-
-    // Update obstacle position using extracted logic
-    const { newPosition: newObstaclePos, newDirection } = updateObstaclePosition(
-      currentState.obstaclePosition,
-      currentState.obstacleDirection,
-      gameConfig.obstacleSpeed,
-      gameConfig.gameWidth,
-      gameConfig.obstacleWidth
-    );
-
-    setObstaclePosition(newObstaclePos);
-    setObstacleDirection(newDirection);
-
-    // Check collision using extracted logic
-    if (checkCollision(
-      currentState.circlePosition, 
-      newObstaclePos, 
-      gameConfig.circleRadius, 
-      gameConfig.obstacleWidth, 
-      gameConfig.obstacleHeight
-    )) {
-      setGameLost(true);
-      callbacks.setAnswer('collision'); // Send a non-matching answer to indicate failure
-      
-      // Stop the game loop immediately
-      if (animationRef.current) {
-        cancelAnimationFrame(animationRef.current);
-        animationRef.current = undefined;
-      }
-      
-      // Submit immediately to avoid delay in getting next puzzle
-      callbacks.submitAnswerWithAnswer('collision');
-      return;
+    if (isGameActive) {
+      startGameLoop();
+    } else {
+      stopGameLoop();
     }
+  }, [isGameActive, startGameLoop, stopGameLoop]);
 
-    // Check win condition using extracted logic
-    if (checkWinCondition(
-      currentState.circlePosition, 
-      gameConfig.gameHeight, 
-      gameConfig.circleRadius
-    )) {
-      setGameWon(true);
-      callbacks.setAnswer('solved'); // This matches the backend's expected correct answer
-      
-      // Stop the game loop immediately
-      if (animationRef.current) {
-        cancelAnimationFrame(animationRef.current);
-        animationRef.current = undefined;
-      }
-      
-      setTimeout(() => callbacks.submitAnswerWithAnswer('solved'), 500);
-      return;
-    }
-
-    animationRef.current = requestAnimationFrame(gameLoop);
-  }, [gameConfig]);
-
-  // Start game loop
+  // Restart game loop when puzzle changes or game is reset
   useEffect(() => {
-    gameLoop();
-    return () => {
-      if (animationRef.current) {
-        cancelAnimationFrame(animationRef.current);
-      }
-    };
-  }, [gameLoop]);
-
-  // Restart game loop when puzzle changes (after reset)
-  useEffect(() => {
-    if (puzzle?.type && !gameWon && !gameLost) {
-      // Small delay to ensure state is reset
-      setTimeout(() => {
-        if (!animationRef.current) {
-          gameLoop();
-        }
+    if (puzzle?.type && isGameActive) {
+      const timer = setTimeout(() => {
+        startGameLoop();
       }, 100);
+      
+      return () => clearTimeout(timer);
     }
-  }, [puzzle, gameWon, gameLost, gameLoop]);
-
-  // Mouse event handlers using extracted logic
-  const handleMouseDown = (e: React.MouseEvent) => {
-    if (gameWon || gameLost) return;
-    
-    const rect = gameContainerRef.current?.getBoundingClientRect();
-    if (!rect) return;
-    
-    const mouseX = e.clientX - rect.left;
-    const mouseY = e.clientY - rect.top;
-    
-    if (isMouseInCircle(mouseX, mouseY, circlePosition, gameConfig.circleRadius)) {
-      setIsDragging(true);
-      setDragOffset(calculateDragOffset(mouseX, mouseY, circlePosition));
-    }
-  };
-
-  const handleMouseMove = (e: React.MouseEvent) => {
-    if (!isDragging || gameWon || gameLost) return;
-    
-    const rect = gameContainerRef.current?.getBoundingClientRect();
-    if (!rect) return;
-    
-    const mouseX = e.clientX - rect.left;
-    const mouseY = e.clientY - rect.top;
-    
-    const newPosition = calculateCirclePosition(
-      mouseX,
-      mouseY,
-      dragOffset,
-      gameConfig.gameWidth,
-      gameConfig.gameHeight,
-      gameConfig.circleRadius
-    );
-    
-    setCirclePosition(newPosition);
-  };
-
-  const handleMouseUp = () => {
-    setIsDragging(false);
-  };
-
-  // Reset game state when puzzle changes
-  useEffect(() => {
-    // Get puzzle type for tracking
-    const puzzleType = puzzle?.type || null;
-    
-    // Prevent double resets for the same puzzle type
-    if (puzzleType === lastPuzzleType) {
-      return;
-    }
-    
-    // Force stop the game loop immediately when puzzle changes
-    if (animationRef.current) {
-      cancelAnimationFrame(animationRef.current);
-      animationRef.current = undefined;
-    }
-    
-    const newInitialState = getInitialGameState(gameConfig);
-    setCirclePosition(newInitialState.circlePosition);
-    setObstaclePosition(newInitialState.obstaclePosition);
-    setObstacleDirection(newInitialState.obstacleDirection);
-    setGameWon(newInitialState.gameWon);
-    setGameLost(newInitialState.gameLost);
-    setLastPuzzleType(puzzleType);
-    
-    // Immediately update the game state ref to ensure game loop works
-    gameStateRef.current = {
-      circlePosition: newInitialState.circlePosition,
-      obstaclePosition: newInitialState.obstaclePosition,
-      obstacleDirection: newInitialState.obstacleDirection,
-      gameWon: newInitialState.gameWon,
-      gameLost: newInitialState.gameLost
-    };
-  }, [puzzle, gameConfig, lastPuzzleType]);
-
-
+  }, [puzzle?.type, isGameActive, resetCounter, startGameLoop]);
 
   return (
     <Card>
@@ -273,7 +133,7 @@ export const SpatialPuzzle: React.FC<SpatialPuzzleProps> = ({
       
       <div className="spatial-puzzle-container">
         <div 
-          ref={gameContainerRef}
+          ref={containerRef}
           className="spatial-puzzle-game-area"
           style={{
             width: gameConfig.gameWidth,
@@ -288,15 +148,15 @@ export const SpatialPuzzle: React.FC<SpatialPuzzleProps> = ({
           onMouseDown={handleMouseDown}
           onMouseMove={handleMouseMove}
           onMouseUp={handleMouseUp}
-          onMouseLeave={handleMouseUp}
+          onMouseLeave={handleMouseLeave}
         >
           {/* Orange obstacle */}
           <div
             className="spatial-puzzle-obstacle"
             style={{
               position: 'absolute',
-              left: obstaclePosition.x,
-              top: obstaclePosition.y,
+              left: gameState.obstaclePosition.x,
+              top: gameState.obstaclePosition.y,
               width: gameConfig.obstacleWidth,
               height: gameConfig.obstacleHeight,
               backgroundColor: '#FF8C00',
@@ -310,13 +170,13 @@ export const SpatialPuzzle: React.FC<SpatialPuzzleProps> = ({
             className="spatial-puzzle-circle"
             style={{
               position: 'absolute',
-              left: circlePosition.x,
-              top: circlePosition.y,
+              left: gameState.circlePosition.x,
+              top: gameState.circlePosition.y,
               width: gameConfig.circleRadius * 2,
               height: gameConfig.circleRadius * 2,
-              backgroundColor: gameLost ? '#FF0000' : '#0066CC',
+              backgroundColor: gameState.gameLost ? '#FF0000' : '#0066CC',
               borderRadius: '50%',
-              cursor: gameWon || gameLost ? 'default' : 'grab',
+              cursor: gameState.gameWon || gameState.gameLost ? 'default' : 'grab',
               border: '2px solid #004499',
               pointerEvents: 'none' // Let parent handle mouse events
             }}
@@ -353,21 +213,40 @@ export const SpatialPuzzle: React.FC<SpatialPuzzleProps> = ({
           />
           
           {/* Game state overlays */}
-          {gameWon && !loading && (
+          {gameState.gameWon && !loading && (
             <div className="spatial-puzzle-overlay success">
               <h3>Success! 🎉</h3>
               <p>You reached the bottom safely!</p>
             </div>
           )}
           
-          {gameLost && !loading && (
+          {gameState.gameLost && !loading && (
             <div className="spatial-puzzle-overlay failure">
               <h3>Game Over! 💥</h3>
               <p>You hit the obstacle. Try again!</p>
+              <button 
+                onClick={handleRetry}
+                style={{
+                  marginTop: '10px',
+                  padding: '8px 16px',
+                  backgroundColor: '#0066CC',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '4px',
+                  cursor: 'pointer',
+                  fontSize: '14px'
+                }}
+                onMouseOver={(e) => {
+                  e.currentTarget.style.backgroundColor = '#004499';
+                }}
+                onMouseOut={(e) => {
+                  e.currentTarget.style.backgroundColor = '#0066CC';
+                }}
+              >
+                Try Again
+              </button>
             </div>
           )}
-          
-
           
           {loading && (
             <div className="spatial-puzzle-overlay loading">
