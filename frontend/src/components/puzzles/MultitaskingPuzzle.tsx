@@ -6,11 +6,16 @@ import type { GridCell, SixPosition } from '../../services/multitaskingPuzzleLog
 interface MultitaskingPuzzleProps {
   onSubmitAnswer: (answer: string) => void;
   submitAnswerWithAnswer?: (answer: string) => void;
+  puzzle?: {
+    type: string;
+    data: any;
+  };
 }
 
 const MultitaskingPuzzle: React.FC<MultitaskingPuzzleProps> = ({ 
   onSubmitAnswer, 
-  submitAnswerWithAnswer 
+  submitAnswerWithAnswer,
+  puzzle
 }) => {
   const rows = 3;
   const cols = 9;
@@ -20,6 +25,7 @@ const MultitaskingPuzzle: React.FC<MultitaskingPuzzleProps> = ({
   const [timeLeft, setTimeLeft] = useState(10);
   const [isComplete, setIsComplete] = useState(false);
   const [hasSubmitted, setHasSubmitted] = useState(false);
+  const [puzzleSolved, setPuzzleSolved] = useState(false);
 
   // Generate the grid with only one 6 in the entire grid
   const generateGrid = useCallback(() => {
@@ -30,6 +36,7 @@ const MultitaskingPuzzle: React.FC<MultitaskingPuzzleProps> = ({
     setIsComplete(false);
     setTimeLeft(10);
     setHasSubmitted(false);
+    setPuzzleSolved(false);
   }, [rows, cols]);
 
   // Initialize grid on component mount
@@ -37,9 +44,16 @@ const MultitaskingPuzzle: React.FC<MultitaskingPuzzleProps> = ({
     generateGrid();
   }, [generateGrid]);
 
+  // Reset state when puzzle changes
+  useEffect(() => {
+    generateGrid();
+  }, [puzzle, generateGrid]);
+
   // Timer countdown
   useEffect(() => {
-    if (timeLeft <= 0 || isComplete || hasSubmitted) return;
+    if (timeLeft <= 0 || isComplete || hasSubmitted) {
+      return;
+    }
     const timer = setInterval(() => {
       setTimeLeft(prev => {
         if (prev <= 1) {
@@ -62,29 +76,31 @@ const MultitaskingPuzzle: React.FC<MultitaskingPuzzleProps> = ({
           r === row && c === col ? { ...cellData, isFound: true } : cellData
         )
       ));
+      setPuzzleSolved(true);
       setIsComplete(true);
     }
   }, [isComplete, timeLeft, hasSubmitted, sixPosition]);
 
   // Submit answer when puzzle is completed (either found or time out)
   useEffect(() => {
-    if (!isComplete || hasSubmitted) return;
+    if (!isComplete || hasSubmitted) {
+      return;
+    }
     
-    const submitAnswer = () => {
-      setHasSubmitted(true);
-      const answer = foundSix ? 'solved' : 'failed';
-      console.log('Multitasking puzzle submitting answer:', answer);
-      
+    // Set hasSubmitted immediately to prevent multiple submissions
+    setHasSubmitted(true);
+    
+    const answer = foundSix ? 'solved' : 'failed';
+    
+    try {
       if (submitAnswerWithAnswer) {
         submitAnswerWithAnswer(answer);
       } else {
         onSubmitAnswer(answer);
       }
-    };
-
-    // Small delay to ensure state updates are complete
-    const timeoutId = setTimeout(submitAnswer, 100);
-    return () => clearTimeout(timeoutId);
+    } catch (error) {
+      console.error('[MultitaskingPuzzle] Error submitting answer:', error);
+    }
   }, [isComplete, foundSix, onSubmitAnswer, submitAnswerWithAnswer, hasSubmitted]);
 
   // Format time display
@@ -96,7 +112,9 @@ const MultitaskingPuzzle: React.FC<MultitaskingPuzzleProps> = ({
     <div className="multitasking-puzzle">
       <div className="puzzle-header">
         <h3>FIND THE SIX</h3>
-        <div className="timer">Time: {formatTime(timeLeft)}</div>
+        <div className="timer">
+          {puzzleSolved ? 'SOLVED!' : `Time: ${formatTime(timeLeft)}`}
+        </div>
       </div>
 
       <div className="progress-dots">

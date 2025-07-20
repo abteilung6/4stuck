@@ -65,6 +65,9 @@ export const SpatialPuzzle: React.FC<SpatialPuzzleProps> = ({
   const [isDragging, setIsDragging] = useState(false);
   const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
   
+  // Track puzzle type to prevent double resets
+  const [lastPuzzleType, setLastPuzzleType] = useState<string | null>(null);
+  
   const animationRef = useRef<number | undefined>(undefined);
   const gameContainerRef = useRef<HTMLDivElement>(null);
   const gameStateRef = useRef({
@@ -128,7 +131,15 @@ export const SpatialPuzzle: React.FC<SpatialPuzzleProps> = ({
     )) {
       setGameLost(true);
       callbacks.setAnswer('collision'); // Send a non-matching answer to indicate failure
-      setTimeout(() => callbacks.submitAnswerWithAnswer('collision'), 1000);
+      
+      // Stop the game loop immediately
+      if (animationRef.current) {
+        cancelAnimationFrame(animationRef.current);
+        animationRef.current = undefined;
+      }
+      
+      // Submit immediately to avoid delay in getting next puzzle
+      callbacks.submitAnswerWithAnswer('collision');
       return;
     }
 
@@ -140,6 +151,13 @@ export const SpatialPuzzle: React.FC<SpatialPuzzleProps> = ({
     )) {
       setGameWon(true);
       callbacks.setAnswer('solved'); // This matches the backend's expected correct answer
+      
+      // Stop the game loop immediately
+      if (animationRef.current) {
+        cancelAnimationFrame(animationRef.current);
+        animationRef.current = undefined;
+      }
+      
       setTimeout(() => callbacks.submitAnswerWithAnswer('solved'), 500);
       return;
     }
@@ -156,6 +174,18 @@ export const SpatialPuzzle: React.FC<SpatialPuzzleProps> = ({
       }
     };
   }, [gameLoop]);
+
+  // Restart game loop when puzzle changes (after reset)
+  useEffect(() => {
+    if (puzzle?.type && !gameWon && !gameLost) {
+      // Small delay to ensure state is reset
+      setTimeout(() => {
+        if (!animationRef.current) {
+          gameLoop();
+        }
+      }, 100);
+    }
+  }, [puzzle, gameWon, gameLost, gameLoop]);
 
   // Mouse event handlers using extracted logic
   const handleMouseDown = (e: React.MouseEvent) => {
@@ -200,13 +230,39 @@ export const SpatialPuzzle: React.FC<SpatialPuzzleProps> = ({
 
   // Reset game state when puzzle changes
   useEffect(() => {
+    // Get puzzle type for tracking
+    const puzzleType = puzzle?.type || null;
+    
+    // Prevent double resets for the same puzzle type
+    if (puzzleType === lastPuzzleType) {
+      return;
+    }
+    
+    // Force stop the game loop immediately when puzzle changes
+    if (animationRef.current) {
+      cancelAnimationFrame(animationRef.current);
+      animationRef.current = undefined;
+    }
+    
     const newInitialState = getInitialGameState(gameConfig);
     setCirclePosition(newInitialState.circlePosition);
     setObstaclePosition(newInitialState.obstaclePosition);
     setObstacleDirection(newInitialState.obstacleDirection);
     setGameWon(newInitialState.gameWon);
     setGameLost(newInitialState.gameLost);
-  }, [puzzle, gameConfig]);
+    setLastPuzzleType(puzzleType);
+    
+    // Immediately update the game state ref to ensure game loop works
+    gameStateRef.current = {
+      circlePosition: newInitialState.circlePosition,
+      obstaclePosition: newInitialState.obstaclePosition,
+      obstacleDirection: newInitialState.obstacleDirection,
+      gameWon: newInitialState.gameWon,
+      gameLost: newInitialState.gameLost
+    };
+  }, [puzzle, gameConfig, lastPuzzleType]);
+
+
 
   return (
     <Card>
@@ -297,19 +353,21 @@ export const SpatialPuzzle: React.FC<SpatialPuzzleProps> = ({
           />
           
           {/* Game state overlays */}
-          {gameWon && (
+          {gameWon && !loading && (
             <div className="spatial-puzzle-overlay success">
               <h3>Success! 🎉</h3>
               <p>You reached the bottom safely!</p>
             </div>
           )}
           
-          {gameLost && (
+          {gameLost && !loading && (
             <div className="spatial-puzzle-overlay failure">
               <h3>Game Over! 💥</h3>
               <p>You hit the obstacle. Try again!</p>
             </div>
           )}
+          
+
           
           {loading && (
             <div className="spatial-puzzle-overlay loading">

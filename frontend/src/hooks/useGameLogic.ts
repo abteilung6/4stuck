@@ -187,18 +187,30 @@ export function useGameLogic({ sessionId, userId, initialTeam }: UseGameLogicPro
       console.log('[submitAnswerWithAnswer] Result:', result);
       if (result.correct) {
         setFeedback('Correct!');
+        console.log('[submitAnswerWithAnswer] Answer was correct, result:', result);
         // Use the next puzzle from the response if available
         if (result.next_puzzle) {
           console.log('[submitAnswerWithAnswer] Setting next puzzle from response:', result.next_puzzle);
           setPuzzle(result.next_puzzle);
+          console.log('[submitAnswerWithAnswer] Next puzzle set successfully');
         } else {
           // Fallback to fetching if next puzzle not in response
+          console.log('[submitAnswerWithAnswer] No next puzzle in response, fetching...');
           await fetchPuzzle();
         }
       } else {
         setFeedback('Incorrect.');
-        // Refetch puzzle (same puzzle for retry)
-        await fetchPuzzle();
+        console.log('[submitAnswerWithAnswer] Answer was incorrect, result:', result);
+        // Use the next puzzle from the response if available (for failed puzzles)
+        if (result.next_puzzle) {
+          console.log('[submitAnswerWithAnswer] Setting next puzzle from failed response:', result.next_puzzle);
+          setPuzzle(result.next_puzzle);
+          console.log('[submitAnswerWithAnswer] Next puzzle set successfully (from failed response)');
+        } else {
+          // Fallback to fetching if next puzzle not in response
+          console.log('[submitAnswerWithAnswer] No next puzzle in response, fetching...');
+          await fetchPuzzle();
+        }
       }
       setAnswer('');
     } catch (err: any) {

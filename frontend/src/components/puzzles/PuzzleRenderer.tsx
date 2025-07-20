@@ -63,15 +63,14 @@ export const PuzzleRenderer: React.FC<PuzzleRendererProps> = ({
     case 'concentration':
       return (
         <ConcentrationPuzzle
+          puzzle={puzzle}
           puzzleData={puzzle.data as { pairs: Array<{ color_word: string; circle_color: string; is_match: boolean }>; duration: number }}
           onSolve={(answer) => {
-            console.log('Concentration puzzle onSolve called with:', answer);
             setAnswer(answer);
             // Submit the answer directly without relying on state
             submitAnswerWithAnswer(answer);
           }}
           onFail={(answer) => {
-            console.log('Concentration puzzle onFail called with:', answer);
             setAnswer(answer);
             // Submit the answer directly without relying on state
             submitAnswerWithAnswer(answer);
@@ -81,8 +80,8 @@ export const PuzzleRenderer: React.FC<PuzzleRendererProps> = ({
     case 'multitasking':
       return (
         <MultitaskingPuzzle
+          puzzle={puzzle}
           onSubmitAnswer={(answer) => {
-            console.log('Multitasking puzzle onSubmitAnswer called with:', answer);
             setAnswer(answer);
             // Submit the answer directly without relying on state
             submitAnswerWithAnswer(answer);

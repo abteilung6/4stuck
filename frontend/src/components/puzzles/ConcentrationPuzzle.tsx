@@ -14,17 +14,31 @@ interface ConcentrationPuzzleProps {
   };
   onSolve: (answer: string) => void;
   onFail: (answer: string) => void;
+  puzzle?: {
+    type: string;
+    data: any;
+  };
 }
 
 const ConcentrationPuzzle: React.FC<ConcentrationPuzzleProps> = ({
   puzzleData,
   onSolve,
-  onFail
+  onFail,
+  puzzle
 }) => {
   const { pairs, duration } = puzzleData;
   const [currentIndex, setCurrentIndex] = useState(0);
   const [hasClicked, setHasClicked] = useState(false);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Reset state when puzzle changes
+  useEffect(() => {
+    setCurrentIndex(0);
+    setHasClicked(false);
+    if (timerRef.current) {
+      clearTimeout(timerRef.current);
+    }
+  }, [puzzle]);
 
   // Cycle through pairs
   useEffect(() => {
@@ -42,22 +56,42 @@ const ConcentrationPuzzle: React.FC<ConcentrationPuzzleProps> = ({
     };
   }, [currentIndex, hasClicked, pairs.length, duration, onFail]);
 
+  // Stop timer when answer is submitted (for both success and failure)
+  useEffect(() => {
+    if (hasClicked) {
+      if (timerRef.current) {
+        clearTimeout(timerRef.current);
+        timerRef.current = null;
+      }
+    }
+  }, [hasClicked]);
+
+  // Force stop timer when puzzle changes (in case timer is still running)
+  useEffect(() => {
+    if (timerRef.current) {
+      clearTimeout(timerRef.current);
+      timerRef.current = null;
+    }
+  }, [puzzle]);
+
   // Handle circle click
   const handleCircleClick = useCallback(() => {
     if (hasClicked) return;
     setHasClicked(true);
+    
+    // Clear the timer immediately when clicked
+    if (timerRef.current) {
+      clearTimeout(timerRef.current);
+      timerRef.current = null;
+    }
+    
+    // Immediately reset current index to prevent showing more pairs
+    setCurrentIndex(pairs.length);
+    
     const answer = String(currentIndex);
-    console.log('Concentration puzzle clicked:', {
-      currentIndex,
-      isMatch: pairs[currentIndex].is_match,
-      answer,
-      pairs: pairs.map((p, i) => ({ index: i, ...p }))
-    });
     if (pairs[currentIndex].is_match) {
-      console.log('Calling onSolve with answer:', answer);
       onSolve(answer);
     } else {
-      console.log('Calling onFail with answer:', answer);
       onFail(answer);
     }
   }, [hasClicked, pairs, currentIndex, onSolve, onFail]);
