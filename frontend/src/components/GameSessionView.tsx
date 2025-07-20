@@ -18,6 +18,7 @@ import GameResultsView from './GameResultsView';
 import TeamCoordinationView from './TeamCoordinationView';
 import { MouseCursorOverlay } from './MouseCursorOverlay';
 import { useMouseTracking } from '../hooks/useMouseTracking';
+import GameGridLayout from './GameGridLayout';
 
 interface GameSessionViewProps {
   session: GameSessionOut;
@@ -249,31 +250,23 @@ const ActiveGameView: React.FC<{
   sessionId: number;
   websocket: WebSocket | null;
 }> = ({ puzzle, answer, feedback, loading, gameState, user, setAnswer, submitAnswer, submitAnswerWithAnswer, notifications, sessionId, websocket }) => {
+  // Convert game state players to the format expected by GameGridLayout
+  const players = gameState?.players?.map((player: any) => ({
+    id: player.id,
+    username: player.username,
+    color: player.color || 'yellow', // Default color if not set
+    points: player.points || 15,
+    isActive: player.isActive || false,
+    isEliminated: player.isEliminated || false
+  })) || [];
+
   return (
     <>
-      <Container variant="full" dataTestId="game-session-container">
-        <SectionTitle level={2}>Game Session</SectionTitle>
-        <Card style={{ background: '#fff', margin: '1em 0', padding: '1em 1.5em' }}>
-          <SectionTitle level={3}>Your Puzzle</SectionTitle>
-          <PuzzleRenderer
-            puzzle={puzzle}
-            answer={answer}
-            setAnswer={setAnswer}
-            submitAnswer={submitAnswer}
-            submitAnswerWithAnswer={submitAnswerWithAnswer}
-            loading={loading}
-            feedback={feedback}
-          />
-          {feedback && <StatusMessage type={feedback === 'Correct!' ? 'success' : 'error'}>{feedback}</StatusMessage>}
-        </Card>
-        
-        {/* Enhanced Team Coordination View */}
-        <TeamCoordinationView 
-          players={gameState?.players || []}
-          currentUserId={user.id}
-          notifications={notifications}
-        />
-      </Container>
+      <GameGridLayout
+        players={players}
+        gameState={gameState?.status || 'active'}
+        timeRemaining={gameState?.timeRemaining}
+      />
       
       {/* Mouse cursor overlay for other players */}
       {user && websocket && (

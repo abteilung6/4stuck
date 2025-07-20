@@ -288,8 +288,8 @@ Complete the Team.försvarsmakten game according to the detailed specifications 
   - [ ] Display team survival statistics in real-time
 
 #### 3.6 Game Layout & Multiplayer UI
-- [ ] **Implement 4-player grid layout**
-  - [ ] Create 2x2 grid layout for 4 players (like original game)
+- [x] **Implement 4-player grid layout**
+  - [x] Create 2x2 grid layout for 4 players (like original game)
   - [ ] Each player gets their own puzzle area/quadrant
   - [ ] Show individual player life bars under each quadrant
   - [ ] Display player colors/identifiers consistently
