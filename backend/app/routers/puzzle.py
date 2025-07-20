@@ -26,12 +26,12 @@ def generate_memory_puzzle():
     colors = ["red", "blue", "yellow", "green"]
     numbers = list(range(1, len(colors) + 1))
     random.shuffle(colors)
-    mapping = dict(zip(numbers, colors))
+    mapping = {str(num): color for num, color in zip(numbers, colors)}
     question_number = random.choice(numbers)
-    correct_answer = mapping[question_number]
+    correct_answer = mapping[str(question_number)]
     data = {
         "mapping": mapping,
-        "question_number": question_number,
+        "question_number": str(question_number),  # Convert to string for frontend validation
         "choices": colors
     }
     return data, correct_answer

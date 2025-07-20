@@ -169,4 +169,48 @@ def test_create_concentration_puzzle():
     result = answer_resp.json()
     assert result["correct"] is True
     
+    tmp.close()
+
+def test_memory_puzzle_data_structure():
+    client, tmp, _ = create_test_app_and_client()
+    user_id, team_id, session_id = create_team_user_session(client)
+    
+    # Create memory puzzle
+    resp = client.post("/puzzle/create", json={"type": "memory", "game_session_id": session_id, "user_id": user_id})
+    assert resp.status_code == 200
+    puzzle = resp.json()
+    
+    # Verify puzzle structure
+    assert puzzle["type"] == "memory"
+    assert "data" in puzzle
+    assert "mapping" in puzzle["data"]
+    assert "question_number" in puzzle["data"]
+    assert "choices" in puzzle["data"]
+    
+    # Verify data types
+    assert isinstance(puzzle["data"]["mapping"], dict)
+    assert isinstance(puzzle["data"]["question_number"], str)  # Should be string
+    assert isinstance(puzzle["data"]["choices"], list)
+    
+    # Verify mapping structure (keys should be strings)
+    mapping = puzzle["data"]["mapping"]
+    assert len(mapping) > 0
+    for key, value in mapping.items():
+        assert isinstance(key, str)  # Keys should be strings
+        assert isinstance(value, str)  # Values should be strings
+    
+    # Verify question_number exists in mapping
+    question_number = puzzle["data"]["question_number"]
+    assert question_number in mapping
+    
+    # Verify correct answer is in choices
+    correct_answer = mapping[question_number]
+    assert correct_answer in puzzle["data"]["choices"]
+    
+    # Test correct answer submission
+    answer_resp = client.post("/puzzle/answer", json={"puzzle_id": puzzle["id"], "answer": correct_answer})
+    assert answer_resp.status_code == 200
+    result = answer_resp.json()
+    assert result["correct"] is True
+    
     tmp.close() 

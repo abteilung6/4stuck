@@ -1,9 +1,17 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React from 'react';
 import Card from '../design-system/Card';
 import SectionTitle from '../design-system/SectionTitle';
 import Button from '../design-system/Button';
 import StatusMessage from '../design-system/StatusMessage';
 import { QuestionText, ChoiceText } from '../design-system/Typography';
+import { useMemoryGameState } from '../../hooks/useMemoryGameState';
+import {
+  extractMemoryPuzzleData,
+  formatMappingForDisplay,
+  generateMappingLabel,
+  generateChoiceLabel,
+  type MemoryPuzzleData,
+} from '../../utils/memoryPuzzleUtils';
 
 export interface MemoryPuzzleProps {
   puzzle: any;
@@ -22,52 +30,51 @@ export const MemoryPuzzle: React.FC<MemoryPuzzleProps> = ({
   loading,
   feedback,
 }) => {
-  const [showMapping, setShowMapping] = useState(true);
-  const [timeLeft, setTimeLeft] = useState(5);
-  const lastPuzzleId = useRef<number | undefined>(undefined);
+  const { showMapping, timeLeft, isComplete } = useMemoryGameState({
+    puzzleId: puzzle?.id,
+    mappingDuration: 5,
+  });
 
-  // Only reset timer if puzzle id truly changes
-  useEffect(() => {
-    if (puzzle?.id == null) return;
-    if (lastPuzzleId.current === puzzle.id) return;
-    setShowMapping(true);
-    setTimeLeft(5);
-    lastPuzzleId.current = puzzle.id;
-  }, [puzzle ? puzzle.id : undefined]);
+  const puzzleData = extractMemoryPuzzleData(puzzle);
 
-  useEffect(() => {
-    if (!showMapping) return;
-    if (timeLeft <= 0) {
-      setShowMapping(false);
-      return;
-    }
-    const timer = setTimeout(() => {
-      setTimeLeft((prev) => prev - 1);
-    }, 1000);
-    return () => clearTimeout(timer);
-  }, [showMapping, timeLeft]);
+  if (!puzzleData) {
+    return (
+      <Card>
+        <SectionTitle level={2}>Memory Puzzle</SectionTitle>
+        <StatusMessage type="error">Invalid puzzle data.</StatusMessage>
+      </Card>
+    );
+  }
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     submitAnswer();
   };
 
-  if (!puzzle.data) {
-    return <p>Invalid puzzle data.</p>;
-  }
-
-  const { mapping, question_number, choices } = puzzle.data;
+  const handleAnswerChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setAnswer(e.target.value);
+  };
 
   if (showMapping) {
+    const mappingItems = formatMappingForDisplay(puzzleData.mapping);
+
     return (
       <Card>
         <SectionTitle level={2}>Memory Puzzle</SectionTitle>
-        <QuestionText>Memorize the color-number mapping below. You have {timeLeft} seconds left.</QuestionText>
+        <QuestionText>
+          Memorize the color-number mapping below. You have {timeLeft} seconds left.
+        </QuestionText>
         <div className="mapping-display" aria-label="Color-Number Mapping">
-          <SectionTitle level={3} className="sr-only">Color-Number Mapping</SectionTitle>
+          <SectionTitle level={3} className="sr-only">
+            Color-Number Mapping
+          </SectionTitle>
           <div className="mapping-grid">
-            {Object.entries(mapping as Record<string, string>).map(([number, color]) => (
-              <div key={number} className="mapping-item" aria-label={`Number ${number} is ${color}`}>
+            {mappingItems.map(({ number, color }) => (
+              <div
+                key={number}
+                className="mapping-item"
+                aria-label={generateMappingLabel(number, color)}
+              >
                 <span className="number">{number}</span>
                 <span className="color">{color}</span>
               </div>
@@ -81,17 +88,24 @@ export const MemoryPuzzle: React.FC<MemoryPuzzleProps> = ({
   return (
     <Card>
       <SectionTitle level={2}>Memory Puzzle</SectionTitle>
-      <QuestionText><strong>Question:</strong> What color is associated with the number {question_number}?</QuestionText>
+      <QuestionText>
+        <strong>Question:</strong> What color is associated with the number{' '}
+        {puzzleData.question_number}?
+      </QuestionText>
       <form onSubmit={handleSubmit} className="answer-form">
         <div className="choices" role="radiogroup" aria-label="Choices">
-          {choices.map((choice: string) => (
-            <label key={choice} className="choice-option" aria-label={choice}>
+          {puzzleData.choices.map((choice: string) => (
+            <label
+              key={choice}
+              className="choice-option"
+              aria-label={generateChoiceLabel(choice)}
+            >
               <input
                 type="radio"
                 name="answer"
                 value={choice}
                 checked={answer === choice}
-                onChange={(e) => setAnswer(e.target.value)}
+                onChange={handleAnswerChange}
                 disabled={loading}
                 aria-checked={answer === choice}
               />
@@ -104,7 +118,11 @@ export const MemoryPuzzle: React.FC<MemoryPuzzleProps> = ({
         </Button>
       </form>
       {feedback && (
-        <StatusMessage type={feedback.includes('Correct') ? 'success' : 'error'}>{feedback}</StatusMessage>
+        <StatusMessage
+          type={feedback.includes('Correct') ? 'success' : 'error'}
+        >
+          {feedback}
+        </StatusMessage>
       )}
     </Card>
   );
