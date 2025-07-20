@@ -1,157 +1,171 @@
-import React, { useState, useEffect, useCallback, useRef } from 'react';
+import React, { useCallback, useEffect } from 'react';
+import Card from '../design-system/Card';
+import SectionTitle from '../design-system/SectionTitle';
+import { BodyText } from '../design-system/Typography';
+import { useConcentrationGameState } from '../../hooks/useConcentrationGameState';
+import { getColorValue, validateConcentrationPuzzleData, getGameProgress } from '../../services/concentrationPuzzleLogic';
 import './ConcentrationPuzzle.css';
 
-interface Pair {
-  color_word: string;
-  circle_color: string;
-  is_match: boolean;
-}
-
 interface ConcentrationPuzzleProps {
-  puzzleData: {
-    pairs: Pair[];
-    duration: number; // seconds per pair
+  puzzle: {
+    id: number;
+    type: string;
+    data: {
+      pairs: Array<{ color_word: string; circle_color: string; is_match: boolean }>;
+      duration: number;
+    };
   };
   onSolve: (answer: string) => void;
   onFail: (answer: string) => void;
-  puzzle?: {
-    type: string;
-    data: any;
-  };
 }
 
 const ConcentrationPuzzle: React.FC<ConcentrationPuzzleProps> = ({
-  puzzleData,
+  puzzle,
   onSolve,
-  onFail,
-  puzzle
+  onFail
 }) => {
-  const { pairs, duration } = puzzleData;
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [hasClicked, setHasClicked] = useState(false);
-  const timerRef = useRef<NodeJS.Timeout | null>(null);
-
-  // Reset state when puzzle changes
-  useEffect(() => {
-    setCurrentIndex(0);
-    setHasClicked(false);
-    if (timerRef.current) {
-      clearTimeout(timerRef.current);
-    }
-  }, [puzzle]);
-
-  // Cycle through pairs
-  useEffect(() => {
-    if (hasClicked) return;
-    if (currentIndex >= pairs.length) {
-      // No click and all pairs shown: timeout
-      onFail('timeout');
-      return;
-    }
-    timerRef.current = setTimeout(() => {
-      setCurrentIndex((prev) => prev + 1);
-    }, duration * 1000);
-    return () => {
-      if (timerRef.current) clearTimeout(timerRef.current);
-    };
-  }, [currentIndex, hasClicked, pairs.length, duration, onFail]);
-
-  // Stop timer when answer is submitted (for both success and failure)
-  useEffect(() => {
-    if (hasClicked) {
-      if (timerRef.current) {
-        clearTimeout(timerRef.current);
-        timerRef.current = null;
-      }
-    }
-  }, [hasClicked]);
-
-  // Force stop timer when puzzle changes (in case timer is still running)
-  useEffect(() => {
-    if (timerRef.current) {
-      clearTimeout(timerRef.current);
-      timerRef.current = null;
-    }
-  }, [puzzle]);
-
-  // Handle circle click
-  const handleCircleClick = useCallback(() => {
-    if (hasClicked) return;
-    setHasClicked(true);
-    
-    // Clear the timer immediately when clicked
-    if (timerRef.current) {
-      clearTimeout(timerRef.current);
-      timerRef.current = null;
-    }
-    
-    // Immediately reset current index to prevent showing more pairs
-    setCurrentIndex(pairs.length);
-    
-    const answer = String(currentIndex);
-    if (pairs[currentIndex].is_match) {
-      onSolve(answer);
-    } else {
-      onFail(answer);
-    }
-  }, [hasClicked, pairs, currentIndex, onSolve, onFail]);
-
-  // Get CSS color from color name
-  const getColorValue = (colorName: string): string => {
-    const colorMap: { [key: string]: string } = {
-      red: '#ff4444',
-      blue: '#4444ff',
-      yellow: '#ffff44',
-      green: '#44ff44',
-      purple: '#ff44ff',
-      orange: '#ff8844'
-    };
-    return colorMap[colorName] || '#888888';
-  };
-
-  if (currentIndex >= pairs.length) {
+  // Validate puzzle data
+  const validation = validateConcentrationPuzzleData(puzzle.data);
+  if (!validation.isValid) {
+    console.error('Invalid concentration puzzle data:', validation.errors);
     return (
-      <div className="concentration-puzzle">
-        <div className="concentration-header">
-          <h3>Concentration Puzzle</h3>
-          <p>Time's up!</p>
-        </div>
-      </div>
+      <Card>
+        <SectionTitle level={2}>Invalid Puzzle Data</SectionTitle>
+        <BodyText color="secondary">The puzzle data is invalid. Please try again.</BodyText>
+      </Card>
     );
   }
 
-  const pair = pairs[currentIndex];
+  // Game state management
+  const {
+    gameState,
+    currentPair,
+    isGameActive,
+    resetGame,
+    resetCounter,
+    handleClick
+  } = useConcentrationGameState({
+    puzzleData: puzzle.data,
+    puzzleType: puzzle.type,
+    puzzleId: puzzle.id
+  });
 
-  return (
-    <div className="concentration-puzzle">
-      <div className="concentration-header">
-        <h3>Concentration Puzzle</h3>
-        <p>Click the circle ONLY when the text matches the color!</p>
-        <div className="timer">Pair {currentIndex + 1} / {pairs.length}</div>
-      </div>
-      <div className="concentration-content">
-        <div className="color-word" style={{ color: getColorValue(pair.color_word) }}>
-          {pair.color_word.toUpperCase()}
-        </div>
-        <div
-          className={`color-circle ${hasClicked ? 'clicked' : ''}`}
-          style={{ backgroundColor: getColorValue(pair.circle_color) }}
-          onClick={handleCircleClick}
-        >
-          {hasClicked && (
-            <div className="click-feedback">
-              {pair.is_match ? '✓' : '✗'}
+  // Handle game completion
+  useEffect(() => {
+    if (gameState.isComplete && gameState.gameResult) {
+      const answer = gameState.clickedIndex !== null 
+        ? String(gameState.clickedIndex) 
+        : 'timeout';
+      
+      if (gameState.gameResult === 'success') {
+        onSolve(answer);
+      } else {
+        onFail(answer);
+      }
+    }
+  }, [gameState.isComplete, gameState.gameResult, gameState.clickedIndex, onSolve, onFail]);
+
+  // Handle retry button click
+  const handleRetry = useCallback(() => {
+    resetGame();
+  }, [resetGame]);
+
+  // Show completion state
+  if (gameState.isComplete) {
+    return (
+      <Card>
+        <SectionTitle level={2}>Concentration Puzzle</SectionTitle>
+        <div className="concentration-completion">
+          {gameState.gameResult === 'success' ? (
+            <div className="success-message">
+              <h3>Success! 🎉</h3>
+              <p>You clicked at the right time!</p>
+            </div>
+          ) : (
+            <div className="failure-message">
+              <h3>Game Over! 💥</h3>
+              <p>
+                {gameState.clickedIndex !== null 
+                  ? "You clicked at the wrong time. Try again!"
+                  : "Time's up! You didn't click in time. Try again!"
+                }
+              </p>
+              <button 
+                onClick={handleRetry}
+                className="retry-button"
+              >
+                Try Again
+              </button>
             </div>
           )}
         </div>
-        <div className="instruction">
-          {pair.is_match
-            ? "Click the circle - text and color match!"
-            : "Don't click - text and color don't match!"
-          }
+      </Card>
+    );
+  }
+
+  // Show active game state
+  if (!currentPair) {
+    return (
+      <Card>
+        <SectionTitle level={2}>Concentration Puzzle</SectionTitle>
+        <BodyText color="secondary">Loading puzzle...</BodyText>
+      </Card>
+    );
+  }
+
+  const progress = getGameProgress(gameState, puzzle.data.pairs.length);
+
+  return (
+    <Card>
+      <SectionTitle level={2}>Concentration Puzzle</SectionTitle>
+      <BodyText color="secondary">
+        Click the circle ONLY when the text matches the color!
+      </BodyText>
+      
+      <div className="concentration-puzzle">
+        <div className="concentration-header">
+          <div className="progress-info">
+            <span>Pair {gameState.currentIndex + 1} / {puzzle.data.pairs.length}</span>
+            <div className="progress-bar">
+              <div 
+                className="progress-fill" 
+                style={{ width: `${progress}%` }}
+                data-testid="progress-bar"
+              />
+            </div>
+          </div>
+        </div>
+        
+        <div className="concentration-content">
+          <div 
+            className="color-word" 
+            style={{ color: getColorValue(currentPair.color_word) }}
+          >
+            {currentPair.color_word.toUpperCase()}
+          </div>
+          
+          <div
+            className={`color-circle ${gameState.hasClicked ? 'clicked' : ''}`}
+            style={{ backgroundColor: getColorValue(currentPair.circle_color) }}
+            onClick={handleClick}
+            data-testid="color-circle"
+          >
+            {gameState.hasClicked && (
+              <div className="click-feedback">
+                {currentPair.is_match ? '✓' : '✗'}
+              </div>
+            )}
+          </div>
+          
+          <div className="instruction">
+            {currentPair.is_match
+              ? "Click the circle - text and color match!"
+              : "Don't click - text and color don't match!"
+            }
+          </div>
         </div>
       </div>
-    </div>
+    </Card>
   );
 };
 

@@ -63,8 +63,11 @@ export const PuzzleRenderer: React.FC<PuzzleRendererProps> = ({
     case 'concentration':
       return (
         <ConcentrationPuzzle
-          puzzle={puzzle}
-          puzzleData={puzzle.data as { pairs: Array<{ color_word: string; circle_color: string; is_match: boolean }>; duration: number }}
+          puzzle={{
+            id: puzzle.id,
+            type: puzzle.type,
+            data: puzzle.data as { pairs: Array<{ color_word: string; circle_color: string; is_match: boolean }>; duration: number }
+          }}
           onSolve={(answer) => {
             setAnswer(answer);
             // Submit the answer directly without relying on state
