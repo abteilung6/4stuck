@@ -2,6 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from .. import models, schemas, database
 from ..services.countdown_service import countdown_service
+from ..utils.websocket_broadcast import cache_user_color
 
 router = APIRouter(prefix="/game", tags=["game"])
 
@@ -35,6 +36,13 @@ def create_game_session(session: schemas.GameSessionCreate, db: Session = Depend
     session_id = new_session.id
     if not countdown_service.start_countdown(session_id, duration_seconds=5):
         print(f"Countdown already running for session {session_id}")
+    
+    # Cache user colors for WebSocket mouse cursor broadcasting
+    team_users = db.query(models.User).filter(models.User.team_id == team.id).all()
+    for user in team_users:
+        if user.color:  # type: ignore
+            cache_user_color(session_id, user.id, user.color)  # type: ignore
+            print(f"[Game Session] Cached color {user.color} for user {user.username} in session {session_id}")
     
     # Broadcast state update to all connected clients
     from ..utils.websocket_broadcast import broadcast_state

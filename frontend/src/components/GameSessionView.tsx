@@ -16,6 +16,8 @@ import CountdownView from './CountdownView';
 import './CountdownView.css';
 import GameResultsView from './GameResultsView';
 import TeamCoordinationView from './TeamCoordinationView';
+import { MouseCursorOverlay } from './MouseCursorOverlay';
+import { useMouseTracking } from '../hooks/useMouseTracking';
 
 interface GameSessionViewProps {
   session: GameSessionOut;
@@ -36,11 +38,20 @@ const GameSessionView: React.FC<GameSessionViewProps> = ({ session, user, team }
     setAnswer,
     submitAnswer,
     submitAnswerWithAnswer,
-    isConnected
+    isConnected,
+    websocket
   } = useGameLogic({
     sessionId: session.id,
     userId: user.id,
     initialTeam: team
+  });
+
+  // Set up mouse tracking for the game session
+  useMouseTracking({
+    sessionId: session.id,
+    userId: user.id,
+    websocket,
+    throttleMs: 100 // Configurable throttle
   });
 
   // Show loading state while waiting for WebSocket data
@@ -128,6 +139,8 @@ const GameSessionView: React.FC<GameSessionViewProps> = ({ session, user, team }
           submitAnswer={submitAnswer}
           submitAnswerWithAnswer={submitAnswerWithAnswer}
           notifications={notifications}
+          sessionId={session.id}
+          websocket={websocket}
         />
       </div>
     );
@@ -135,18 +148,29 @@ const GameSessionView: React.FC<GameSessionViewProps> = ({ session, user, team }
 
   // Fallback loading state for unknown status
   return (
-    <Container variant="full" dataTestId="game-session-container">
-      <SectionTitle level={2}>Game Session</SectionTitle>
-      <StatusMessage type="info">Preparing game...</StatusMessage>
-      <div style={{ textAlign: 'center', marginTop: 16 }}>
-        <div style={{ fontSize: '1.2rem', color: '#666' }}>
-          Current Status: {gameStatus.status}
+    <>
+      <Container variant="full" dataTestId="game-session-container">
+        <SectionTitle level={2}>Game Session</SectionTitle>
+        <StatusMessage type="info">Preparing game...</StatusMessage>
+        <div style={{ textAlign: 'center', marginTop: 16 }}>
+          <div style={{ fontSize: '1.2rem', color: '#666' }}>
+            Current Status: {gameStatus.status}
+          </div>
+          <div style={{ fontSize: '1rem', color: '#999', marginTop: 8 }}>
+            Active Players: {gameStatus.activePlayersCount}
+          </div>
         </div>
-        <div style={{ fontSize: '1rem', color: '#999', marginTop: 8 }}>
-          Active Players: {gameStatus.activePlayersCount}
-        </div>
-      </div>
-    </Container>
+      </Container>
+      
+      {/* Mouse cursor overlay for other players */}
+      {user && websocket && (
+        <MouseCursorOverlay
+          sessionId={session.id}
+          currentUserId={user.id}
+          websocket={websocket}
+        />
+      )}
+    </>
   );
 };
 
@@ -222,31 +246,44 @@ const ActiveGameView: React.FC<{
   submitAnswer: () => Promise<void>;
   submitAnswerWithAnswer: (answer: string) => Promise<void>;
   notifications: string[];
-}> = ({ puzzle, answer, feedback, loading, gameState, user, setAnswer, submitAnswer, submitAnswerWithAnswer, notifications }) => {
+  sessionId: number;
+  websocket: WebSocket | null;
+}> = ({ puzzle, answer, feedback, loading, gameState, user, setAnswer, submitAnswer, submitAnswerWithAnswer, notifications, sessionId, websocket }) => {
   return (
-    <Container variant="full" dataTestId="game-session-container">
-      <SectionTitle level={2}>Game Session</SectionTitle>
-      <Card style={{ background: '#fff', margin: '1em 0', padding: '1em 1.5em' }}>
-        <SectionTitle level={3}>Your Puzzle</SectionTitle>
-        <PuzzleRenderer
-          puzzle={puzzle}
-          answer={answer}
-          setAnswer={setAnswer}
-          submitAnswer={submitAnswer}
-          submitAnswerWithAnswer={submitAnswerWithAnswer}
-          loading={loading}
-          feedback={feedback}
+    <>
+      <Container variant="full" dataTestId="game-session-container">
+        <SectionTitle level={2}>Game Session</SectionTitle>
+        <Card style={{ background: '#fff', margin: '1em 0', padding: '1em 1.5em' }}>
+          <SectionTitle level={3}>Your Puzzle</SectionTitle>
+          <PuzzleRenderer
+            puzzle={puzzle}
+            answer={answer}
+            setAnswer={setAnswer}
+            submitAnswer={submitAnswer}
+            submitAnswerWithAnswer={submitAnswerWithAnswer}
+            loading={loading}
+            feedback={feedback}
+          />
+          {feedback && <StatusMessage type={feedback === 'Correct!' ? 'success' : 'error'}>{feedback}</StatusMessage>}
+        </Card>
+        
+        {/* Enhanced Team Coordination View */}
+        <TeamCoordinationView 
+          players={gameState?.players || []}
+          currentUserId={user.id}
+          notifications={notifications}
         />
-        {feedback && <StatusMessage type={feedback === 'Correct!' ? 'success' : 'error'}>{feedback}</StatusMessage>}
-      </Card>
+      </Container>
       
-      {/* Enhanced Team Coordination View */}
-      <TeamCoordinationView 
-        players={gameState?.players || []}
-        currentUserId={user.id}
-        notifications={notifications}
-      />
-    </Container>
+      {/* Mouse cursor overlay for other players */}
+      {user && websocket && (
+        <MouseCursorOverlay
+          sessionId={sessionId}
+          currentUserId={user.id}
+          websocket={websocket}
+        />
+      )}
+    </>
   );
 };
 

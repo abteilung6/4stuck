@@ -375,6 +375,8 @@ export interface components {
             team_id: number | null;
             /** Points */
             points: number;
+            /** Color */
+            color?: string | null;
         };
         /** ValidationError */
         ValidationError: {

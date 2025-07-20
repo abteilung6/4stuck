@@ -18,6 +18,9 @@ player_activity: Dict[int, Dict[int, Dict[str, Any]]] = {}
 # Mouse position tracking: session_id -> user_id -> position_data
 mouse_positions: Dict[int, Dict[int, Dict[str, Any]]] = {}
 
+# User color cache: session_id -> user_id -> color
+user_colors: Dict[int, Dict[int, str]] = {}
+
 def add_connection(session_id: int, websocket: WebSocket):
     """Add a WebSocket connection to the session"""
     if session_id not in connections:
@@ -55,6 +58,21 @@ def update_mouse_position(session_id: int, user_id: int, x: int, y: int, puzzle_
         "puzzle_area": puzzle_area,
         "timestamp": datetime.utcnow().isoformat()
     }
+
+def cache_user_color(session_id: int, user_id: int, color: str):
+    """Cache a user's color for the session"""
+    if session_id not in user_colors:
+        user_colors[session_id] = {}
+    user_colors[session_id][user_id] = color
+
+def get_user_color(session_id: int, user_id: int) -> Optional[str]:
+    """Get a user's cached color for the session"""
+    return user_colors.get(session_id, {}).get(user_id)
+
+def clear_user_colors(session_id: int):
+    """Clear all user colors for a session (when session ends)"""
+    if session_id in user_colors:
+        del user_colors[session_id]
 
 def cleanup_old_activity(session_id: int, max_age_seconds: int = 30):
     """Clean up old activity data"""
@@ -166,5 +184,15 @@ async def broadcast_achievement(session_id: int, user_id: int, achievement_type:
         "user_id": user_id,
         "achievement_type": achievement_type,  # "puzzle_solved", "fast_solve", "team_support"
         "achievement_data": achievement_data,
+        "timestamp": datetime.utcnow().isoformat()
+    })
+
+async def broadcast_mouse_cursor(session_id: int, user_id: int, x: int, y: int, color: str):
+    """Broadcast mouse cursor position to all players in the session"""
+    await broadcast_message(session_id, "mouse_cursor", {
+        "user_id": user_id,
+        "x": x,
+        "y": y,
+        "color": color,
         "timestamp": datetime.utcnow().isoformat()
     }) 

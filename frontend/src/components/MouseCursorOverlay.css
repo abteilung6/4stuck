@@ -1,0 +1,83 @@
+.mouse-cursor-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  z-index: 9999;
+}
+
+.player-cursor {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+
+.cursor-border {
+  width: 20px;
+  height: 20px;
+  border: 3px solid var(--cursor-color);
+  border-radius: 50%;
+  background: transparent;
+  position: absolute;
+  top: -10px;
+  left: -10px;
+  animation: cursor-pulse 2s infinite;
+}
+
+.cursor-label {
+  position: absolute;
+  top: 15px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--cursor-color);
+  color: white;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: bold;
+  white-space: nowrap;
+  opacity: 0.8;
+}
+
+@keyframes cursor-pulse {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.2);
+    opacity: 0.7;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* Color-specific styles */
+.player-cursor[style*="--cursor-color: red"] .cursor-border {
+  border-color: #ff4444;
+  box-shadow: 0 0 10px rgba(255, 68, 68, 0.5);
+}
+
+.player-cursor[style*="--cursor-color: blue"] .cursor-border {
+  border-color: #4444ff;
+  box-shadow: 0 0 10px rgba(68, 68, 255, 0.5);
+}
+
+.player-cursor[style*="--cursor-color: yellow"] .cursor-border {
+  border-color: #ffff44;
+  box-shadow: 0 0 10px rgba(255, 255, 68, 0.5);
+}
+
+.player-cursor[style*="--cursor-color: green"] .cursor-border {
+  border-color: #44ff44;
+  box-shadow: 0 0 10px rgba(68, 255, 68, 0.5);
+}
+
+.player-cursor[style*="--cursor-color: gray"] .cursor-border {
+  border-color: #888888;
+  box-shadow: 0 0 10px rgba(136, 136, 136, 0.5);
+} 

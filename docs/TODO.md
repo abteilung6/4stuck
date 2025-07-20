@@ -270,7 +270,7 @@ Complete the Team.försvarsmakten game according to the detailed specifications 
 
 #### 3.5 Real-Time Multiplayer Features
 - [ ] **Implement real-time player activity visualization**
-  - [ ] Show mouse cursor positions of other players in real-time
+  - [x] Show mouse cursor positions of other players in real-time
   - [ ] Display which puzzle each teammate is currently solving
   - [ ] Show real-time progress indicators for each player's current puzzle
   - [ ] Add visual feedback when teammates solve puzzles
@@ -280,12 +280,6 @@ Complete the Team.försvarsmakten game according to the detailed specifications 
   - [ ] Display shared puzzle state when applicable
   - [ ] Add visual indicators for teammate focus/attention areas
   - [ ] Show real-time puzzle completion progress across team
-
-- [ ] **Implement team communication features**
-  - [ ] Add simple emoji reactions for team coordination
-  - [ ] Show "player is thinking" indicators
-  - [ ] Display teammate stress/performance indicators
-  - [ ] Add visual cues for team strategy coordination
 
 - [ ] **Add spectator mode for eliminated players**
   - [ ] Allow eliminated players to watch remaining teammates

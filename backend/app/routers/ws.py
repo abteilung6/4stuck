@@ -5,7 +5,8 @@ from ..utils.websocket_broadcast import (
     add_connection, remove_connection, broadcast_state,
     update_player_activity, update_mouse_position,
     broadcast_puzzle_interaction, broadcast_team_communication,
-    broadcast_achievement
+    broadcast_achievement, broadcast_mouse_cursor,
+    cache_user_color, get_user_color
 )
 import json
 import logging
@@ -56,8 +57,19 @@ async def websocket_endpoint(websocket: WebSocket, session_id: int, db: Session 
                         
                         if user_id and x is not None and y is not None:
                             update_mouse_position(session_id, user_id, x, y, puzzle_area)
-                            # Broadcast to other players
-                            await broadcast_state(session_id, db)
+                            # Get user color from cache (no database query!)
+                            color = get_user_color(session_id, user_id)
+                            
+                            # Fallback: if no cached color, get from database and cache it
+                            if not color:
+                                user = db.query(models.User).filter(models.User.id == user_id).first()
+                                if user and hasattr(user, 'color') and user.color:  # type: ignore # noqa
+                                    color = user.color  # type: ignore
+                                    cache_user_color(session_id, user_id, str(color))
+                            
+                            if color:
+                                await broadcast_mouse_cursor(session_id, user_id, x, y, str(color))
+                            # Don't broadcast full state for mouse movements to reduce lag
                     
                     elif message_type == "puzzle_interaction":
                         # Handle puzzle interaction events

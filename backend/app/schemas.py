@@ -13,6 +13,7 @@ class UserOut(BaseModel):
     username: str
     team_id: Optional[int]
     points: int
+    color: Optional[str] = None
     model_config = {'from_attributes': True}
 
 class TeamBase(BaseModel):

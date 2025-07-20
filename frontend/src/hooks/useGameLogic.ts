@@ -33,6 +33,7 @@ export interface UseGameLogicReturn {
   
   // Connection state
   isConnected: boolean;
+  websocket: WebSocket | null;
 }
 
 export function useGameLogic({ sessionId, userId, initialTeam }: UseGameLogicProps): UseGameLogicReturn {
@@ -263,6 +264,7 @@ export function useGameLogic({ sessionId, userId, initialTeam }: UseGameLogicPro
     fetchPuzzle,
     
     // Connection state
-    isConnected
+    isConnected,
+    websocket: wsServiceRef.current?.getWebSocket() || null
   };
 } 

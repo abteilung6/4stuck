@@ -17,6 +17,8 @@ import StatusMessage from './design-system/StatusMessage';
 import SectionTitle from './design-system/SectionTitle';
 import List from './design-system/List';
 import './design-system/List.css';
+import { MouseCursorOverlay } from './MouseCursorOverlay';
+import { useMouseTracking } from '../hooks/useMouseTracking';
 
 const Lobby: React.FC = () => {
   const [teams, setTeams] = useState<TeamWithMembersOut[]>([]);
@@ -200,6 +202,38 @@ const Lobby: React.FC = () => {
   // Find the current user object from the team members
   const currentUser = currentTeam?.members?.find(m => m.username === currentName) || null;
 
+  // Set up WebSocket connection for mouse tracking (only when in a team)
+  const [websocket, setWebsocket] = useState<WebSocket | null>(null);
+
+  useEffect(() => {
+    if (currentTeam && currentUser) {
+      // Create WebSocket connection for mouse tracking
+      const ws = new WebSocket(`ws://localhost:8000/ws/game/${session?.id || 0}`);
+      
+      ws.onopen = () => {
+        console.log('[Lobby] WebSocket connected for mouse tracking');
+      };
+      
+      ws.onerror = (error) => {
+        console.error('[Lobby] WebSocket error:', error);
+      };
+      
+      setWebsocket(ws);
+      
+      return () => {
+        ws.close();
+      };
+    }
+  }, [currentTeam, currentUser, session?.id]);
+
+  // Set up mouse tracking
+  useMouseTracking({
+    sessionId: session?.id || 0,
+    userId: currentUser?.id || 0,
+    websocket,
+    throttleMs: 100 // Configurable throttle
+  });
+
   // If a session is active (not in 'lobby'), show the game session view
   if (session && currentTeam && session.status !== 'lobby') {
     if (!currentUser) {
@@ -356,6 +390,15 @@ const Lobby: React.FC = () => {
       >
         Return to Lobby
       </button>
+      
+      {/* Mouse cursor overlay for other players */}
+      {currentUser && websocket && (
+        <MouseCursorOverlay
+          sessionId={session?.id || 0}
+          currentUserId={currentUser.id}
+          websocket={websocket}
+        />
+      )}
     </Container>
   );
 };
