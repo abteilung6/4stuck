@@ -419,3 +419,40 @@ describe('MultitaskingPuzzle Integration', () => {
     expect(screen.getByText('0 of 2 found')).toBeInTheDocument();
   });
 }); 
+
+describe('Readonly/Spectator Mode', () => {
+  const mockSubmitAnswerWithAnswer = vi.fn();
+  const mockSetAnswer = vi.fn();
+  const mockSubmitAnswer = vi.fn();
+
+  const validPuzzleData = {
+    rows: 3,
+    digitsPerRow: 9,
+    timeLimit: 10,
+    sixPositions: [2, 5, 7] // 6s at positions 2, 5, 7 in rows 0, 1, 2
+  };
+
+  const defaultProps = {
+    puzzle: {
+      type: 'multitasking',
+      data: validPuzzleData
+    },
+    answer: '',
+    setAnswer: mockSetAnswer,
+    submitAnswer: mockSubmitAnswer,
+    submitAnswerWithAnswer: mockSubmitAnswerWithAnswer,
+    loading: false,
+    feedback: ''
+  };
+
+  it('should disable all digit buttons and show spectating overlay', () => {
+    render(<MultitaskingPuzzle {...defaultProps} readonly={true} />);
+    // All digit buttons should be disabled
+    const digitButtons = screen.getAllByRole('button', { name: /Row \d+, Column \d+: [69]/ });
+    digitButtons.forEach(btn => {
+      expect(btn).toBeDisabled();
+    });
+    // Spectating overlay should be visible
+    expect(screen.getByText('Spectating')).toBeInTheDocument();
+  });
+}); 

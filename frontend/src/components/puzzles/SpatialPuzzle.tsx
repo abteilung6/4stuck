@@ -20,6 +20,7 @@ interface SpatialPuzzleProps {
   submitAnswerWithAnswer: (answer: string) => void;
   loading: boolean;
   feedback: string;
+  readonly?: boolean;
 }
 
 export const SpatialPuzzle: React.FC<SpatialPuzzleProps> = ({
@@ -30,6 +31,7 @@ export const SpatialPuzzle: React.FC<SpatialPuzzleProps> = ({
   submitAnswerWithAnswer,
   loading,
   feedback,
+  readonly = false,
 }) => {
   // Game configuration with validation
   const gameConfig = useMemo(() => {
@@ -127,6 +129,7 @@ export const SpatialPuzzle: React.FC<SpatialPuzzleProps> = ({
   return (
     <Card>
       <SectionTitle level={2}>Navigate the Circle</SectionTitle>
+      {readonly && <div className="spectator-overlay">Spectating</div>}
       <BodyText color="secondary">
         Drag the blue circle from the top to the bottom without touching the orange obstacle!
       </BodyText>
@@ -145,10 +148,10 @@ export const SpatialPuzzle: React.FC<SpatialPuzzleProps> = ({
             overflow: 'hidden',
             cursor: isDragging ? 'grabbing' : 'default'
           }}
-          onMouseDown={handleMouseDown}
-          onMouseMove={handleMouseMove}
-          onMouseUp={handleMouseUp}
-          onMouseLeave={handleMouseLeave}
+          onMouseDown={readonly ? undefined : handleMouseDown}
+          onMouseMove={readonly ? undefined : handleMouseMove}
+          onMouseUp={readonly ? undefined : handleMouseUp}
+          onMouseLeave={readonly ? undefined : handleMouseLeave}
         >
           {/* Orange obstacle */}
           <div
@@ -225,7 +228,7 @@ export const SpatialPuzzle: React.FC<SpatialPuzzleProps> = ({
               <h3>Game Over! 💥</h3>
               <p>You hit the obstacle. Try again!</p>
               <button 
-                onClick={handleRetry}
+                onClick={readonly ? undefined : handleRetry}
                 style={{
                   marginTop: '10px',
                   padding: '8px 16px',
@@ -233,13 +236,14 @@ export const SpatialPuzzle: React.FC<SpatialPuzzleProps> = ({
                   color: 'white',
                   border: 'none',
                   borderRadius: '4px',
-                  cursor: 'pointer',
+                  cursor: readonly ? 'not-allowed' : 'pointer',
                   fontSize: '14px'
                 }}
-                onMouseOver={(e) => {
+                disabled={readonly}
+                onMouseOver={readonly ? undefined : (e) => {
                   e.currentTarget.style.backgroundColor = '#004499';
                 }}
-                onMouseOut={(e) => {
+                onMouseOut={readonly ? undefined : (e) => {
                   e.currentTarget.style.backgroundColor = '#0066CC';
                 }}
               >

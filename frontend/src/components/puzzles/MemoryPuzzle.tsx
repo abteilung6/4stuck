@@ -20,6 +20,7 @@ export interface MemoryPuzzleProps {
   submitAnswer: () => void;
   loading: boolean;
   feedback: string;
+  readonly?: boolean;
 }
 
 export const MemoryPuzzle: React.FC<MemoryPuzzleProps> = ({
@@ -29,6 +30,7 @@ export const MemoryPuzzle: React.FC<MemoryPuzzleProps> = ({
   submitAnswer,
   loading,
   feedback,
+  readonly = false,
 }) => {
   const { showMapping, timeLeft, isComplete } = useMemoryGameState({
     puzzleId: puzzle?.id,
@@ -61,6 +63,7 @@ export const MemoryPuzzle: React.FC<MemoryPuzzleProps> = ({
     return (
       <Card>
         <SectionTitle level={2}>Memory Puzzle</SectionTitle>
+        {readonly && <div className="spectator-overlay">Spectating</div>}
         <QuestionText>
           Memorize the color-number mapping below. You have {timeLeft} seconds left.
         </QuestionText>
@@ -88,11 +91,12 @@ export const MemoryPuzzle: React.FC<MemoryPuzzleProps> = ({
   return (
     <Card>
       <SectionTitle level={2}>Memory Puzzle</SectionTitle>
+      {readonly && <div className="spectator-overlay">Spectating</div>}
       <QuestionText>
         <strong>Question:</strong> What color is associated with the number{' '}
         {puzzleData.question_number}?
       </QuestionText>
-      <form onSubmit={handleSubmit} className="answer-form">
+      <form onSubmit={readonly ? undefined : handleSubmit} className="answer-form">
         <div className="choices" role="radiogroup" aria-label="Choices">
           {puzzleData.choices.map((choice: string) => (
             <label
@@ -105,15 +109,15 @@ export const MemoryPuzzle: React.FC<MemoryPuzzleProps> = ({
                 name="answer"
                 value={choice}
                 checked={answer === choice}
-                onChange={handleAnswerChange}
-                disabled={loading}
+                onChange={readonly ? undefined : handleAnswerChange}
+                disabled={loading || readonly}
                 aria-checked={answer === choice}
               />
               <ChoiceText>{choice}</ChoiceText>
             </label>
           ))}
         </div>
-        <Button type="submit" disabled={loading || !answer} variant="primary">
+        <Button type="submit" disabled={loading || !answer || readonly} variant="primary">
           {loading ? 'Submitting...' : 'Submit Answer'}
         </Button>
       </form>

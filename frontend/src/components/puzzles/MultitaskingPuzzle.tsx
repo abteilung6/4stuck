@@ -5,19 +5,21 @@ import './MultitaskingPuzzle.css';
 
 interface MultitaskingPuzzleProps {
   puzzle: any;
-  answer: string;
-  setAnswer: (answer: string) => void;
-  submitAnswer: () => Promise<void>;
+  answer?: string;
+  setAnswer?: (answer: string) => void;
+  submitAnswer?: () => Promise<void>;
   submitAnswerWithAnswer: (answer: string) => Promise<void>;
-  loading: boolean;
-  feedback: string;
+  loading?: boolean;
+  feedback?: string;
+  readonly?: boolean;
 }
 
 const MultitaskingPuzzle: React.FC<MultitaskingPuzzleProps> = ({
   puzzle,
   submitAnswerWithAnswer,
-  loading,
-  feedback
+  loading = false,
+  feedback = '',
+  readonly = false,
 }) => {
   // Memoize puzzle data extraction to prevent re-rendering with new 6 positions
   const puzzleData = React.useMemo(() => {
@@ -58,6 +60,7 @@ const MultitaskingPuzzle: React.FC<MultitaskingPuzzleProps> = ({
 
   return (
     <div className="multitasking-puzzle">
+      {readonly && <div className="spectator-overlay">Spectating</div>}
       <div className="puzzle-header">
         <h3>Find All Sixes</h3>
         <div className="timer">
@@ -88,14 +91,14 @@ const MultitaskingPuzzle: React.FC<MultitaskingPuzzleProps> = ({
           <div key={rowIndex} className="grid-row">
             {row.map((digit, colIndex) => {
               const isFound = foundPositions[rowIndex] === colIndex;
-              const isClickable = !isGameOver && digit === '6';
+              const isClickable = !isGameOver && digit === '6' && !readonly;
               
               return (
                 <button
                   key={colIndex}
                   className={`grid-digit ${isFound ? 'found' : ''} ${isClickable ? 'clickable' : ''}`}
-                  onClick={() => handleDigitClick(rowIndex, colIndex)}
-                  disabled={!isClickable || isGameOver}
+                  onClick={isClickable ? () => handleDigitClick(rowIndex, colIndex) : undefined}
+                  disabled={!isClickable || isGameOver || readonly}
                   aria-label={`Row ${rowIndex + 1}, Column ${colIndex + 1}: ${digit}`}
                 >
                   {digit}

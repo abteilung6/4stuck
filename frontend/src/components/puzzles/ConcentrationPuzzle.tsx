@@ -17,12 +17,14 @@ interface ConcentrationPuzzleProps {
   };
   onSolve: (answer: string) => void;
   onFail: (answer: string) => void;
+  readonly?: boolean;
 }
 
 const ConcentrationPuzzle: React.FC<ConcentrationPuzzleProps> = ({
   puzzle,
   onSolve,
-  onFail
+  onFail,
+  readonly = false,
 }) => {
   // Validate puzzle data
   const validation = validateConcentrationPuzzleData(puzzle.data);
@@ -118,6 +120,7 @@ const ConcentrationPuzzle: React.FC<ConcentrationPuzzleProps> = ({
   return (
     <Card>
       <SectionTitle level={2}>Concentration Puzzle</SectionTitle>
+      {readonly && <div className="spectator-overlay">Spectating</div>}
       <BodyText color="secondary">
         Click the circle ONLY when the text matches the color!
       </BodyText>
@@ -147,12 +150,12 @@ const ConcentrationPuzzle: React.FC<ConcentrationPuzzleProps> = ({
           <div
             className={`color-circle ${gameState.hasClicked ? 'clicked' : ''}`}
             style={{ backgroundColor: getColorValue(currentPair.circle_color) }}
-            onClick={handleClick}
+            onClick={readonly ? undefined : handleClick}
             data-testid="color-circle"
           >
             {gameState.hasClicked && (
               <div className="click-feedback">
-                {currentPair.is_match ? '✓' : '✗'}
+                {currentPair.is_match ? '\u2713' : '\u2717'}
               </div>
             )}
           </div>

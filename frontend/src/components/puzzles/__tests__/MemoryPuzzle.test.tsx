@@ -414,4 +414,25 @@ describe('MemoryPuzzle', () => {
       expect(defaultProps.setAnswer).toHaveBeenCalledWith('green');
     });
   });
+
+  describe('Readonly/Spectator Mode', () => {
+    it('should disable all inputs and show spectating overlay', () => {
+      mockUseMemoryGameState.mockReturnValue({
+        showMapping: false,
+        timeLeft: 0,
+        isComplete: true,
+      });
+      render(<MemoryPuzzle {...defaultProps} readonly={true} answer="blue" />);
+      // All radio buttons should be disabled
+      const radioButtons = screen.getAllByRole('radio');
+      radioButtons.forEach(radio => {
+        expect(radio).toBeDisabled();
+      });
+      // Submit button should be disabled
+      const submitButton = screen.getByTestId('submit-button');
+      expect(submitButton).toBeDisabled();
+      // Spectating overlay should be visible
+      expect(screen.getByText('Spectating')).toBeInTheDocument();
+    });
+  });
 }); 

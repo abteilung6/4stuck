@@ -17,6 +17,7 @@ export interface PuzzleRendererProps {
   submitAnswerWithAnswer: (answer: string) => void;
   loading: boolean;
   feedback: string;
+  readonly?: boolean;
 }
 
 export const PuzzleRenderer: React.FC<PuzzleRendererProps> = ({
@@ -27,6 +28,7 @@ export const PuzzleRenderer: React.FC<PuzzleRendererProps> = ({
   submitAnswerWithAnswer,
   loading,
   feedback,
+  readonly = false,
 }) => {
   if (!puzzle) return (
     <Card>
@@ -45,6 +47,7 @@ export const PuzzleRenderer: React.FC<PuzzleRendererProps> = ({
           submitAnswer={submitAnswer}
           loading={loading}
           feedback={feedback}
+          readonly={readonly}
         />
       );
 
@@ -58,6 +61,7 @@ export const PuzzleRenderer: React.FC<PuzzleRendererProps> = ({
           submitAnswerWithAnswer={submitAnswerWithAnswer}
           loading={loading}
           feedback={feedback}
+          readonly={readonly}
         />
       );
     case 'concentration':
@@ -78,6 +82,7 @@ export const PuzzleRenderer: React.FC<PuzzleRendererProps> = ({
             // Submit the answer directly without relying on state
             submitAnswerWithAnswer(answer);
           }}
+          readonly={readonly}
         />
       );
     case 'multitasking':
@@ -90,6 +95,7 @@ export const PuzzleRenderer: React.FC<PuzzleRendererProps> = ({
             submitAnswerWithAnswer(answer);
           }}
           submitAnswerWithAnswer={submitAnswerWithAnswer}
+          readonly={readonly}
         />
       );
     default:

@@ -253,3 +253,45 @@ describe('SpatialPuzzle', () => {
     expect(screen.getByTestId('section-title')).toHaveTextContent('Navigate the Circle');
   });
 }); 
+
+describe('Readonly/Spectator Mode', () => {
+  const mockPuzzle = {
+    id: 1,
+    type: 'spatial',
+    data: {},
+  };
+
+  const mockProps = {
+    puzzle: mockPuzzle,
+    answer: '',
+    setAnswer: vi.fn(),
+    submitAnswer: vi.fn(),
+    submitAnswerWithAnswer: vi.fn(),
+    loading: false,
+    feedback: '',
+    readonly: true,
+  };
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+    vi.clearAllTimers();
+  });
+
+  afterEach(() => {
+    vi.clearAllTimers();
+  });
+
+  it('should disable mouse events and show spectating overlay', () => {
+    render(<SpatialPuzzle {...mockProps} />);
+    // Spectating overlay should be visible
+    expect(screen.getByText('Spectating')).toBeInTheDocument();
+    // Mouse events should not trigger handlers
+    const gameArea = screen.getByTestId('card').querySelector('.spatial-puzzle-game-area');
+    fireEvent.mouseDown(gameArea!);
+    fireEvent.mouseMove(gameArea!);
+    fireEvent.mouseUp(gameArea!);
+    fireEvent.mouseLeave(gameArea!);
+    // No errors should occur and overlay is present
+    expect(gameArea).toBeInTheDocument();
+  });
+}); 

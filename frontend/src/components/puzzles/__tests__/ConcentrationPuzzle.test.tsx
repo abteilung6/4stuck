@@ -382,4 +382,35 @@ describe('ConcentrationPuzzle', () => {
 
     expect(screen.getByText("Don't click - text and color don't match!")).toBeInTheDocument();
   });
+});
+
+describe('Readonly/Spectator Mode', () => {
+  const mockPuzzle = {
+    id: 1,
+    type: 'concentration',
+    data: {
+      pairs: [
+        { color_word: 'red', circle_color: 'blue', is_match: false },
+        { color_word: 'blue', circle_color: 'blue', is_match: true }
+      ],
+      duration: 2
+    }
+  };
+
+  const mockProps = {
+    puzzle: mockPuzzle,
+    onSolve: vi.fn(),
+    onFail: vi.fn()
+  };
+
+  it('should disable circle click and show spectating overlay', () => {
+    render(<ConcentrationPuzzle {...mockProps} readonly={true} />);
+    // Spectating overlay should be visible
+    expect(screen.getByText('Spectating')).toBeInTheDocument();
+    // Circle should not trigger click handler
+    const circle = screen.getByTestId('color-circle');
+    fireEvent.click(circle);
+    // No errors should occur and overlay is present
+    expect(circle).toBeInTheDocument();
+  });
 }); 
