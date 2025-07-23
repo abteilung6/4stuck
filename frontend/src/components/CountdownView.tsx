@@ -48,28 +48,9 @@ const CountdownView: React.FC<CountdownViewProps> = ({
   };
 
   return (
-    <div className="countdown-container">
-      <div className="countdown-content">
-        <h1 className="countdown-title">DO YOU HAVE WHAT IT TAKES?</h1>
-        
-        <div className="countdown-timer">
-          <div className="countdown-number animate-pulse">{countdown}</div>
-          <div className="countdown-text animate-glow">{getCountdownText()}</div>
-        </div>
-
-        <div className="countdown-rules">
-          <h2>Game Rules</h2>
-          <ul>
-            {getRulesText().map((rule, index) => (
-              <li key={index}>{rule}</li>
-            ))}
-          </ul>
-        </div>
-
-        <div className="countdown-motivation">
-          <p>Your team's survival depends on everyone's performance.</p>
-          <p>Stay focused. Work together. Survive.</p>
-        </div>
+    <div className="countdown-container" style={{ background: 'none', boxShadow: 'none', border: 'none' }}>
+      <div className="countdown-timer" data-testid="countdown-timer">
+        {countdown}
       </div>
     </div>
   );
