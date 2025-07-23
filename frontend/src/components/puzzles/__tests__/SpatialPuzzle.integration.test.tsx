@@ -66,14 +66,14 @@ describe('SpatialPuzzle Integration Tests', () => {
 
     // Wait for component to render
     await waitFor(() => {
-      expect(screen.getByText('Navigate the Circle')).toBeInTheDocument();
+      expect(screen.getByTestId('spatial-puzzle-area')).toBeInTheDocument();
     });
 
     // Verify that requestAnimationFrame was called (game loop started)
     expect(mockRequestAnimationFrame).toHaveBeenCalled();
 
     // Get the obstacle element
-    const obstacle = screen.getByTestId('card').querySelector('.spatial-puzzle-obstacle');
+    const obstacle = screen.getByTestId('spatial-puzzle-area').querySelector('.spatial-puzzle-obstacle');
     expect(obstacle).toBeInTheDocument();
 
     // Get initial position
@@ -109,11 +109,11 @@ describe('SpatialPuzzle Integration Tests', () => {
 
     // Wait for component to render
     await waitFor(() => {
-      expect(screen.getByText('Navigate the Circle')).toBeInTheDocument();
+      expect(screen.getByTestId('spatial-puzzle-area')).toBeInTheDocument();
     });
 
     // Get the game area and circle
-    const gameArea = screen.getByTestId('card').querySelector('.spatial-puzzle-game-area');
+    const gameArea = screen.getByTestId('spatial-puzzle-area');
     const circle = gameArea?.querySelector('.spatial-puzzle-circle');
     
     expect(circle).toBeInTheDocument();
@@ -166,11 +166,11 @@ describe('SpatialPuzzle Integration Tests', () => {
 
     // Wait for component to render
     await waitFor(() => {
-      expect(screen.getByText('Navigate the Circle')).toBeInTheDocument();
+      expect(screen.getByTestId('spatial-puzzle-area')).toBeInTheDocument();
     });
 
     // Get the game area
-    const gameArea = screen.getByTestId('card').querySelector('.spatial-puzzle-game-area');
+    const gameArea = screen.getByTestId('spatial-puzzle-area');
     const circle = gameArea?.querySelector('.spatial-puzzle-circle');
     
     expect(circle).toBeInTheDocument();

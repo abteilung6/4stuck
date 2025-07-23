@@ -260,14 +260,24 @@ const ActiveGameView: React.FC<{
     isEliminated: player.isEliminated || false
   })) || [];
 
+  const puzzles = gameState?.puzzles || [];
+  const localUserId = user.id;
+
   return (
     <>
       <GameGridLayout
         players={players}
+        puzzles={puzzles}
+        localUserId={localUserId}
+        answer={answer}
+        setAnswer={setAnswer}
+        submitAnswer={submitAnswer}
+        submitAnswerWithAnswer={submitAnswerWithAnswer}
+        loading={loading}
+        feedback={feedback}
         gameState={gameState?.status || 'active'}
         timeRemaining={gameState?.timeRemaining}
       />
-      
       {/* Mouse cursor overlay for other players */}
       {user && websocket && (
         <MouseCursorOverlay

@@ -102,14 +102,15 @@ describe('spatialPuzzleLogic', () => {
 
   describe('checkWinCondition', () => {
     it('should return true when circle reaches bottom', () => {
-      const circlePos: Position = { x: 50, y: testConfig.gameHeight - 50 };
-      
+      const circleRadius = testConfig.circleRadius;
+      const gameHeight = testConfig.gameHeight;
+      // y such that bottom of circle is exactly at gameHeight - 10
+      const circlePos = { x: 50, y: gameHeight - (circleRadius * 2) - 10 };
       const result = checkWinCondition(
         circlePos, 
-        testConfig.gameHeight, 
-        testConfig.circleRadius
+        gameHeight, 
+        circleRadius
       );
-      
       expect(result).toBe(true);
     });
 
@@ -298,7 +299,7 @@ describe('spatialPuzzleLogic', () => {
       const result = getInitialGameState(testConfig);
       
       expect(result.circlePosition.x).toBe(testConfig.gameWidth / 2 - testConfig.circleRadius);
-      expect(result.circlePosition.y).toBe(20);
+      expect(result.circlePosition.y).toBe(0);
       expect(result.obstaclePosition.x).toBe(0);
       expect(result.obstaclePosition.y).toBe(testConfig.gameHeight / 2 - testConfig.obstacleHeight / 2);
       expect(result.obstacleDirection).toBe('right');
@@ -343,16 +344,16 @@ describe('spatialPuzzleLogic', () => {
     });
 
     it('should detect win condition and end game', () => {
+      const circleRadius = testConfig.circleRadius;
+      const gameHeight = testConfig.gameHeight;
       const currentState: GameState = {
-        circlePosition: { x: 50, y: testConfig.gameHeight - 50 }, // Near bottom
+        circlePosition: { x: 50, y: gameHeight - (circleRadius * 2) - 10 }, // At win threshold
         obstaclePosition: { x: 100, y: 100 },
         obstacleDirection: 'right',
         gameWon: false,
         gameLost: false
       };
-      
       const result = processGameTick(currentState, testConfig);
-      
       expect(result.shouldEndGame).toBe(true);
       expect(result.gameResult.type).toBe('won');
       expect(result.newState.gameWon).toBe(true);

@@ -24,7 +24,7 @@ describe('useSpatialGameState', () => {
       })
     );
 
-    expect(result.current.gameState.circlePosition).toEqual({ x: 180, y: 20 });
+    expect(result.current.gameState.circlePosition).toEqual({ x: 180, y: 0 });
     expect(result.current.gameState.obstaclePosition).toEqual({ x: 0, y: 285 });
     expect(result.current.gameState.obstacleDirection).toBe('right');
     expect(result.current.gameState.gameWon).toBe(false);
@@ -60,7 +60,7 @@ describe('useSpatialGameState', () => {
     rerender({ puzzleType: 'memory', puzzleId: 2 });
 
     // State should be reset
-    expect(result.current.gameState.circlePosition).toEqual({ x: 180, y: 20 });
+    expect(result.current.gameState.circlePosition).toEqual({ x: 180, y: 0 });
     expect(result.current.gameState.gameWon).toBe(false);
   });
 
@@ -237,7 +237,7 @@ describe('useSpatialGameState', () => {
     rerender({ puzzleType: 'spatial', puzzleId: 84 });
 
     // State should be reset
-    expect(result.current.gameState.circlePosition).toEqual({ x: 180, y: 20 });
+    expect(result.current.gameState.circlePosition).toEqual({ x: 180, y: 0 });
     expect(result.current.gameState.gameWon).toBe(false);
   });
 }); 

@@ -1,4 +1,4 @@
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { 
   type Position,
   type GameConfig,
@@ -12,17 +12,18 @@ interface UseSpatialMouseHandlingProps {
   circlePosition: Position;
   isGameActive: boolean;
   onCirclePositionChange: (position: Position) => void;
+  containerRef: React.RefObject<HTMLDivElement>;
 }
 
 export function useSpatialMouseHandling({
   gameConfig,
   circlePosition,
   isGameActive,
-  onCirclePositionChange
+  onCirclePositionChange,
+  containerRef
 }: UseSpatialMouseHandlingProps) {
   const [isDragging, setIsDragging] = useState(false);
   const [dragOffset, setDragOffset] = useState<Position>({ x: 0, y: 0 });
-  const containerRef = useRef<HTMLDivElement>(null);
 
   const getMousePosition = useCallback((e: React.MouseEvent): Position | null => {
     const rect = containerRef.current?.getBoundingClientRect();
@@ -32,7 +33,7 @@ export function useSpatialMouseHandling({
       x: e.clientX - rect.left,
       y: e.clientY - rect.top
     };
-  }, []);
+  }, [containerRef]);
 
   const handleMouseDown = useCallback((e: React.MouseEvent) => {
     if (!isGameActive) return;
@@ -73,7 +74,6 @@ export function useSpatialMouseHandling({
   }, []);
 
   return {
-    containerRef,
     isDragging,
     handleMouseDown,
     handleMouseMove,

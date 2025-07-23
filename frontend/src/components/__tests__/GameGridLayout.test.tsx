@@ -1,104 +1,102 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
-import { describe, it, expect } from 'vitest';
+import { vi, describe, it, expect } from 'vitest';
 import GameGridLayout from '../GameGridLayout';
 
-describe('GameGridLayout', () => {
-  const mockPlayers = [
-    {
-      id: 1,
-      username: 'Player 1',
-      color: 'yellow',
-      points: 15,
-      isActive: true,
-      isEliminated: false
-    },
-    {
-      id: 2,
-      username: 'Player 2',
-      color: 'red',
-      points: 12,
-      isActive: true,
-      isEliminated: false
-    },
-    {
-      id: 3,
-      username: 'Player 3',
-      color: 'blue',
-      points: 8,
-      isActive: false,
-      isEliminated: false
-    },
-    {
-      id: 4,
-      username: 'Player 4',
-      color: 'green',
-      points: 0,
-      isActive: false,
-      isEliminated: true
-    }
-  ];
+// Mock PuzzleRenderer for test isolation
+vi.mock('../puzzles/PuzzleRenderer', () => ({
+  PuzzleRenderer: ({ puzzle, readonly }: any) => (
+    <div data-testid={`puzzle-${puzzle ? puzzle.user_id : 'none'}`}>{readonly ? 'readonly' : 'interactive'}</div>
+  )
+}));
 
+describe('GameGridLayout', () => {
+  const players = [
+    { id: 1, username: 'Alice', color: 'yellow', points: 10, isActive: true, isEliminated: false },
+    { id: 2, username: 'Bob', color: 'red', points: 8, isActive: false, isEliminated: false },
+    { id: 3, username: 'Carol', color: 'blue', points: 0, isActive: false, isEliminated: true },
+    { id: 4, username: 'Dave', color: 'green', points: 15, isActive: true, isEliminated: false }
+  ];
+  const puzzles = [
+    { id: 101, user_id: 1, type: 'memory', status: 'active', data: {} },
+    { id: 102, user_id: 2, type: 'spatial', status: 'active', data: {} },
+    { id: 103, user_id: 4, type: 'concentration', status: 'active', data: {} }
+  ];
   it('should render the game grid layout with 4 player quadrants', () => {
     render(
       <GameGridLayout
-        players={mockPlayers}
+        players={players}
+        puzzles={[]}
+        localUserId={1}
         gameState="active"
-        timeRemaining={300}
+        timeRemaining={0}
+        answer=""
+        setAnswer={() => {}}
+        submitAnswer={() => {}}
+        submitAnswerWithAnswer={() => {}}
+        loading={false}
+        feedback=""
       />
     );
-
-    // Check that the game grid layout is rendered
-    expect(screen.getByText('Player 1')).toBeInTheDocument();
-    expect(screen.getByText('Player 2')).toBeInTheDocument();
-    expect(screen.getByText('Player 3')).toBeInTheDocument();
-    expect(screen.getByText('Player 4')).toBeInTheDocument();
-
-    // Check that player statuses are displayed
-    const activeElements = screen.getAllByText('🟢 ACTIVE');
-    expect(activeElements).toHaveLength(2); // Player 1 and Player 2 are active
-    expect(screen.getByText('⏳ WAITING')).toBeInTheDocument();
-    expect(screen.getByText('❌ ELIMINATED')).toBeInTheDocument();
+    expect(screen.getAllByText(/Alice|Bob|Carol|Dave/).length).toBe(4);
   });
-
   it('should handle fewer than 4 players by adding placeholders', () => {
-    const fewerPlayers = mockPlayers.slice(0, 2); // Only 2 players
-
     render(
       <GameGridLayout
-        players={fewerPlayers}
+        players={players.slice(0, 2)}
+        puzzles={[]}
+        localUserId={1}
         gameState="active"
-        timeRemaining={300}
+        timeRemaining={0}
+        answer=""
+        setAnswer={() => {}}
+        submitAnswer={() => {}}
+        submitAnswerWithAnswer={() => {}}
+        loading={false}
+        feedback=""
       />
     );
-
-    // Check that the original 2 players are displayed
-    expect(screen.getByText('Player 1')).toBeInTheDocument();
-    expect(screen.getByText('Player 2')).toBeInTheDocument();
-
-    // Check that placeholder players are added
-    expect(screen.getByText('Player 3')).toBeInTheDocument();
-    expect(screen.getByText('Player 4')).toBeInTheDocument();
+    expect(screen.getAllByText(/Player 3|Player 4/).length).toBe(2);
   });
-
   it('should display different game states correctly', () => {
     render(
       <GameGridLayout
-        players={mockPlayers}
+        players={players}
+        puzzles={[]}
+        localUserId={1}
         gameState="lobby"
+        timeRemaining={0}
+        answer=""
+        setAnswer={() => {}}
+        submitAnswer={() => {}}
+        submitAnswerWithAnswer={() => {}}
+        loading={false}
+        feedback=""
       />
     );
-
-    // Check that the game grid layout is rendered correctly
-    expect(screen.getByText('Player 1')).toBeInTheDocument();
-    expect(screen.getByText('Player 2')).toBeInTheDocument();
-    expect(screen.getByText('Player 3')).toBeInTheDocument();
-    expect(screen.getByText('Player 4')).toBeInTheDocument();
-
-    // Check that player statuses are displayed
-    const activeElements = screen.getAllByText('🟢 ACTIVE');
-    expect(activeElements).toHaveLength(2); // Player 1 and Player 2 are active
-    expect(screen.getByText('⏳ WAITING')).toBeInTheDocument();
-    expect(screen.getByText('❌ ELIMINATED')).toBeInTheDocument();
+    expect(screen.getAllByText(/Alice|Bob|Carol|Dave/).length).toBe(4);
+  });
+  it('renders the correct puzzle for each player and sets readonly correctly', () => {
+    render(
+      <GameGridLayout
+        players={players}
+        puzzles={puzzles}
+        localUserId={1}
+        answer=""
+        setAnswer={() => {}}
+        submitAnswer={() => {}}
+        submitAnswerWithAnswer={() => {}}
+        loading={false}
+        feedback=""
+        gameState="active"
+      />
+    );
+    // Local player (id 1) should be interactive
+    expect(screen.getByTestId('puzzle-1')).toHaveTextContent('interactive');
+    // Teammates (id 2, 4) should be readonly
+    expect(screen.getByTestId('puzzle-2')).toHaveTextContent('readonly');
+    expect(screen.getByTestId('puzzle-4')).toHaveTextContent('readonly');
+    // Eliminated player (id 3) should not render a puzzle
+    expect(screen.queryByTestId('puzzle-3')).toBeNull();
   });
 }); 

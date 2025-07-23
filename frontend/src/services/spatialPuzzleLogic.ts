@@ -91,7 +91,10 @@ export function checkWinCondition(
   gameHeight: number, 
   circleRadius: number
 ): boolean {
-  return circlePos.y >= gameHeight - circleRadius * 2 - 20; // 20px margin from bottom
+  // The bottom of the circle
+  const circleBottom = circlePos.y + circleRadius * 2;
+  // Require the bottom of the circle to be within 10px of the game bottom
+  return circleBottom >= gameHeight - 10;
 }
 
 /**
@@ -180,7 +183,7 @@ export function getInitialGameState(config: GameConfig): GameState {
   return {
     circlePosition: { 
       x: config.gameWidth / 2 - config.circleRadius, 
-      y: 20 
+      y: 0 // Start at the very top
     },
     obstaclePosition: { 
       x: 0, 

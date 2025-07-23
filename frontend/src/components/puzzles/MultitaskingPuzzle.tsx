@@ -21,10 +21,12 @@ const MultitaskingPuzzle: React.FC<MultitaskingPuzzleProps> = ({
   feedback = '',
   readonly = false,
 }) => {
-  // Memoize puzzle data extraction to prevent re-rendering with new 6 positions
-  const puzzleData = React.useMemo(() => {
-    return extractMultitaskingPuzzleData(puzzle?.data);
-  }, [puzzle?.data]);
+  // Ensure 6s positions are stable for each puzzle instance
+  const puzzleDataRef = React.useRef<{ id: any, data: any } | null>(null);
+  if (!puzzleDataRef.current || puzzleDataRef.current.id !== puzzle?.id) {
+    puzzleDataRef.current = { id: puzzle?.id, data: extractMultitaskingPuzzleData(puzzle?.data) };
+  }
+  const puzzleData = puzzleDataRef.current.data;
 
   const handleComplete = React.useCallback((foundPositions: number[]) => {
     const answer = foundPositions.join(',');

@@ -5,6 +5,7 @@ import type { PuzzleResult } from '../api/models/PuzzleResult';
 import type { GameState, GameStatusInfo } from '../types/game';
 import { calculateGameStatus } from '../services/gameRules';
 import { createGameWebSocketService, type WebSocketCallbacks } from '../services/gameWebSocket';
+import React from 'react';
 
 export interface UseGameLogicProps {
   sessionId: number;
@@ -173,9 +174,11 @@ export function useGameLogic({ sessionId, userId, initialTeam }: UseGameLogicPro
   }, [puzzle, answer, fetchPuzzle]);
 
   // Submit answer with specific answer value
+  const isSubmittingRef = React.useRef(false);
   const submitAnswerWithAnswer = useCallback(async (specificAnswer: string) => {
     if (!puzzle) return;
-    
+    if (isSubmittingRef.current) return;
+    isSubmittingRef.current = true;
     setLoading(true);
     setFeedback('');
     try {
@@ -188,26 +191,22 @@ export function useGameLogic({ sessionId, userId, initialTeam }: UseGameLogicPro
       if (result.correct) {
         setFeedback('Correct!');
         console.log('[submitAnswerWithAnswer] Answer was correct, result:', result);
-        // Use the next puzzle from the response if available
         if (result.next_puzzle) {
           console.log('[submitAnswerWithAnswer] Setting next puzzle from response:', result.next_puzzle);
           setPuzzle(result.next_puzzle);
           console.log('[submitAnswerWithAnswer] Next puzzle set successfully');
         } else {
-          // Fallback to fetching if next puzzle not in response
           console.log('[submitAnswerWithAnswer] No next puzzle in response, fetching...');
           await fetchPuzzle();
         }
       } else {
         setFeedback('Incorrect.');
         console.log('[submitAnswerWithAnswer] Answer was incorrect, result:', result);
-        // Use the next puzzle from the response if available (for failed puzzles)
         if (result.next_puzzle) {
           console.log('[submitAnswerWithAnswer] Setting next puzzle from failed response:', result.next_puzzle);
           setPuzzle(result.next_puzzle);
           console.log('[submitAnswerWithAnswer] Next puzzle set successfully (from failed response)');
         } else {
-          // Fallback to fetching if next puzzle not in response
           console.log('[submitAnswerWithAnswer] No next puzzle in response, fetching...');
           await fetchPuzzle();
         }
@@ -215,7 +214,6 @@ export function useGameLogic({ sessionId, userId, initialTeam }: UseGameLogicPro
       setAnswer('');
     } catch (err: any) {
       console.error('[submitAnswerWithAnswer] Error:', err);
-      // Handle specific error for out of points
       if (err?.response?.status === 400 && err?.response?.data?.detail?.includes('out of points')) {
         setFeedback('You are out of points! Wait for your teammates to solve puzzles to receive points.');
         setError('You are out of points and cannot submit answers.');
@@ -224,6 +222,7 @@ export function useGameLogic({ sessionId, userId, initialTeam }: UseGameLogicPro
       }
     } finally {
       setLoading(false);
+      isSubmittingRef.current = false;
     }
   }, [puzzle, fetchPuzzle]);
 

@@ -118,9 +118,7 @@ describe('spatialPuzzleLogic', () => {
       const circlePos = { x: 100, y: 560 }; // Near bottom of 600px game
       const gameHeight = 600;
       const circleRadius = 20;
-      
       const result = checkWinCondition(circlePos, gameHeight, circleRadius);
-      
       expect(result).toBe(true);
     });
 
@@ -128,10 +126,25 @@ describe('spatialPuzzleLogic', () => {
       const circlePos = { x: 100, y: 300 }; // Middle of game
       const gameHeight = 600;
       const circleRadius = 20;
-      
       const result = checkWinCondition(circlePos, gameHeight, circleRadius);
-      
       expect(result).toBe(false);
+    });
+
+    it('should not trigger win at the top', () => {
+      const circlePos = { x: 100, y: 0 }; // At the very top
+      const gameHeight = 600;
+      const circleRadius = 20;
+      const result = checkWinCondition(circlePos, gameHeight, circleRadius);
+      expect(result).toBe(false);
+    });
+
+    it('should trigger win when bottom of circle is at or past game bottom', () => {
+      const circleRadius = 20;
+      const gameHeight = 600;
+      // y such that bottom of circle is exactly at gameHeight - 10
+      const circlePos = { x: 100, y: gameHeight - (circleRadius * 2) - 10 };
+      const result = checkWinCondition(circlePos, gameHeight, circleRadius);
+      expect(result).toBe(true);
     });
   });
 
@@ -285,7 +298,7 @@ describe('spatialPuzzleLogic', () => {
       const result = getInitialGameState(config);
       
       expect(result.circlePosition.x).toBe(180); // (400/2) - 20
-      expect(result.circlePosition.y).toBe(20);
+      expect(result.circlePosition.y).toBe(0);
       expect(result.obstaclePosition.x).toBe(0);
       expect(result.obstaclePosition.y).toBe(285); // (600/2) - (30/2)
       expect(result.obstacleDirection).toBe('right');

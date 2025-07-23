@@ -1,5 +1,6 @@
 import React from 'react';
 import './PlayerQuadrant.css';
+import { PuzzleRenderer } from './puzzles/PuzzleRenderer';
 
 interface PlayerData {
   id: number;
@@ -13,9 +14,28 @@ interface PlayerData {
 interface PlayerQuadrantProps {
   player: PlayerData;
   position: 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right';
+  puzzle: any;
+  readonly: boolean;
+  answer: string;
+  setAnswer: (answer: string) => void;
+  submitAnswer: () => void;
+  submitAnswerWithAnswer: (answer: string) => void;
+  loading: boolean;
+  feedback: string;
 }
 
-const PlayerQuadrant: React.FC<PlayerQuadrantProps> = ({ player, position }) => {
+const PlayerQuadrant: React.FC<PlayerQuadrantProps> = ({
+  player,
+  position,
+  puzzle,
+  readonly,
+  answer,
+  setAnswer,
+  submitAnswer,
+  submitAnswerWithAnswer,
+  loading,
+  feedback
+}) => {
   const getColorClass = (color: string) => {
     switch (color) {
       case 'yellow': return 'player-yellow';
@@ -81,11 +101,16 @@ const PlayerQuadrant: React.FC<PlayerQuadrantProps> = ({ player, position }) => 
             <div className="eliminated-text">ELIMINATED</div>
           </div>
         ) : (
-          <div className="puzzle-placeholder">
-            <div className="puzzle-icon">🧩</div>
-            <div className="puzzle-text">PUZZLE AREA</div>
-            <div className="puzzle-subtext">Ready for puzzle</div>
-          </div>
+          <PuzzleRenderer
+            puzzle={puzzle}
+            answer={answer}
+            setAnswer={setAnswer}
+            submitAnswer={submitAnswer}
+            submitAnswerWithAnswer={submitAnswerWithAnswer}
+            loading={loading}
+            feedback={feedback}
+            readonly={readonly}
+          />
         )}
       </div>
     </div>
