@@ -119,13 +119,8 @@ const ConcentrationPuzzle: React.FC<ConcentrationPuzzleProps> = ({
 
   return (
     <Card>
-      <SectionTitle level={2}>Concentration Puzzle</SectionTitle>
       {readonly && <div className="spectator-overlay">Spectating</div>}
-      <BodyText color="secondary">
-        Click the circle ONLY when the text matches the color!
-      </BodyText>
-      
-      <div className="concentration-puzzle">
+      <div className="concentration-puzzle" style={{ padding: 0, background: 'none', borderRadius: 0 }}>
         <div className="concentration-header">
           <div className="progress-info">
             <span>Pair {gameState.currentIndex + 1} / {puzzle.data.pairs.length}</span>

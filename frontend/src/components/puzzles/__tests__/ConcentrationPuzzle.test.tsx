@@ -70,11 +70,11 @@ describe('ConcentrationPuzzle', () => {
     });
   });
 
-  it('renders the puzzle with correct title and instructions', () => {
+  it('renders the puzzle with progress bar', () => {
     render(<ConcentrationPuzzle {...mockProps} />);
 
-    expect(screen.getByText('Concentration Puzzle')).toBeInTheDocument();
-    expect(screen.getByText('Click the circle ONLY when the text matches the color!')).toBeInTheDocument();
+    expect(screen.getByText('Pair 1 / 2')).toBeInTheDocument();
+    expect(screen.getByTestId('progress-bar')).toBeInTheDocument();
   });
 
   it('displays current pair information', () => {
