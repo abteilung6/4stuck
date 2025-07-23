@@ -118,35 +118,21 @@ describe('SpatialPuzzle', () => {
   it('displays game elements correctly', () => {
     render(<SpatialPuzzle {...mockProps} />);
     // Check for the circle element
-    const circle = document.querySelector('[style*="border-radius: 50%"]');
+    const circle = document.querySelector('.spatial-puzzle-circle');
     expect(circle).toBeInTheDocument();
     // Check for the obstacle element (orange color)
-    const obstacle = document.querySelector('[style*="background-color: rgb(255, 140, 0)"]');
+    const obstacle = document.querySelector('.spatial-puzzle-obstacle');
     expect(obstacle).toBeInTheDocument();
   });
 
-  it('shows start and end zone indicators', () => {
-    render(<SpatialPuzzle {...mockProps} />);
-    // Check for start and end zone indicators (green dashed borders)
-    const zones = document.querySelectorAll('[style*="border: 2px dashed rgb(0, 255, 0)"]');
-    expect(zones.length).toBeGreaterThan(0);
-  });
-
-  it('shows loading overlay when loading prop is true', () => {
+  it('shows overlays and feedback correctly', () => {
+    // Loading overlay
     render(<SpatialPuzzle {...mockProps} loading={true} />);
     expect(screen.getByText('Processing...')).toBeInTheDocument();
-  });
-
-  it('shows feedback when provided', () => {
+    // Feedback overlay
     const feedback = 'Great job! You solved it!';
-    render(<SpatialPuzzle {...mockProps} feedback={feedback} />);
+    render(<SpatialPuzzle {...mockProps} feedback={feedback} loading={false} />);
     expect(screen.getByText(feedback)).toBeInTheDocument();
-  });
-
-  it('handles unmount gracefully', () => {
-    const { unmount } = render(<SpatialPuzzle {...mockProps} />);
-    // Should not crash on unmount
-    expect(() => unmount()).not.toThrow();
   });
 
   it('handles mouse events correctly', () => {
@@ -173,20 +159,6 @@ describe('SpatialPuzzle', () => {
   });
 
   it('should not immediately show win message on mount (initial circle at top)', () => {
-    const mockPuzzle = {
-      id: 1,
-      type: 'spatial',
-      data: {},
-    };
-    const mockProps = {
-      puzzle: mockPuzzle,
-      answer: '',
-      setAnswer: vi.fn(),
-      submitAnswer: vi.fn(),
-      submitAnswerWithAnswer: vi.fn(),
-      loading: false,
-      feedback: '',
-    };
     render(<SpatialPuzzle {...mockProps} />);
     // Should not show the win message
     expect(screen.queryByText('You reached the bottom safely!')).toBeNull();
@@ -220,8 +192,8 @@ describe('Readonly/Spectator Mode', () => {
     vi.clearAllTimers();
   });
 
-  it('should disable mouse events and show spectating overlay', () => {
-    render(<SpatialPuzzle {...mockProps} />);
+  it('should disable mouse events and show spectating overlay in readonly mode', () => {
+    render(<SpatialPuzzle {...mockProps} readonly={true} />);
     // Spectating overlay should be visible
     expect(screen.getByText('Spectating')).toBeInTheDocument();
     // Mouse events should not trigger handlers

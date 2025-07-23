@@ -63,34 +63,21 @@ describe('SpatialPuzzle Integration Tests', () => {
 
   it('should start game loop and move obstacle', async () => {
     render(<SpatialPuzzle {...mockProps} />);
-
-    // Wait for component to render
     await waitFor(() => {
       expect(screen.getByTestId('spatial-puzzle-area')).toBeInTheDocument();
     });
-
-    // Verify that requestAnimationFrame was called (game loop started)
     expect(mockRequestAnimationFrame).toHaveBeenCalled();
-
-    // Get the obstacle element
     const obstacle = screen.getByTestId('spatial-puzzle-area').querySelector('.spatial-puzzle-obstacle');
     expect(obstacle).toBeInTheDocument();
-
-    // Get initial position
     const initialStyle = obstacle?.getAttribute('style') || '';
     const initialLeft = parseInt(initialStyle.match(/left:\s*(\d+)px/)?.[1] || '0');
-
-    // Manually trigger the game loop callback to simulate animation frame
     const gameLoopCallback = (mockRequestAnimationFrame as any).lastCallback;
     if (gameLoopCallback) {
       gameLoopCallback();
     }
-
-    // Wait a bit and check if the obstacle position changed
     await waitFor(() => {
       const currentStyle = obstacle?.getAttribute('style') || '';
       const currentLeft = parseInt(currentStyle.match(/left:\s*(\d+)px/)?.[1] || '0');
-      // The obstacle should have moved from its initial position
       expect(currentLeft).not.toBe(initialLeft);
     }, { timeout: 1000 });
   });
@@ -98,7 +85,6 @@ describe('SpatialPuzzle Integration Tests', () => {
   it('should detect win condition when circle reaches bottom', async () => {
     const mockSetAnswer = vi.fn();
     const mockSubmitAnswerWithAnswer = vi.fn();
-    
     render(
       <SpatialPuzzle
         {...mockProps}
@@ -106,19 +92,12 @@ describe('SpatialPuzzle Integration Tests', () => {
         submitAnswerWithAnswer={mockSubmitAnswerWithAnswer}
       />
     );
-
-    // Wait for component to render
     await waitFor(() => {
       expect(screen.getByTestId('spatial-puzzle-area')).toBeInTheDocument();
     });
-
-    // Get the game area and circle
     const gameArea = screen.getByTestId('spatial-puzzle-area');
     const circle = gameArea?.querySelector('.spatial-puzzle-circle');
-    
     expect(circle).toBeInTheDocument();
-
-    // Mock getBoundingClientRect for the game area
     const mockRect = {
       left: 0,
       top: 0,
@@ -126,27 +105,19 @@ describe('SpatialPuzzle Integration Tests', () => {
       height: 600,
     };
     gameArea!.getBoundingClientRect = vi.fn().mockReturnValue(mockRect);
-
-    // Simulate dragging the circle to the bottom
     fireEvent.mouseDown(gameArea!, {
       clientX: 200,
       clientY: 50
     });
-
     fireEvent.mouseMove(gameArea!, {
       clientX: 200,
-      clientY: 580 // Much closer to bottom to trigger win condition
+      clientY: 580
     });
-
     fireEvent.mouseUp(gameArea!);
-
-    // Manually trigger the game loop to process the win condition
     const gameLoopCallback = (mockRequestAnimationFrame as any).lastCallback;
     if (gameLoopCallback) {
       gameLoopCallback();
     }
-
-    // Wait for win condition to be detected
     await waitFor(() => {
       expect(mockSetAnswer).toHaveBeenCalledWith('solved');
     }, { timeout: 2000 });
@@ -155,7 +126,6 @@ describe('SpatialPuzzle Integration Tests', () => {
   it('should allow retry after hitting obstacle', async () => {
     const mockSetAnswer = vi.fn();
     const mockSubmitAnswerWithAnswer = vi.fn();
-    
     render(
       <SpatialPuzzle
         {...mockProps}
@@ -163,35 +133,18 @@ describe('SpatialPuzzle Integration Tests', () => {
         submitAnswerWithAnswer={mockSubmitAnswerWithAnswer}
       />
     );
-
-    // Wait for component to render
     await waitFor(() => {
       expect(screen.getByTestId('spatial-puzzle-area')).toBeInTheDocument();
     });
-
-    // Get the game area
     const gameArea = screen.getByTestId('spatial-puzzle-area');
     const circle = gameArea?.querySelector('.spatial-puzzle-circle');
-    
     expect(circle).toBeInTheDocument();
-
-    // Verify that the game is initially active (circle is blue)
     expect(circle).toHaveStyle({ backgroundColor: 'rgb(0, 102, 204)' });
-
-    // Verify that the obstacle is present and the game loop is running
     const obstacle = gameArea?.querySelector('.spatial-puzzle-obstacle');
     expect(obstacle).toBeInTheDocument();
-
-    // Wait a bit for the game loop to start
     await new Promise(resolve => setTimeout(resolve, 100));
-
-    // Verify that the game is still active and playable
     const circleAfterTime = gameArea?.querySelector('.spatial-puzzle-circle');
     expect(circleAfterTime).toHaveStyle({ backgroundColor: 'rgb(0, 102, 204)' });
-
-    // Test that the game loop restart mechanism works by checking that the component
-    // properly handles the resetCounter from the game state hook
-    // This is the core functionality that was broken and is now fixed
     expect(circleAfterTime).toBeInTheDocument();
     expect(obstacle).toBeInTheDocument();
   });

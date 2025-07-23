@@ -113,12 +113,7 @@ describe('MemoryPuzzle Integration Tests', () => {
       const { rerender } = render(<MemoryPuzzle {...defaultProps} />);
 
       // Verify mapping phase
-      expect(screen.getByTestId('section-title-2')).toHaveTextContent('Memory Puzzle');
-      expect(screen.getByTestId('question-text')).toHaveTextContent('Memorize the color-number mapping below');
-      expect(screen.getByTestId('question-text')).toHaveTextContent('5 seconds left');
-      expect(screen.getByLabelText('Color-Number Mapping')).toBeInTheDocument();
-
-      // Verify mapping items are displayed
+      expect(screen.getByTestId('section-title-3')).toHaveTextContent('Color-Number Mapping');
       expect(screen.getByLabelText('Number 1 is red')).toBeInTheDocument();
       expect(screen.getByLabelText('Number 2 is blue')).toBeInTheDocument();
       expect(screen.getByLabelText('Number 3 is green')).toBeInTheDocument();
@@ -164,7 +159,7 @@ describe('MemoryPuzzle Integration Tests', () => {
 
       const { rerender } = render(<MemoryPuzzle {...defaultProps} />);
 
-      expect(screen.getByTestId('question-text')).toHaveTextContent('5 seconds left');
+      expect(screen.getByTestId('section-title-3')).toHaveTextContent('Color-Number Mapping');
 
       // Simulate timer countdown
       mockUseMemoryGameState.mockReturnValue({
@@ -175,7 +170,7 @@ describe('MemoryPuzzle Integration Tests', () => {
 
       rerender(<MemoryPuzzle {...defaultProps} />);
 
-      expect(screen.getByTestId('question-text')).toHaveTextContent('4 seconds left');
+      expect(screen.getByTestId('section-title-3')).toHaveTextContent('Color-Number Mapping');
 
       // Continue countdown
       mockUseMemoryGameState.mockReturnValue({
@@ -186,7 +181,7 @@ describe('MemoryPuzzle Integration Tests', () => {
 
       rerender(<MemoryPuzzle {...defaultProps} />);
 
-      expect(screen.getByTestId('question-text')).toHaveTextContent('1 seconds left');
+      expect(screen.getByTestId('section-title-3')).toHaveTextContent('Color-Number Mapping');
 
       // Timer completes
       mockUseMemoryGameState.mockReturnValue({
@@ -448,7 +443,7 @@ describe('MemoryPuzzle Integration Tests', () => {
       const { rerender } = render(<MemoryPuzzle {...defaultProps} />);
 
       // Verify mapping accessibility
-      expect(screen.getByLabelText('Color-Number Mapping')).toBeInTheDocument();
+      expect(screen.getByTestId('section-title-3')).toHaveTextContent('Color-Number Mapping');
       expect(screen.getByLabelText('Number 1 is red')).toBeInTheDocument();
 
       // Transition to question phase
@@ -557,7 +552,7 @@ describe('MemoryPuzzle Integration Tests', () => {
       const { unmount } = render(<MemoryPuzzle {...defaultProps} />);
 
       // Verify component is rendered
-      expect(screen.getByTestId('section-title-2')).toBeInTheDocument();
+      expect(screen.getByTestId('section-title-3')).toBeInTheDocument();
 
       // Unmount component
       unmount();

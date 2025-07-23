@@ -58,21 +58,15 @@ export const MemoryPuzzle: React.FC<MemoryPuzzleProps> = ({
   };
 
   if (showMapping) {
-    const mappingItems = formatMappingForDisplay(puzzleData.mapping);
-
     return (
       <Card>
-        <SectionTitle level={2}>Memory Puzzle</SectionTitle>
         {readonly && <div className="spectator-overlay">Spectating</div>}
-        <QuestionText>
-          Memorize the color-number mapping below. You have {timeLeft} seconds left.
-        </QuestionText>
-        <div className="mapping-display" aria-label="Color-Number Mapping">
+        <div className="memory-mapping">
           <SectionTitle level={3} className="sr-only">
             Color-Number Mapping
           </SectionTitle>
           <div className="mapping-grid">
-            {mappingItems.map(({ number, color }) => (
+            {formatMappingForDisplay(puzzleData.mapping).map(({ number, color }) => (
               <div
                 key={number}
                 className="mapping-item"
@@ -90,13 +84,12 @@ export const MemoryPuzzle: React.FC<MemoryPuzzleProps> = ({
 
   return (
     <Card>
-      <SectionTitle level={2}>Memory Puzzle</SectionTitle>
       {readonly && <div className="spectator-overlay">Spectating</div>}
-      <QuestionText>
-        <strong>Question:</strong> What color is associated with the number{' '}
-        {puzzleData.question_number}?
-      </QuestionText>
-      <form onSubmit={readonly ? undefined : handleSubmit} className="answer-form">
+      <form onSubmit={handleSubmit} className="memory-form">
+        <QuestionText>
+          <strong>Question:</strong> What color is associated with the number{' '}
+          {puzzleData.question_number}?
+        </QuestionText>
         <div className="choices" role="radiogroup" aria-label="Choices">
           {puzzleData.choices.map((choice: string) => (
             <label

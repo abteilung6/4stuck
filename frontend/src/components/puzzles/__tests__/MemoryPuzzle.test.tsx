@@ -110,10 +110,10 @@ describe('MemoryPuzzle', () => {
 
       render(<MemoryPuzzle {...defaultProps} />);
 
-      expect(screen.getByTestId('section-title-2')).toHaveTextContent('Memory Puzzle');
-      expect(screen.getByTestId('question-text')).toHaveTextContent('Memorize the color-number mapping below');
-      expect(screen.getByTestId('question-text')).toHaveTextContent('5 seconds left');
-      expect(screen.getByLabelText('Color-Number Mapping')).toBeInTheDocument();
+      expect(screen.getByTestId('section-title-3')).toHaveTextContent('Color-Number Mapping');
+      expect(screen.getByLabelText('Number 1 is red')).toBeInTheDocument();
+      expect(screen.getByLabelText('Number 2 is blue')).toBeInTheDocument();
+      expect(screen.getByLabelText('Number 3 is green')).toBeInTheDocument();
     });
 
     it('should display mapping items with correct labels', () => {
@@ -125,7 +125,7 @@ describe('MemoryPuzzle', () => {
 
       render(<MemoryPuzzle {...defaultProps} />);
 
-      expect(screen.getByTestId('question-text')).toHaveTextContent('3 seconds left');
+      expect(screen.getByTestId('section-title-3')).toHaveTextContent('Color-Number Mapping');
       expect(screen.getByLabelText('Number 1 is red')).toBeInTheDocument();
       expect(screen.getByLabelText('Number 2 is blue')).toBeInTheDocument();
       expect(screen.getByLabelText('Number 3 is green')).toBeInTheDocument();
@@ -155,7 +155,6 @@ describe('MemoryPuzzle', () => {
 
       render(<MemoryPuzzle {...defaultProps} />);
 
-      expect(screen.getByTestId('section-title-2')).toHaveTextContent('Memory Puzzle');
       expect(screen.getByTestId('question-text')).toHaveTextContent('What color is associated with the number 2?');
       expect(screen.getByRole('radiogroup')).toBeInTheDocument();
       expect(screen.getByTestId('submit-button')).toBeInTheDocument();
@@ -433,6 +432,27 @@ describe('MemoryPuzzle', () => {
       expect(submitButton).toBeDisabled();
       // Spectating overlay should be visible
       expect(screen.getByText('Spectating')).toBeInTheDocument();
+    });
+  });
+
+  describe('Component Unmount', () => {
+    it('should handle component unmounting during mapping phase', () => {
+      mockUseMemoryGameState.mockReturnValue({
+        showMapping: true,
+        timeLeft: 5,
+        isComplete: false,
+      });
+
+      const { unmount } = render(<MemoryPuzzle {...defaultProps} />);
+
+      // Verify component is rendered
+      expect(screen.getByTestId('section-title-3')).toBeInTheDocument();
+
+      // Unmount component
+      unmount();
+
+      // Should not throw any errors
+      expect(true).toBe(true);
     });
   });
 }); 
