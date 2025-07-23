@@ -76,9 +76,6 @@ const MultitaskingPuzzle: React.FC<MultitaskingPuzzleProps> = ({
               />
             ))}
           </div>
-          <div className="progress-text">
-            {foundPositions.length} of {puzzleData.rows} found
-          </div>
         </div>
         <div className="number-grid">
           {grid.map((row, rowIndex) => (
