@@ -66,12 +66,8 @@ describe('MultitaskingPuzzle Integration', () => {
   it('should render puzzle with correct structure', () => {
     render(<MultitaskingPuzzle {...defaultProps} />);
 
-    // Check header
-    expect(screen.getByText('Find All Sixes')).toBeInTheDocument();
+    // Check timer
     expect(screen.getByText('Time: 0:10')).toBeInTheDocument();
-
-    // Check instructions
-    expect(screen.getByText('Find and click on all the 6s in the grid. One 6 per row!')).toBeInTheDocument();
 
     // Check progress
     expect(screen.getByText('0 of 3 found')).toBeInTheDocument();
@@ -94,7 +90,10 @@ describe('MultitaskingPuzzle Integration', () => {
     expect(screen.queryByText('❌ Invalid puzzle data')).not.toBeInTheDocument();
 
     // Should show the grid
-    expect(screen.getByText('Find All Sixes')).toBeInTheDocument();
+    // No title to check
+    // Just check grid exists
+    const gridDigits = screen.getAllByRole('button', { name: /Row \d+, Column \d+: [69]/ });
+    expect(gridDigits.length).toBeGreaterThan(0);
   });
 
   it('should show error for invalid puzzle data', () => {

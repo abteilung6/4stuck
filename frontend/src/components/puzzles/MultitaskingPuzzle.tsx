@@ -63,62 +63,53 @@ const MultitaskingPuzzle: React.FC<MultitaskingPuzzleProps> = ({
   return (
     <div className="multitasking-puzzle">
       {readonly && <div className="spectator-overlay">Spectating</div>}
-      <div className="puzzle-header">
-        <h3>Find All Sixes</h3>
-        <div className="timer">
-          Time: {formatTime(timeRemaining)}
+      <div className="timer-row">
+        <div className="timer">Time: {formatTime(timeRemaining)}</div>
+      </div>
+      <div className="main-content">
+        <div className="progress-container">
+          <div className="progress-dots">
+            {Array.from({ length: puzzleData.rows }, (_, index) => (
+              <div
+                key={index}
+                className={`progress-dot ${foundPositions[index] !== undefined ? 'found' : ''}`}
+              />
+            ))}
+          </div>
+          <div className="progress-text">
+            {foundPositions.length} of {puzzleData.rows} found
+          </div>
         </div>
-      </div>
-
-      <div className="instructions">
-        <p>Find and click on all the 6s in the grid. One 6 per row!</p>
-      </div>
-
-      <div className="progress-container">
-        <div className="progress-dots">
-          {Array.from({ length: puzzleData.rows }, (_, index) => (
-            <div
-              key={index}
-              className={`progress-dot ${foundPositions[index] !== undefined ? 'found' : ''}`}
-            />
+        <div className="number-grid">
+          {grid.map((row, rowIndex) => (
+            <div key={rowIndex} className="grid-row">
+              {row.map((digit, colIndex) => {
+                const isFound = foundPositions[rowIndex] === colIndex;
+                const isClickable = !isGameOver && digit === '6' && !readonly;
+                return (
+                  <button
+                    key={colIndex}
+                    className={`grid-digit ${isFound ? 'found' : ''} ${isClickable ? 'clickable' : ''}`}
+                    onClick={isClickable ? () => handleDigitClick(rowIndex, colIndex) : undefined}
+                    disabled={!isClickable || isGameOver || readonly}
+                    aria-label={`Row ${rowIndex + 1}, Column ${colIndex + 1}: ${digit}`}
+                  >
+                    {digit}
+                  </button>
+                );
+              })}
+            </div>
           ))}
         </div>
-        <div className="progress-text">
-          {foundPositions.length} of {puzzleData.rows} found
-        </div>
-      </div>
-
-      <div className="number-grid">
-        {grid.map((row, rowIndex) => (
-          <div key={rowIndex} className="grid-row">
-            {row.map((digit, colIndex) => {
-              const isFound = foundPositions[rowIndex] === colIndex;
-              const isClickable = !isGameOver && digit === '6' && !readonly;
-              
-              return (
-                <button
-                  key={colIndex}
-                  className={`grid-digit ${isFound ? 'found' : ''} ${isClickable ? 'clickable' : ''}`}
-                  onClick={isClickable ? () => handleDigitClick(rowIndex, colIndex) : undefined}
-                  disabled={!isClickable || isGameOver || readonly}
-                  aria-label={`Row ${rowIndex + 1}, Column ${colIndex + 1}: ${digit}`}
-                >
-                  {digit}
-                </button>
-              );
-            })}
+        {isGameOver && (
+          <div className="game-over">
+            {isComplete && <div className="success">✅ All 6s found!</div>}
+            {isTimeUp && <div className="time-up">⏰ Time's up!</div>}
+            {loading && <div className="loading">Submitting...</div>}
+            {feedback && <div className="feedback">{feedback}</div>}
           </div>
-        ))}
+        )}
       </div>
-
-      {isGameOver && (
-        <div className="game-over">
-          {isComplete && <div className="success">✅ All 6s found!</div>}
-          {isTimeUp && <div className="time-up">⏰ Time's up!</div>}
-          {loading && <div className="loading">Submitting...</div>}
-          {feedback && <div className="feedback">{feedback}</div>}
-        </div>
-      )}
     </div>
   );
 };
