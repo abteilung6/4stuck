@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from typing import Optional, Any, List
+from typing import Optional, Any, List, Dict
 from datetime import datetime
 
 class UserBase(BaseModel):
@@ -90,4 +90,30 @@ class PlayerPoints(BaseModel):
 
 class TeamPoints(BaseModel):
     team_id: int
-    players: List[PlayerPoints] 
+    players: List[PlayerPoints]
+
+class ColorAssignmentRequest(BaseModel):
+    user_id: int
+    team_id: int
+
+class ColorAssignmentResponse(BaseModel):
+    user_id: int
+    color: str
+    success: bool
+    message: str
+
+class TeamColorValidationResponse(BaseModel):
+    team_id: int
+    is_valid: bool
+    conflicts: List[Dict[str, Any]]
+
+class ColorConflictResolutionResponse(BaseModel):
+    team_id: int
+    reassignments: Dict[str, str]
+    success: bool
+    message: str
+
+class AvailableColorsResponse(BaseModel):
+    team_id: int
+    available_colors: List[str]
+    used_colors: List[str] 

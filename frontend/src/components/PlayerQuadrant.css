@@ -60,14 +60,21 @@
 }
 
 .player-name {
-  font-size: 1.1rem;
   font-weight: bold;
-  color: #333333;
-  text-shadow: none;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  max-width: 100%;
+  font-size: 1.1em;
+  color: #333;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.color-badge {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: 2px solid #fff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+  flex-shrink: 0;
 }
 
 .player-status {

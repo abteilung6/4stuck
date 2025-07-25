@@ -1,6 +1,7 @@
 import React from 'react';
 import './PlayerQuadrant.css';
 import { PuzzleRenderer } from './puzzles/PuzzleRenderer';
+import { useColorAssignment } from '../hooks/useColorAssignment';
 
 interface PlayerData {
   id: number;
@@ -36,25 +37,7 @@ const PlayerQuadrant: React.FC<PlayerQuadrantProps> = ({
   loading,
   feedback
 }) => {
-  const getColorClass = (color: string) => {
-    switch (color) {
-      case 'yellow': return 'player-yellow';
-      case 'red': return 'player-red';
-      case 'blue': return 'player-blue';
-      case 'green': return 'player-green';
-      default: return 'player-yellow';
-    }
-  };
-
-  const getPlayerColor = (color: string) => {
-    switch (color) {
-      case 'yellow': return '#ffc107';
-      case 'red': return '#dc3545';
-      case 'blue': return '#17a2b8';
-      case 'green': return '#28a745';
-      default: return '#ffc107';
-    }
-  };
+  const { getColorClass, getColorValue } = useColorAssignment();
 
   // Create array of 15 circles for life points
   const lifeCircles = Array.from({ length: 15 }, (_, index) => ({
@@ -67,7 +50,10 @@ const PlayerQuadrant: React.FC<PlayerQuadrantProps> = ({
       {/* Player Header */}
       <div className="player-header">
         <div className="player-info">
-          <div className="player-name">{player.username}</div>
+          <div className="player-name">
+            <span className="color-badge" style={{ backgroundColor: getColorValue(player.color) }}></span>
+            {player.username}
+          </div>
         </div>
         <div className="player-status">
           {player.isEliminated ? (
@@ -87,7 +73,7 @@ const PlayerQuadrant: React.FC<PlayerQuadrantProps> = ({
             key={circle.id}
             className={`life-circle ${circle.isActive ? 'active' : 'inactive'}`}
             style={{
-              backgroundColor: circle.isActive ? getPlayerColor(player.color) : '#e9ecef'
+              backgroundColor: circle.isActive ? getColorValue(player.color) : '#e9ecef'
             }}
           />
         ))}
@@ -103,13 +89,13 @@ const PlayerQuadrant: React.FC<PlayerQuadrantProps> = ({
         ) : (
           <PuzzleRenderer
             puzzle={puzzle}
+            readonly={readonly}
             answer={answer}
             setAnswer={setAnswer}
             submitAnswer={submitAnswer}
             submitAnswerWithAnswer={submitAnswerWithAnswer}
             loading={loading}
             feedback={feedback}
-            readonly={readonly}
           />
         )}
       </div>

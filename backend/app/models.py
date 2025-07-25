@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, ForeignKey, DateTime, JSON
+from sqlalchemy import Column, Integer, String, ForeignKey, DateTime, JSON, UniqueConstraint
 from sqlalchemy.orm import declarative_base, relationship
 from datetime import datetime
 
@@ -13,6 +13,9 @@ class Team(Base):
 
 class User(Base):
     __tablename__ = "users"
+    __table_args__ = (
+        UniqueConstraint('team_id', 'color', name='uq_team_color'),
+    )
     id = Column(Integer, primary_key=True, index=True)
     username = Column(String, unique=True, index=True)
     team_id = Column(Integer, ForeignKey("teams.id"), nullable=True)

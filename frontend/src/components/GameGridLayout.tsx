@@ -53,7 +53,7 @@ const GameGridLayout: React.FC<GameGridLayoutProps> = ({
   const displayPlayers = [...players];
   while (displayPlayers.length < 4) {
     displayPlayers.push({
-      id: displayPlayers.length + 1,
+      id: 1000 + displayPlayers.length, // Use high number to avoid conflicts
       username: `Player ${displayPlayers.length + 1}`,
       color: ['yellow', 'red', 'blue', 'green'][displayPlayers.length],
       points: 15,

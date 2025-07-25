@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import './MouseCursorOverlay.css';
+import { useColorAssignment } from '../hooks/useColorAssignment';
 
 interface PlayerCursor {
   userId: number;
@@ -22,6 +23,7 @@ export const MouseCursorOverlay: React.FC<MouseCursorOverlayProps> = ({
   websocket
 }) => {
   const [playerCursors, setPlayerCursors] = useState<Map<number, PlayerCursor>>(new Map());
+  const { getColorValue } = useColorAssignment();
 
   useEffect(() => {
     if (!websocket) return;
@@ -88,7 +90,7 @@ export const MouseCursorOverlay: React.FC<MouseCursorOverlayProps> = ({
           style={{
             left: cursor.x,
             top: cursor.y,
-            '--cursor-color': cursor.color
+            '--cursor-color': getColorValue(cursor.color)
           } as React.CSSProperties}
         >
           <div className="cursor-border"></div>

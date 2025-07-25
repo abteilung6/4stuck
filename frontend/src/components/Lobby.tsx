@@ -121,16 +121,21 @@ const Lobby: React.FC = () => {
     }
     setStatus('Joining team...');
     try {
-      await TeamService.joinTeamTeamJoinPost(currentName, team.id);
+      // Get the updated user object with color from the join endpoint
+      const joinedUser = await TeamService.joinTeamTeamJoinPost(currentName, team.id);
       setStatus(`Joined ${team.name}`);
-      
+
       // Fetch updated teams and set currentTeam to the fresh data
       await fetchTeams();
       const updatedTeams = await TeamService.getAvailableTeamsTeamAvailableGet();
       const updatedTeam = updatedTeams.find(t => t.id === team.id);
       if (updatedTeam) {
-        setCurrentTeam(updatedTeam);
-        console.log('[Lobby] Updated currentTeam after join:', updatedTeam);
+        // Patch the current user in the team with the color from the join response
+        const patchedMembers = updatedTeam.members.map(m =>
+          m.username === joinedUser.username ? { ...m, color: joinedUser.color } : m
+        );
+        setCurrentTeam({ ...updatedTeam, members: patchedMembers });
+        console.log('[Lobby] Updated currentTeam after join:', { ...updatedTeam, members: patchedMembers });
       } else {
         setStatus('Failed to get updated team data.');
       }

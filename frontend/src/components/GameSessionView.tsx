@@ -19,6 +19,7 @@ import TeamCoordinationView from './TeamCoordinationView';
 import { MouseCursorOverlay } from './MouseCursorOverlay';
 import { useMouseTracking } from '../hooks/useMouseTracking';
 import GameGridLayout from './GameGridLayout';
+import { useContext } from 'react';
 
 interface GameSessionViewProps {
   session: GameSessionOut;
@@ -142,6 +143,7 @@ const GameSessionView: React.FC<GameSessionViewProps> = ({ session, user, team }
           notifications={notifications}
           sessionId={session.id}
           websocket={websocket}
+          team={team}
         />
       </div>
     );
@@ -249,16 +251,33 @@ const ActiveGameView: React.FC<{
   notifications: string[];
   sessionId: number;
   websocket: WebSocket | null;
-}> = ({ puzzle, answer, feedback, loading, gameState, user, setAnswer, submitAnswer, submitAnswerWithAnswer, notifications, sessionId, websocket }) => {
-  // Convert game state players to the format expected by GameGridLayout
+  team: any;
+}> = ({ puzzle, answer, feedback, loading, gameState, user, setAnswer, submitAnswer, submitAnswerWithAnswer, notifications, sessionId, websocket, team }) => {
+  // Build a map of userId -> color from team members
+  const memberColorMap = Object.fromEntries(
+    (team?.members || []).map((m: any) => [m.id, m.color])
+  );
+
   const players = gameState?.players?.map((player: any) => ({
     id: player.id,
     username: player.username,
-    color: player.color || 'yellow', // Default color if not set
+    color: memberColorMap[player.id] || player.color,
     points: player.points || 15,
     isActive: player.isActive || false,
     isEliminated: player.isEliminated || false
   })) || [];
+
+  // Fill up to 4 players with placeholders, using gray for their color
+  while (players.length < 4) {
+    players.push({
+      id: 1000 + players.length,
+      username: `Player ${players.length + 1}`,
+      color: 'gray',
+      points: 15,
+      isActive: false,
+      isEliminated: false
+    });
+  }
 
   const puzzles = gameState?.puzzles || [];
   const localUserId = user.id;
