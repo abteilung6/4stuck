@@ -2,28 +2,32 @@
   position: fixed;
   top: 0;
   left: 0;
-  width: 100vw;
-  height: 100vh;
+  width: 100%;
+  height: 100%;
   pointer-events: none;
   z-index: 9999;
 }
 
 .player-cursor {
   position: absolute;
-  transform: translate(-50%, -50%);
   pointer-events: none;
+  /* Remove any default sizing - let the utility handle it */
 }
 
 .cursor-border {
-  width: 20px;
-  height: 20px;
+  /* Fill the entire parent container */
+  width: 100%;
+  height: 100%;
   border: 3px solid var(--cursor-color);
   border-radius: 50%;
   background: transparent;
   position: absolute;
-  top: -10px;
-  left: -10px;
+  top: 0;
+  left: 0;
   animation: cursor-pulse 2s infinite;
+  /* Ensure no transforms that could affect positioning */
+  transform: none;
+  box-sizing: border-box;
 }
 
 .cursor-label {

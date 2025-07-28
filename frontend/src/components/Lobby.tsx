@@ -18,8 +18,6 @@ import StatusMessage from './design-system/StatusMessage';
 import SectionTitle from './design-system/SectionTitle';
 import List from './design-system/List';
 import './design-system/List.css';
-import { MouseCursorOverlay } from './MouseCursorOverlay';
-import { useMouseTracking } from '../hooks/useMouseTracking';
 
 const Lobby: React.FC = () => {
   const [teams, setTeams] = useState<AvailableTeamOut[]>([]);
@@ -124,7 +122,7 @@ const Lobby: React.FC = () => {
       // Get the updated user object with color from the join endpoint
       const joinedUser = await TeamService.joinTeamTeamJoinPost(currentName, team.id);
       setStatus(`Joined ${team.name}`);
-
+      
       // Fetch updated teams and set currentTeam to the fresh data
       await fetchTeams();
       const updatedTeams = await TeamService.getAvailableTeamsTeamAvailableGet();
@@ -178,9 +176,32 @@ const Lobby: React.FC = () => {
     setSessionLoading(true);
     setStatus('Starting game session...');
     try {
+      // First, ensure all team members have colors assigned
+      console.log('[Lobby] Ensuring all team members have colors assigned...');
+      const colorPromises = currentTeam.members
+        .filter(member => !member.color || member.color === 'gray')
+        .map(async (member) => {
+          try {
+            console.log('[Lobby] Assigning color to member:', member.username);
+            const result = await TeamService.assignColorToUserTeamAssignColorPost({
+              user_id: member.id,
+              team_id: currentTeam.id
+            });
+            console.log('[Lobby] Color assignment result for', member.username, ':', result);
+            return result;
+          } catch (error) {
+            console.error('[Lobby] Failed to assign color to', member.username, ':', error);
+            return null;
+          }
+        });
+      
+      await Promise.all(colorPromises);
+      
+      // Create the game session
       const sess = await GameService.createGameSessionGameSessionPost({ team_id: currentTeam.id });
       setSession(sess);
       console.log('[Lobby] setSession', sess);
+      
       // Re-fetch teams and update currentTeam to ensure members are up-to-date
       await fetchTeams();
       setTeams(prevTeams => {
@@ -208,37 +229,8 @@ const Lobby: React.FC = () => {
   // Find the current user object from the team members
   const currentUser = currentTeam?.members?.find(m => m.username === currentName) || null;
 
-  // Set up WebSocket connection for mouse tracking (only when in a team)
-  const [websocket, setWebsocket] = useState<WebSocket | null>(null);
-
-  useEffect(() => {
-    if (currentTeam && currentUser) {
-      // Create WebSocket connection for mouse tracking
-      const ws = new WebSocket(`ws://localhost:8000/ws/game/${session?.id || 0}`);
-      
-      ws.onopen = () => {
-        console.log('[Lobby] WebSocket connected for mouse tracking');
-      };
-      
-      ws.onerror = (error) => {
-        console.error('[Lobby] WebSocket error:', error);
-      };
-      
-      setWebsocket(ws);
-      
-      return () => {
-        ws.close();
-      };
-    }
-  }, [currentTeam, currentUser, session?.id]);
-
-  // Set up mouse tracking
-  useMouseTracking({
-    sessionId: session?.id || 0,
-    userId: currentUser?.id || 0,
-    websocket,
-    throttleMs: 100 // Configurable throttle
-  });
+  // Remove WebSocket creation and mouse tracking from Lobby
+  // These will be handled by GameSessionView instead
 
   // If a session is active (not in 'lobby'), show the game session view
   if (session && currentTeam && session.status !== 'lobby') {
@@ -401,14 +393,6 @@ const Lobby: React.FC = () => {
         Return to Lobby
       </button>
       
-      {/* Mouse cursor overlay for other players */}
-      {currentUser && websocket && (
-        <MouseCursorOverlay
-          sessionId={session?.id || 0}
-          currentUserId={currentUser.id}
-          websocket={websocket}
-        />
-      )}
     </Container>
   );
 };

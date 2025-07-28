@@ -167,124 +167,124 @@ export const SpatialPuzzle: React.FC<SpatialPuzzleProps> = ({
   return (
     <Card>
       {readonly && <div className="spectator-overlay">Spectating</div>}
-      <div
-        ref={containerRef}
+        <div 
+          ref={containerRef}
         className="spatial-puzzle-container spatial-puzzle-game-area"
-        style={{
+          style={{
           width: '100%',
           height: '100%',
           minWidth: 300,
           minHeight: 300,
-          position: 'relative',
+            position: 'relative',
           touchAction: 'none',
           userSelect: 'none',
           boxSizing: 'border-box',
-        }}
+          }}
         data-testid="spatial-puzzle-area"
-        onMouseDown={handleMouseDown}
-        onMouseMove={handleMouseMove}
-        onMouseUp={handleMouseUp}
+          onMouseDown={handleMouseDown}
+          onMouseMove={handleMouseMove}
+          onMouseUp={handleMouseUp}
         onMouseLeave={handleMouseUp}
-      >
-        {/* Orange obstacle */}
-        <div
-          className="spatial-puzzle-obstacle"
-          style={{
-            position: 'absolute',
-            left: gameState.obstaclePosition.x,
-            top: gameState.obstaclePosition.y,
-            width: gameConfig.obstacleWidth,
-            height: gameConfig.obstacleHeight,
-            backgroundColor: '#FF8C00',
-            borderRadius: '4px',
+        >
+          {/* Orange obstacle */}
+          <div
+            className="spatial-puzzle-obstacle"
+            style={{
+              position: 'absolute',
+              left: gameState.obstaclePosition.x,
+              top: gameState.obstaclePosition.y,
+              width: gameConfig.obstacleWidth,
+              height: gameConfig.obstacleHeight,
+              backgroundColor: '#FF8C00',
+              borderRadius: '4px',
             transition: 'none'
-          }}
-        />
-        {/* Blue circle (draggable) */}
-        <div
-          className="spatial-puzzle-circle"
-          style={{
-            position: 'absolute',
-            left: gameState.circlePosition.x,
-            top: gameState.circlePosition.y,
-            width: gameConfig.circleRadius * 2,
-            height: gameConfig.circleRadius * 2,
-            backgroundColor: gameState.gameLost ? '#FF0000' : '#0066CC',
-            borderRadius: '50%',
-            cursor: gameState.gameWon || gameState.gameLost ? 'default' : 'grab',
-            border: '2px solid #004499',
+            }}
+          />
+          {/* Blue circle (draggable) */}
+          <div
+            className="spatial-puzzle-circle"
+            style={{
+              position: 'absolute',
+              left: gameState.circlePosition.x,
+              top: gameState.circlePosition.y,
+              width: gameConfig.circleRadius * 2,
+              height: gameConfig.circleRadius * 2,
+              backgroundColor: gameState.gameLost ? '#FF0000' : '#0066CC',
+              borderRadius: '50%',
+              cursor: gameState.gameWon || gameState.gameLost ? 'default' : 'grab',
+              border: '2px solid #004499',
             pointerEvents: 'none'
-          }}
-        />
-        {/* Start zone indicator */}
-        <div
-          style={{
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            right: 0,
+            }}
+          />
+          {/* Start zone indicator */}
+          <div
+            style={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              right: 0,
             height: Math.max(24, gameConfig.gameHeight * 0.12),
-            border: '2px dashed #00FF00',
-            borderBottom: 'none',
-            backgroundColor: 'rgba(0, 255, 0, 0.1)',
-            pointerEvents: 'none'
-          }}
-        />
-        {/* End zone indicator */}
-        <div
-          style={{
-            position: 'absolute',
-            bottom: 0,
-            left: 0,
-            right: 0,
+              border: '2px dashed #00FF00',
+              borderBottom: 'none',
+              backgroundColor: 'rgba(0, 255, 0, 0.1)',
+              pointerEvents: 'none'
+            }}
+          />
+          {/* End zone indicator */}
+          <div
+            style={{
+              position: 'absolute',
+              bottom: 0,
+              left: 0,
+              right: 0,
             height: Math.max(24, gameConfig.gameHeight * 0.12),
-            border: '2px dashed #00FF00',
-            borderTop: 'none',
-            backgroundColor: 'rgba(0, 255, 0, 0.1)',
-            pointerEvents: 'none'
-          }}
-        />
-        {/* Game state overlays */}
-        {gameState.gameWon && !loading && (
-          <div className="spatial-puzzle-overlay success">
-            <h3>Success! 🎉</h3>
-            <p>You reached the bottom safely!</p>
-          </div>
-        )}
-        {gameState.gameLost && !loading && (
-          <div className="spatial-puzzle-overlay failure">
-            <h3>Game Over! 💥</h3>
-            <p>You hit the obstacle. Try again!</p>
-            <button
+              border: '2px dashed #00FF00',
+              borderTop: 'none',
+              backgroundColor: 'rgba(0, 255, 0, 0.1)',
+              pointerEvents: 'none'
+            }}
+          />
+          {/* Game state overlays */}
+          {gameState.gameWon && !loading && (
+            <div className="spatial-puzzle-overlay success">
+              <h3>Success! 🎉</h3>
+              <p>You reached the bottom safely!</p>
+            </div>
+          )}
+          {gameState.gameLost && !loading && (
+            <div className="spatial-puzzle-overlay failure">
+              <h3>Game Over! 💥</h3>
+              <p>You hit the obstacle. Try again!</p>
+              <button 
               onClick={readonly ? undefined : handleRetry}
-              style={{
-                marginTop: '10px',
-                padding: '8px 16px',
-                backgroundColor: '#0066CC',
-                color: 'white',
-                border: 'none',
-                borderRadius: '4px',
+                style={{
+                  marginTop: '10px',
+                  padding: '8px 16px',
+                  backgroundColor: '#0066CC',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '4px',
                 cursor: readonly ? 'not-allowed' : 'pointer',
-                fontSize: '14px'
-              }}
+                  fontSize: '14px'
+                }}
               disabled={readonly}
               onMouseOver={readonly ? undefined : (e) => {
-                e.currentTarget.style.backgroundColor = '#004499';
-              }}
+                  e.currentTarget.style.backgroundColor = '#004499';
+                }}
               onMouseOut={readonly ? undefined : (e) => {
-                e.currentTarget.style.backgroundColor = '#0066CC';
-              }}
-            >
-              Try Again
-            </button>
-          </div>
-        )}
-        {loading && (
-          <div className="spatial-puzzle-overlay loading">
-            <p>Processing...</p>
-          </div>
-        )}
-      </div>
+                  e.currentTarget.style.backgroundColor = '#0066CC';
+                }}
+              >
+                Try Again
+              </button>
+            </div>
+          )}
+          {loading && (
+            <div className="spatial-puzzle-overlay loading">
+              <p>Processing...</p>
+            </div>
+          )}
+        </div>
       {feedback && (
         <div className={`spatial-puzzle-feedback ${feedback.includes('Success') ? 'success' : 'error'}`}>
           {feedback}

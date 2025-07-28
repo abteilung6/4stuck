@@ -1,16 +1,14 @@
 from fastapi import APIRouter, WebSocket, WebSocketDisconnect, Depends
-from .. import models, schemas, database
 from sqlalchemy.orm import Session
+from .. import database, models
 from ..utils.websocket_broadcast import (
-    add_connection, remove_connection, broadcast_state,
-    update_player_activity, update_mouse_position,
-    broadcast_puzzle_interaction, broadcast_team_communication,
-    broadcast_achievement, broadcast_mouse_cursor,
-    cache_user_color, get_user_color
+    add_connection, remove_connection, broadcast_state, 
+    broadcast_puzzle_interaction, broadcast_team_communication, 
+    broadcast_achievement, broadcast_mouse_cursor, get_user_color,
+    update_mouse_position
 )
 import json
-import logging
-logging.basicConfig(level=logging.INFO)
+
 
 router = APIRouter(prefix="/ws", tags=["websocket"])
 
@@ -24,9 +22,7 @@ def get_db():
 
 @router.websocket("/game/{session_id}")
 async def websocket_endpoint(websocket: WebSocket, session_id: int, db: Session = Depends(get_db)):
-    logging.info(f"[WS] About to accept websocket for session {session_id}")
     await websocket.accept()
-    logging.info(f"[WS] Websocket accepted for session {session_id}")
     
     add_connection(session_id, websocket)
     
@@ -34,10 +30,8 @@ async def websocket_endpoint(websocket: WebSocket, session_id: int, db: Session 
         # Send initial state
         await broadcast_state(session_id, db)
         while True:
-            logging.info(f"[WS] Waiting to receive text for session {session_id}")
             try:
                 data = await websocket.receive_text()
-                logging.info(f"[WS] Received data for session {session_id}: {data}")
                 
                 # Parse the incoming message
                 try:
@@ -54,22 +48,16 @@ async def websocket_endpoint(websocket: WebSocket, session_id: int, db: Session 
                         x = message.get("x")
                         y = message.get("y")
                         puzzle_area = message.get("puzzle_area")
+                        viewport = message.get("viewport")  # New viewport information
                         
                         if user_id and x is not None and y is not None:
                             update_mouse_position(session_id, user_id, x, y, puzzle_area)
-                            # Get user color from cache (no database query!)
+                            
+                            # Get the user's color for the cursor
                             color = get_user_color(session_id, user_id)
-                            
-                            # Fallback: if no cached color, get from database and cache it
-                            if not color:
-                                user = db.query(models.User).filter(models.User.id == user_id).first()
-                                if user and hasattr(user, 'color') and user.color:  # type: ignore # noqa
-                                    color = user.color  # type: ignore
-                                    cache_user_color(session_id, user_id, str(color))
-                            
                             if color:
-                                await broadcast_mouse_cursor(session_id, user_id, x, y, str(color))
-                            # Don't broadcast full state for mouse movements to reduce lag
+                                # Send separate mouse_cursor message to all other players with viewport info
+                                await broadcast_mouse_cursor(session_id, user_id, x, y, color, viewport)
                     
                     elif message_type == "puzzle_interaction":
                         # Handle puzzle interaction events
@@ -119,22 +107,12 @@ async def websocket_endpoint(websocket: WebSocket, session_id: int, db: Session 
                         # Unknown message type - just re-broadcast state
                         await broadcast_state(session_id, db)
                         
-                except json.JSONDecodeError:
-                    logging.warning(f"[WS] Invalid JSON received for session {session_id}: {data}")
-                    # Re-broadcast state on invalid JSON
+                except json.JSONDecodeError as e:
                     await broadcast_state(session_id, db)
                     
-            except RuntimeError as e:
-                if "WebSocket is not connected" in str(e):
-                    logging.info(f"[WS] Client disconnected immediately for session {session_id}")
-                    break
-                else:
-                    raise
-    except WebSocketDisconnect:
-        logging.info(f"[WS] WebSocketDisconnect for session {session_id}")
-    except Exception as e:
-        logging.error(f"[WS] Exception in websocket for session {session_id}: {e}")
+            except WebSocketDisconnect:
+                break
+            except Exception as e:
+                break
     finally:
-        # Clean up connection
-        remove_connection(session_id, websocket)
-        logging.info(f"[WS] Connection cleaned up for session {session_id}") 
+        remove_connection(session_id, websocket) 

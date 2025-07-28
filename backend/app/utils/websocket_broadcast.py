@@ -123,9 +123,8 @@ async def broadcast_state(session_id: int, db: Session):
         users = db.query(models.User).filter(models.User.team_id == team.id).all()
         puzzles = db.query(models.Puzzle).filter(models.Puzzle.game_session_id == session_id).all()
         
-        # Get current player activity and mouse positions
+        # Get current player activity (but NOT mouse positions - those are handled separately)
         current_activity = player_activity.get(session_id, {})
-        current_mouse_positions = mouse_positions.get(session_id, {})
         
         state = {
             "type": "state_update",
@@ -137,8 +136,8 @@ async def broadcast_state(session_id: int, db: Session):
                         "id": u.id, 
                         "username": u.username, 
                         "points": u.points,
-                        "activity": current_activity.get(int(u.id), {}),
-                        "mouse_position": current_mouse_positions.get(int(u.id), {})
+                        "activity": current_activity.get(int(u.id), {})
+                        # Removed mouse_position - this is now handled by separate mouse_cursor messages
                     } for u in users
                 ],
                 "puzzles": [
@@ -187,12 +186,18 @@ async def broadcast_achievement(session_id: int, user_id: int, achievement_type:
         "timestamp": datetime.utcnow().isoformat()
     })
 
-async def broadcast_mouse_cursor(session_id: int, user_id: int, x: int, y: int, color: str):
+async def broadcast_mouse_cursor(session_id: int, user_id: int, x: int, y: int, color: str, viewport: Optional[Dict[str, Any]] = None):
     """Broadcast mouse cursor position to all players in the session"""
-    await broadcast_message(session_id, "mouse_cursor", {
+    message_data = {
         "user_id": user_id,
         "x": x,
         "y": y,
         "color": color,
         "timestamp": datetime.utcnow().isoformat()
-    }) 
+    }
+    
+    # Include viewport information if provided
+    if viewport:
+        message_data["viewport"] = viewport
+    
+    await broadcast_message(session_id, "mouse_cursor", message_data) 

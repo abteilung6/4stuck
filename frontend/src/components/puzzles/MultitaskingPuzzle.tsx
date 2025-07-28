@@ -67,45 +67,45 @@ const MultitaskingPuzzle: React.FC<MultitaskingPuzzleProps> = ({
         <div className="timer">Time: {formatTime(timeRemaining)}</div>
       </div>
       <div className="main-content">
-        <div className="progress-container">
-          <div className="progress-dots">
-            {Array.from({ length: puzzleData.rows }, (_, index) => (
-              <div
-                key={index}
-                className={`progress-dot ${foundPositions[index] !== undefined ? 'found' : ''}`}
-              />
-            ))}
-          </div>
-        </div>
-        <div className="number-grid">
-          {grid.map((row, rowIndex) => (
-            <div key={rowIndex} className="grid-row">
-              {row.map((digit, colIndex) => {
-                const isFound = foundPositions[rowIndex] === colIndex;
-                const isClickable = !isGameOver && digit === '6' && !readonly;
-                return (
-                  <button
-                    key={colIndex}
-                    className={`grid-digit ${isFound ? 'found' : ''} ${isClickable ? 'clickable' : ''}`}
-                    onClick={isClickable ? () => handleDigitClick(rowIndex, colIndex) : undefined}
-                    disabled={!isClickable || isGameOver || readonly}
-                    aria-label={`Row ${rowIndex + 1}, Column ${colIndex + 1}: ${digit}`}
-                  >
-                    {digit}
-                  </button>
-                );
-              })}
-            </div>
+      <div className="progress-container">
+        <div className="progress-dots">
+          {Array.from({ length: puzzleData.rows }, (_, index) => (
+            <div
+              key={index}
+              className={`progress-dot ${foundPositions[index] !== undefined ? 'found' : ''}`}
+            />
           ))}
         </div>
-        {isGameOver && (
-          <div className="game-over">
-            {isComplete && <div className="success">✅ All 6s found!</div>}
-            {isTimeUp && <div className="time-up">⏰ Time's up!</div>}
-            {loading && <div className="loading">Submitting...</div>}
-            {feedback && <div className="feedback">{feedback}</div>}
+        </div>
+      <div className="number-grid">
+        {grid.map((row, rowIndex) => (
+          <div key={rowIndex} className="grid-row">
+            {row.map((digit, colIndex) => {
+              const isFound = foundPositions[rowIndex] === colIndex;
+                const isClickable = !isGameOver && digit === '6' && !readonly;
+              return (
+                <button
+                  key={colIndex}
+                  className={`grid-digit ${isFound ? 'found' : ''} ${isClickable ? 'clickable' : ''}`}
+                    onClick={isClickable ? () => handleDigitClick(rowIndex, colIndex) : undefined}
+                    disabled={!isClickable || isGameOver || readonly}
+                  aria-label={`Row ${rowIndex + 1}, Column ${colIndex + 1}: ${digit}`}
+                >
+                  {digit}
+                </button>
+              );
+            })}
           </div>
-        )}
+        ))}
+      </div>
+      {isGameOver && (
+        <div className="game-over">
+          {isComplete && <div className="success">✅ All 6s found!</div>}
+          {isTimeUp && <div className="time-up">⏰ Time's up!</div>}
+          {loading && <div className="loading">Submitting...</div>}
+          {feedback && <div className="feedback">{feedback}</div>}
+        </div>
+      )}
       </div>
     </div>
   );

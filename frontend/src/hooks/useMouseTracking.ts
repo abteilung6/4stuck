@@ -1,11 +1,12 @@
-import { useEffect, useRef, useCallback } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
+import { getViewportInfo } from '../utils/cursorPositioning';
 
-interface MousePosition {
+export interface MousePosition {
   x: number;
   y: number;
 }
 
-interface UseMouseTrackingProps {
+export interface UseMouseTrackingProps {
   sessionId: number;
   userId: number;
   websocket: WebSocket | null;
@@ -23,6 +24,7 @@ export const useMouseTracking = ({
 
   const sendMousePosition = useCallback((x: number, y: number) => {
     if (!websocket || websocket.readyState !== WebSocket.OPEN) {
+      console.log('🔍 useMouseTracking: WebSocket not ready, cannot send mouse position');
       return;
     }
 
@@ -35,19 +37,33 @@ export const useMouseTracking = ({
       }
     }
 
+    // Get current viewport information for better remote positioning
+    const viewport = getViewportInfo();
+
     const message = {
       type: 'mouse_position',
       user_id: userId,
       x: x,
       y: y,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
+      viewport: {
+        screenWidth: viewport.screenWidth,
+        screenHeight: viewport.screenHeight,
+        viewportWidth: viewport.viewportWidth,
+        viewportHeight: viewport.viewportHeight,
+        devicePixelRatio: viewport.devicePixelRatio,
+        zoomLevel: viewport.zoomLevel
+      }
     };
 
+    console.log('🔍 useMouseTracking: Sending mouse position:', message);
     websocket.send(JSON.stringify(message));
     lastSentPosition.current = { x, y };
   }, [websocket, userId]);
 
   const handleMouseMove = useCallback((event: MouseEvent) => {
+    console.log('🔍 useMouseTracking: Mouse moved to:', { x: event.clientX, y: event.clientY });
+    
     // Clear existing timeout
     if (throttleTimeoutRef.current) {
       clearTimeout(throttleTimeoutRef.current);

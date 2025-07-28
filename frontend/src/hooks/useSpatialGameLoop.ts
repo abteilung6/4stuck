@@ -36,6 +36,7 @@ export function useSpatialGameLoop({
 }: UseSpatialGameLoopProps) {
   const animationRef = useRef<number | undefined>(undefined);
   const gameStateRef = useRef<GameState>(gameState);
+  const gameConfigRef = useRef<GameConfig>(gameConfig);
   const callbacksRef = useRef<GameCallbacks>(callbacks);
   const stateSettersRef = useRef<StateSetters>(stateSetters);
 
@@ -43,6 +44,10 @@ export function useSpatialGameLoop({
   useEffect(() => {
     gameStateRef.current = gameState;
   }, [gameState]);
+
+  useEffect(() => {
+    gameConfigRef.current = gameConfig;
+  }, [gameConfig]);
 
   useEffect(() => {
     callbacksRef.current = callbacks;
@@ -68,7 +73,7 @@ export function useSpatialGameLoop({
       const currentStateSetters = stateSettersRef.current;
 
       // Process game tick
-      const { newState, shouldEndGame, gameResult } = processGameTick(currentState, gameConfig);
+      const { newState, shouldEndGame, gameResult } = processGameTick(currentState, gameConfigRef.current);
 
       // Update state with new obstacle position and direction
       currentStateSetters.setObstaclePosition(newState.obstaclePosition);
@@ -95,7 +100,7 @@ export function useSpatialGameLoop({
 
     // Start the game loop
     animationRef.current = requestAnimationFrame(gameTick);
-  }, [isActive, gameConfig, stopGameLoop]);
+  }, [isActive, stopGameLoop]);
 
   // Cleanup on unmount
   useEffect(() => {

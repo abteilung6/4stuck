@@ -86,10 +86,10 @@ export const MemoryPuzzle: React.FC<MemoryPuzzleProps> = ({
     <Card>
       {readonly && <div className="spectator-overlay">Spectating</div>}
       <form onSubmit={handleSubmit} className="memory-form">
-        <QuestionText>
-          <strong>Question:</strong> What color is associated with the number{' '}
-          {puzzleData.question_number}?
-        </QuestionText>
+      <QuestionText>
+        <strong>Question:</strong> What color is associated with the number{' '}
+        {puzzleData.question_number}?
+      </QuestionText>
         <div className="choices" role="radiogroup" aria-label="Choices">
           {puzzleData.choices.map((choice: string) => (
             <label

@@ -129,7 +129,7 @@ describe('spatialPuzzleLogic', () => {
       const result = checkWinCondition(circlePos, gameHeight, circleRadius);
       expect(result).toBe(false);
     });
-
+      
     it('should not trigger win at the top', () => {
       const circlePos = { x: 100, y: 0 }; // At the very top
       const gameHeight = 600;

@@ -16,7 +16,7 @@ import CountdownView from './CountdownView';
 import './CountdownView.css';
 import GameResultsView from './GameResultsView';
 import TeamCoordinationView from './TeamCoordinationView';
-import { MouseCursorOverlay } from './MouseCursorOverlay';
+import MouseCursorOverlay from './MouseCursorOverlay';
 import { useMouseTracking } from '../hooks/useMouseTracking';
 import GameGridLayout from './GameGridLayout';
 import { useContext } from 'react';
@@ -52,7 +52,7 @@ const GameSessionView: React.FC<GameSessionViewProps> = ({ session, user, team }
   useMouseTracking({
     sessionId: session.id,
     userId: user.id,
-    websocket,
+    websocket: websocket, // Use the WebSocket from useGameLogic
     throttleMs: 100 // Configurable throttle
   });
 
@@ -171,6 +171,11 @@ const GameSessionView: React.FC<GameSessionViewProps> = ({ session, user, team }
           sessionId={session.id}
           currentUserId={user.id}
           websocket={websocket}
+          teamMembers={(team?.members || []).map((member: any) => ({
+            id: member.id,
+            username: member.username,
+            color: member.color || undefined
+          }))}
         />
       )}
     </>
@@ -303,6 +308,11 @@ const ActiveGameView: React.FC<{
           sessionId={sessionId}
           currentUserId={user.id}
           websocket={websocket}
+          teamMembers={(team?.members || []).map((member: any) => ({
+            id: member.id,
+            username: member.username,
+            color: member.color || undefined
+          }))}
         />
       )}
     </>
