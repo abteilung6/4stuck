@@ -1,0 +1,178 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "4stuck/schemas/core/v1/player.json",
+  "title": "Player Domain Models",
+  "description": "Player and team-related data models",
+  "definitions": {
+    "Player": {
+      "title": "Player",
+      "description": "A player in the game",
+      "type": "object",
+      "required": ["id", "username", "team_id", "points"],
+      "properties": {
+        "id": {
+          "type": "integer",
+          "description": "Unique player identifier"
+        },
+        "username": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 50,
+          "description": "Player's display name"
+        },
+        "team_id": {
+          "type": "integer",
+          "description": "ID of the team this player belongs to"
+        },
+        "color": {
+          "$ref": "4stuck/schemas/core/v1/communication.json#/definitions/PlayerColor",
+          "description": "Color assigned to this player for identification"
+        },
+        "points": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Current points (0 = eliminated)"
+        },
+        "is_eliminated": {
+          "type": "boolean",
+          "description": "Whether the player has been eliminated from the game"
+        },
+        "is_ready": {
+          "type": "boolean",
+          "description": "Whether the player is ready to start the game"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time",
+          "description": "When the player was created"
+        },
+        "last_active": {
+          "type": "string",
+          "format": "date-time",
+          "description": "When the player was last active"
+        }
+      },
+      "examples": [
+        {
+          "id": 1,
+          "username": "Alice",
+          "team_id": 1,
+          "color": "blue",
+          "points": 15,
+          "is_eliminated": false,
+          "is_ready": true,
+          "created_at": "2024-01-15T10:00:00Z",
+          "last_active": "2024-01-15T10:30:00Z"
+        }
+      ]
+    },
+    "Team": {
+      "title": "Team",
+      "description": "A team of players",
+      "type": "object",
+      "required": ["id", "name"],
+      "properties": {
+        "id": {
+          "type": "integer",
+          "description": "Unique team identifier"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 50,
+          "description": "Team name"
+        },
+        "members": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Player"
+          },
+          "description": "Players in this team"
+        },
+        "player_count": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 4,
+          "description": "Number of players in the team"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time",
+          "description": "When the team was created"
+        }
+      },
+      "examples": [
+        {
+          "id": 1,
+          "name": "Team Alpha",
+          "player_count": 3,
+          "created_at": "2024-01-15T10:00:00Z"
+        }
+      ]
+    },
+    "TeamStatus": {
+      "title": "Team Status",
+      "description": "Current status of a team",
+      "type": "string",
+      "enum": ["available", "full", "in_game", "finished"],
+      "description": "Team availability status"
+    },
+    "AvailableTeam": {
+      "title": "Available Team",
+      "description": "Team that can accept new players",
+      "type": "object",
+      "required": ["id", "name", "members", "player_count", "status"],
+      "properties": {
+        "id": {
+          "type": "integer",
+          "description": "Team identifier"
+        },
+        "name": {
+          "type": "string",
+          "description": "Team name"
+        },
+        "members": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Player"
+          },
+          "description": "Current team members"
+        },
+        "player_count": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 4,
+          "description": "Number of players in the team"
+        },
+        "max_players": {
+          "type": "integer",
+          "default": 4,
+          "description": "Maximum number of players allowed in the team"
+        },
+        "status": {
+          "$ref": "#/definitions/TeamStatus",
+          "description": "Current team status"
+        },
+        "game_session_id": {
+          "type": "integer",
+          "description": "ID of active game session (if any)"
+        },
+        "game_status": {
+          "type": "string",
+          "enum": ["lobby", "countdown", "active", "finished"],
+          "description": "Status of active game session (if any)"
+        }
+      },
+      "examples": [
+        {
+          "id": 1,
+          "name": "Team Alpha",
+          "player_count": 2,
+          "status": "available",
+          "game_session_id": null,
+          "game_status": null
+        }
+      ]
+    }
+  }
+} 

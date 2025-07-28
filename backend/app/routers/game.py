@@ -1,8 +1,11 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
-from .. import models, schemas, database
+from .. import models, database
+from ..schemas.v1.api.requests import GameSessionCreate, GameSessionStateUpdate
+from ..schemas.v1.api.responses import GameSessionOut
 from ..services.countdown_service import countdown_service
 from ..utils.websocket_broadcast import cache_user_color
+from datetime import datetime, timezone
 
 router = APIRouter(prefix="/game", tags=["game"])
 
@@ -13,8 +16,8 @@ def get_db():
     finally:
         db.close()
 
-@router.post("/session", response_model=schemas.GameSessionOut)
-def create_game_session(session: schemas.GameSessionCreate, db: Session = Depends(get_db)):
+@router.post("/session", response_model=GameSessionOut)
+def create_game_session(session: GameSessionCreate, db: Session = Depends(get_db)):
     team = db.query(models.Team).filter(models.Team.id == session.team_id).first()
     if not team:
         raise HTTPException(status_code=404, detail="Team not found")
@@ -57,14 +60,14 @@ def create_game_session(session: schemas.GameSessionCreate, db: Session = Depend
     
     return new_session
 
-@router.get("/session/{team_id}", response_model=schemas.GameSessionOut)
+@router.get("/session/{team_id}", response_model=GameSessionOut)
 def get_current_session(team_id: int, db: Session = Depends(get_db)):
     session = db.query(models.GameSession).filter_by(team_id=team_id).order_by(models.GameSession.id.desc()).first()
     if not session:
         raise HTTPException(status_code=404, detail="No game session for this team")
     return session
 
-@router.post("/session/{session_id}/start", response_model=schemas.GameSessionOut)
+@router.post("/session/{session_id}/start", response_model=GameSessionOut)
 def start_game_session(session_id: int, db: Session = Depends(get_db)):
     """Start the game (transition from countdown to active)"""
     session = db.query(models.GameSession).filter(models.GameSession.id == session_id).first()
@@ -74,9 +77,8 @@ def start_game_session(session_id: int, db: Session = Depends(get_db)):
     if session.status != "countdown":
         raise HTTPException(status_code=400, detail="Game session must be in countdown state to start")
     
-    from datetime import datetime
     session.status = "active"
-    session.started_at = datetime.utcnow()
+    session.started_at = datetime.now(timezone.utc)
     db.commit()
     db.refresh(session)
     
@@ -93,98 +95,55 @@ def start_game_session(session_id: int, db: Session = Depends(get_db)):
     
     return session
 
-@router.post("/session/{session_id}/state", response_model=schemas.GameSessionOut)
-def update_game_session_state(session_id: int, state_update: schemas.GameSessionStateUpdate, db: Session = Depends(get_db)):
+@router.post("/session/{session_id}/state", response_model=GameSessionOut)
+def update_game_session_state(session_id: int, state_update: GameSessionStateUpdate, db: Session = Depends(get_db)):
     """Update game session state (lobby, countdown, active, finished)"""
     session = db.query(models.GameSession).filter(models.GameSession.id == session_id).first()
     if not session:
         raise HTTPException(status_code=404, detail="Game session not found")
     
-    valid_states = ["lobby", "countdown", "active", "finished"]
-    if state_update.status not in valid_states:
-        raise HTTPException(status_code=400, detail=f"Invalid state. Must be one of: {valid_states}")
-    
-    # Validate state transitions
+    # Validate state transition
     valid_transitions = {
         "lobby": ["countdown"],
         "countdown": ["active"],
         "active": ["finished"],
-        "finished": []  # No transitions from finished state
+        "finished": []  # No transitions from finished
     }
     
     current_status = session.status
-    if state_update.status not in valid_transitions.get(current_status, []):
+    new_status = state_update.status
+    
+    if new_status not in valid_transitions.get(current_status, []):
         raise HTTPException(
             status_code=400, 
-            detail=f"Invalid state transition from '{current_status}' to '{state_update.status}'. "
-                   f"Valid transitions from '{current_status}': {valid_transitions.get(current_status, [])}"
+            detail=f"Invalid state transition from {current_status} to {new_status}"
         )
     
-    session.status = state_update.status
+    # Update session state
+    session.status = new_status
     
-    # Start countdown when transitioning to countdown state
-    if state_update.status == "countdown":
-        if not countdown_service.start_countdown(session_id, duration_seconds=5):
-            # If countdown is already running, this is fine - just log it
-            print(f"Countdown already running for session {session_id}")
-    
-    # Set started_at when transitioning to active
-    if state_update.status == "active" and not session.started_at:
-        from datetime import datetime
-        session.started_at = datetime.utcnow()
-        
-        # Initialize all players with starting points (15)
-        team_users = db.query(models.User).filter(models.User.team_id == session.team_id).all()
-        for user in team_users:
-            user.points = 15  # Reset to starting points
-        print(f"Initialized {len(team_users)} players with 15 points for session {session_id}")
-        
-        # Create initial puzzles for all players
-        import random
-        puzzle_types = ["memory", "spatial", "concentration", "multitasking"]
-        for user in team_users:
-            # Randomly select puzzle type
-            puzzle_type = random.choice(puzzle_types)
-            
-            # Generate puzzle data based on type
-            if puzzle_type == "memory":
-                from ..routers.puzzle import generate_memory_puzzle
-                data, correct_answer = generate_memory_puzzle()
-            elif puzzle_type == "spatial":
-                data = {}
-                correct_answer = "solved"
-            elif puzzle_type == "concentration":
-                from ..routers.puzzle import generate_concentration_puzzle
-                data, correct_answer = generate_concentration_puzzle()
-            elif puzzle_type == "multitasking":
-                data = {}
-                correct_answer = "solved"
-            
-            # Create the puzzle
-            new_puzzle = models.Puzzle(
-                type=puzzle_type,
-                data=data,
-                correct_answer=correct_answer,
-                status="active",
-                game_session_id=session_id,
-                user_id=user.id
-            )
-            db.add(new_puzzle)
-        
-        print(f"Created initial puzzles for {len(team_users)} players in session {session_id}")
-    
-    # Set ended_at when transitioning to finished
-    if state_update.status == "finished" and not session.ended_at:
-        from datetime import datetime
-        session.ended_at = datetime.utcnow()
+    # Set timestamps for specific transitions
+    if new_status == "active" and current_status == "countdown":
+        session.started_at = datetime.now(timezone.utc)
+    elif new_status == "finished" and current_status == "active":
+        session.ended_at = datetime.now(timezone.utc)
+        # Calculate survival time
         if session.started_at:
-            session.survival_time_seconds = int((session.ended_at - session.started_at).total_seconds())
+            # Handle both timezone-aware and timezone-naive datetimes
+            started_at = session.started_at
+            ended_at = session.ended_at
+            
+            # If started_at is timezone-naive, assume UTC
+            if started_at.tzinfo is None:
+                started_at = started_at.replace(tzinfo=timezone.utc)
+            
+            survival_time = (ended_at - started_at).total_seconds()
+            session.survival_time_seconds = int(survival_time)
     
-    # Commit all changes (session status, player points, and puzzles)
     db.commit()
     db.refresh(session)
     
-    # Broadcast state update AFTER committing to ensure puzzles are available
+    # Broadcast state update
     from ..utils.websocket_broadcast import broadcast_state
     import asyncio
     try:
@@ -192,7 +151,6 @@ def update_game_session_state(session_id: int, state_update: schemas.GameSession
         asyncio.set_event_loop(loop)
         loop.run_until_complete(broadcast_state(session_id, db))
         loop.close()
-        print(f"Successfully broadcasted state update with puzzles for session {session_id}")
     except Exception as e:
         print(f"Failed to broadcast state update for session {session_id}: {e}")
     

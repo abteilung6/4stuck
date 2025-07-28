@@ -1,0 +1,374 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "4stuck/schemas/websocket/v1/messages.json",
+  "title": "WebSocket Message Models",
+  "description": "WebSocket message types and structures for real-time communication",
+  "definitions": {
+    "MessageType": {
+      "title": "Message Type",
+      "description": "Types of WebSocket messages",
+      "type": "string",
+      "enum": [
+        "mouse_position",
+        "puzzle_interaction", 
+        "state_update",
+        "ping",
+        "pong",
+        "error",
+        "game_event"
+      ],
+      "description": "Available WebSocket message types"
+    },
+    "WebSocketMessage": {
+      "title": "WebSocket Message",
+      "description": "Base structure for all WebSocket messages",
+      "type": "object",
+      "required": ["type", "timestamp"],
+      "properties": {
+        "type": {
+          "$ref": "#/definitions/MessageType",
+          "description": "Type of message"
+        },
+        "timestamp": {
+          "type": "string",
+          "format": "date-time",
+          "description": "When the message was sent"
+        },
+        "session_id": {
+          "type": "integer",
+          "description": "Game session ID this message belongs to"
+        },
+        "user_id": {
+          "type": "integer",
+          "description": "ID of the user sending the message (for incoming messages)"
+        },
+        "data": {
+          "description": "Message-specific data payload"
+        }
+      },
+      "examples": [
+        {
+          "type": "mouse_position",
+          "timestamp": "2024-01-15T10:30:00Z",
+          "session_id": 1,
+          "data": {
+            "user_id": 1,
+            "x": 150,
+            "y": 200,
+            "color": "blue"
+          }
+        }
+      ]
+    },
+    "IncomingMessage": {
+      "title": "Incoming Message",
+      "description": "Message sent from client to server",
+      "type": "object",
+      "required": ["type"],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": ["mouse_position", "puzzle_interaction", "ping", "team_communication", "player_activity", "achievement"]
+        },
+        "user_id": {
+          "type": "integer",
+          "description": "ID of the user sending the message"
+        },
+        "x": {
+          "type": "number",
+          "description": "X coordinate (for mouse_position)"
+        },
+        "y": {
+          "type": "number",
+          "description": "Y coordinate (for mouse_position)"
+        },
+        "normalized_x": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Normalized X coordinate (0-1)"
+        },
+        "normalized_y": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Normalized Y coordinate (0-1)"
+        },
+        "puzzle_id": {
+          "type": "integer",
+          "description": "Puzzle ID (for puzzle_interaction)"
+        },
+        "interaction_type": {
+          "type": "string",
+          "enum": ["click", "drag", "submit", "timeout", "start", "complete"],
+          "description": "Type of puzzle interaction"
+        },
+        "interaction_data": {
+          "type": "object",
+          "description": "Additional interaction data",
+          "additionalProperties": true
+        },
+        "answer": {
+          "type": "string",
+          "description": "Puzzle answer (for submit interaction)"
+        },
+        "message_type": {
+          "type": "string",
+          "description": "Type of team communication or achievement"
+        },
+        "message_data": {
+          "type": "object",
+          "description": "Additional data for team communication or achievement",
+          "additionalProperties": true
+        },
+        "activity_data": {
+          "type": "object",
+          "description": "Player activity data",
+          "additionalProperties": true
+        }
+      },
+      "examples": [
+        {
+          "type": "mouse_position",
+          "user_id": 1,
+          "x": 150,
+          "y": 200,
+          "normalized_x": 0.5,
+          "normalized_y": 0.6
+        },
+        {
+          "type": "puzzle_interaction",
+          "user_id": 1,
+          "puzzle_id": 123,
+          "interaction_type": "submit",
+          "answer": "blue"
+        },
+        {
+          "type": "ping"
+        },
+        {
+          "type": "team_communication",
+          "user_id": 1,
+          "message_type": "encouragement",
+          "message_data": {"text": "Great job team!"}
+        },
+        {
+          "type": "player_activity",
+          "user_id": 1,
+          "activity_data": {"status": "focused", "puzzle_type": "memory"}
+        },
+        {
+          "type": "achievement",
+          "user_id": 1,
+          "message_type": "puzzle_solved",
+          "message_data": {"puzzle_id": 123, "time": 15.5}
+        }
+      ]
+    },
+    "OutgoingMessage": {
+      "title": "Outgoing Message",
+      "description": "Message sent from server to client",
+      "type": "object",
+      "required": ["type", "timestamp"],
+      "properties": {
+        "type": {
+          "$ref": "#/definitions/MessageType",
+          "description": "Type of message"
+        },
+        "timestamp": {
+          "type": "string",
+          "format": "date-time",
+          "description": "When the message was sent"
+        },
+        "data": {
+          "description": "Message-specific data payload"
+        }
+      },
+      "examples": [
+        {
+          "type": "state_update",
+          "timestamp": "2024-01-15T10:30:00Z",
+          "data": {
+            "session": {
+              "id": 1,
+              "status": "active"
+            },
+            "players": [
+              {
+                "id": 1,
+                "username": "Alice",
+                "points": 15
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "MousePositionMessage": {
+      "title": "Mouse Position Message",
+      "description": "Real-time mouse position broadcast",
+      "type": "object",
+      "required": ["type", "timestamp", "data"],
+      "properties": {
+        "type": {
+          "const": "mouse_position"
+        },
+        "timestamp": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "data": {
+          "$ref": "4stuck/schemas/core/v1/communication.json#/definitions/MousePosition"
+        }
+      }
+    },
+    "PuzzleInteractionMessage": {
+      "title": "Puzzle Interaction Message",
+      "description": "Puzzle interaction broadcast",
+      "type": "object",
+      "required": ["type", "timestamp", "data"],
+      "properties": {
+        "type": {
+          "const": "puzzle_interaction"
+        },
+        "timestamp": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "data": {
+          "$ref": "4stuck/schemas/core/v1/communication.json#/definitions/PuzzleInteraction"
+        }
+      }
+    },
+    "StateUpdateMessage": {
+      "title": "State Update Message",
+      "description": "Game state update broadcast",
+      "type": "object",
+      "required": ["type", "timestamp", "data"],
+      "properties": {
+        "type": {
+          "const": "state_update"
+        },
+        "timestamp": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "data": {
+          "$ref": "4stuck/schemas/core/v1/game.json#/definitions/GameState"
+        }
+      }
+    },
+    "GameEventMessage": {
+      "title": "Game Event Message",
+      "description": "Game event notification",
+      "type": "object",
+      "required": ["type", "timestamp", "data"],
+      "properties": {
+        "type": {
+          "const": "game_event"
+        },
+        "timestamp": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "data": {
+          "type": "object",
+          "required": ["event_type"],
+          "properties": {
+            "event_type": {
+              "type": "string",
+              "enum": [
+                "player_joined",
+                "player_left", 
+                "game_started",
+                "game_ended",
+                "puzzle_solved",
+                "player_eliminated",
+                "point_decay",
+                "countdown_started",
+                "countdown_completed"
+              ]
+            },
+            "user_id": {
+              "type": "integer",
+              "description": "Player ID related to the event"
+            },
+            "message": {
+              "type": "string",
+              "description": "Human-readable event message"
+            },
+            "details": {
+              "type": "object",
+              "description": "Additional event details",
+              "additionalProperties": true
+            }
+          }
+        }
+      }
+    },
+    "ErrorMessage": {
+      "title": "Error Message",
+      "description": "Error notification from server",
+      "type": "object",
+      "required": ["type", "timestamp", "data"],
+      "properties": {
+        "type": {
+          "const": "error"
+        },
+        "timestamp": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "data": {
+          "type": "object",
+          "required": ["code", "message"],
+          "properties": {
+            "code": {
+              "type": "string",
+              "description": "Error code"
+            },
+            "message": {
+              "type": "string",
+              "description": "Human-readable error message"
+            },
+            "details": {
+              "type": "object",
+              "description": "Additional error details",
+              "additionalProperties": true
+            }
+          }
+        }
+      }
+    },
+    "PingMessage": {
+      "title": "Ping Message",
+      "description": "Ping message for connection health check",
+      "type": "object",
+      "required": ["type", "timestamp"],
+      "properties": {
+        "type": {
+          "const": "ping"
+        },
+        "timestamp": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "PongMessage": {
+      "title": "Pong Message",
+      "description": "Pong response to ping",
+      "type": "object",
+      "required": ["type", "timestamp"],
+      "properties": {
+        "type": {
+          "const": "pong"
+        },
+        "timestamp": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    }
+  }
+} 

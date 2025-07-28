@@ -86,7 +86,8 @@ class TestSpatialPuzzleNextTask:
             # Submit correct answer
             answer_resp = client.post("/puzzle/answer", json={
                 "puzzle_id": puzzle["id"], 
-                "answer": "solved"
+                "answer": "solved",
+                "user_id": user1_id
             })
             assert answer_resp.status_code == 200
             result = answer_resp.json()
@@ -149,7 +150,8 @@ class TestSpatialPuzzleNextTask:
             # Submit incorrect answer
             answer_resp = client.post("/puzzle/answer", json={
                 "puzzle_id": puzzle["id"], 
-                "answer": "collision"
+                "answer": "collision",
+                "user_id": user_id
             })
             assert answer_resp.status_code == 200
             result = answer_resp.json()
@@ -214,7 +216,8 @@ class TestSpatialPuzzleNextTask:
                 # Submit correct answer
                 answer_resp = client.post("/puzzle/answer", json={
                     "puzzle_id": puzzle["id"], 
-                    "answer": "solved"
+                    "answer": "solved",
+                    "user_id": user_id
                 })
                 assert answer_resp.status_code == 200
                 result = answer_resp.json()
@@ -284,7 +287,8 @@ class TestSpatialPuzzleNextTask:
             # Submit correct answer
             answer_resp = client.post("/puzzle/answer", json={
                 "puzzle_id": puzzle["id"], 
-                "answer": "solved"
+                "answer": "solved",
+                "user_id": user1_id
             })
             assert answer_resp.status_code == 200
             result = answer_resp.json()
@@ -358,7 +362,8 @@ class TestSpatialPuzzleNextTask:
             # Submit correct answer
             answer_resp = client.post("/puzzle/answer", json={
                 "puzzle_id": puzzle["id"], 
-                "answer": "solved"
+                "answer": "solved",
+                "user_id": user1_id
             })
             assert answer_resp.status_code == 200
             result = answer_resp.json()
@@ -420,7 +425,8 @@ class TestSpatialPuzzleNextTask:
             # Submit correct answer
             answer_resp = client.post("/puzzle/answer", json={
                 "puzzle_id": puzzle["id"], 
-                "answer": "solved"
+                "answer": "solved",
+                "user_id": user_id
             })
             assert answer_resp.status_code == 200
             result = answer_resp.json()

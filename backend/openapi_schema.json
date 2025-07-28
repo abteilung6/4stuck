@@ -1,0 +1,1493 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "FastAPI",
+    "version": "0.1.0"
+  },
+  "paths": {
+    "/team/register": {
+      "post": {
+        "tags": [
+          "team"
+        ],
+        "summary": "Register User",
+        "operationId": "register_user_team_register_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/team/create": {
+      "post": {
+        "tags": [
+          "team"
+        ],
+        "summary": "Create Team",
+        "operationId": "create_team_team_create_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TeamCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TeamOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/team/join": {
+      "post": {
+        "tags": [
+          "team"
+        ],
+        "summary": "Join Team",
+        "operationId": "join_team_team_join_post",
+        "parameters": [
+          {
+            "name": "username",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Username"
+            }
+          },
+          {
+            "name": "team_id",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Team Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/team/assign-color": {
+      "post": {
+        "tags": [
+          "team"
+        ],
+        "summary": "Assign Color To User",
+        "description": "Assign a unique color to a user within their team.",
+        "operationId": "assign_color_to_user_team_assign_color_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AssignColorRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ColorAssignmentResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/team/{team_id}/validate-colors": {
+      "get": {
+        "tags": [
+          "team"
+        ],
+        "summary": "Validate Team Colors",
+        "description": "Validate that all players in a team have unique colors.",
+        "operationId": "validate_team_colors_team__team_id__validate_colors_get",
+        "parameters": [
+          {
+            "name": "team_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Team Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TeamColorValidationResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/team/{team_id}/resolve-conflicts": {
+      "post": {
+        "tags": [
+          "team"
+        ],
+        "summary": "Resolve Color Conflicts",
+        "description": "Resolve any color conflicts in a team by reassigning colors.",
+        "operationId": "resolve_color_conflicts_team__team_id__resolve_conflicts_post",
+        "parameters": [
+          {
+            "name": "team_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Team Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ColorConflictResolutionResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/team/{team_id}/available-colors": {
+      "get": {
+        "tags": [
+          "team"
+        ],
+        "summary": "Get Available Colors",
+        "description": "Get available and used colors for a team.",
+        "operationId": "get_available_colors_team__team_id__available_colors_get",
+        "parameters": [
+          {
+            "name": "team_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Team Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AvailableColorsResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/team/available": {
+      "get": {
+        "tags": [
+          "team"
+        ],
+        "summary": "Get Available Teams",
+        "description": "Get only teams that are available for players to join.\nA team is available if:\n1. It has fewer than 4 players\n2. It has no active game session (lobby, countdown, active)",
+        "operationId": "get_available_teams_team_available_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/AvailableTeam"
+                  },
+                  "type": "array",
+                  "title": "Response Get Available Teams Team Available Get"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/team/": {
+      "get": {
+        "tags": [
+          "team"
+        ],
+        "summary": "List Teams",
+        "description": "List all teams (for admin/debug purposes).\nFor user-facing team listing, use /team/available instead.",
+        "operationId": "list_teams_team__get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/TeamWithMembersOut"
+                  },
+                  "type": "array",
+                  "title": "Response List Teams Team  Get"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/game/session": {
+      "post": {
+        "tags": [
+          "game"
+        ],
+        "summary": "Create Game Session",
+        "operationId": "create_game_session_game_session_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GameSessionCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GameSessionOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/game/session/{team_id}": {
+      "get": {
+        "tags": [
+          "game"
+        ],
+        "summary": "Get Current Session",
+        "operationId": "get_current_session_game_session__team_id__get",
+        "parameters": [
+          {
+            "name": "team_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Team Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GameSessionOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/game/session/{session_id}/start": {
+      "post": {
+        "tags": [
+          "game"
+        ],
+        "summary": "Start Game Session",
+        "description": "Start the game (transition from countdown to active)",
+        "operationId": "start_game_session_game_session__session_id__start_post",
+        "parameters": [
+          {
+            "name": "session_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Session Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GameSessionOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/game/session/{session_id}/state": {
+      "post": {
+        "tags": [
+          "game"
+        ],
+        "summary": "Update Game Session State",
+        "description": "Update game session state (lobby, countdown, active, finished)",
+        "operationId": "update_game_session_state_game_session__session_id__state_post",
+        "parameters": [
+          {
+            "name": "session_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Session Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GameSessionStateUpdate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GameSessionOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/puzzle/create": {
+      "post": {
+        "tags": [
+          "puzzle"
+        ],
+        "summary": "Create Puzzle",
+        "operationId": "create_puzzle_puzzle_create_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PuzzleCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PuzzleState"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/puzzle/current/{user_id}": {
+      "get": {
+        "tags": [
+          "puzzle"
+        ],
+        "summary": "Get Current Puzzle",
+        "operationId": "get_current_puzzle_puzzle_current__user_id__get",
+        "parameters": [
+          {
+            "name": "user_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "User Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PuzzleState"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/puzzle/answer": {
+      "post": {
+        "tags": [
+          "puzzle"
+        ],
+        "summary": "Submit Answer",
+        "operationId": "submit_answer_puzzle_answer_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PuzzleAnswer"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PuzzleResult"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/puzzle/points/{team_id}": {
+      "get": {
+        "tags": [
+          "puzzle"
+        ],
+        "summary": "Get Team Points",
+        "operationId": "get_team_points_puzzle_points__team_id__get",
+        "parameters": [
+          {
+            "name": "team_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Team Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TeamPoints"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/puzzle/decay/{team_id}": {
+      "post": {
+        "tags": [
+          "puzzle"
+        ],
+        "summary": "Decay Points",
+        "operationId": "decay_points_puzzle_decay__team_id__post",
+        "parameters": [
+          {
+            "name": "team_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Team Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/": {
+      "get": {
+        "summary": "Read Root",
+        "operationId": "read_root__get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "AssignColorRequest": {
+        "properties": {
+          "user_id": {
+            "type": "integer",
+            "title": "User Id",
+            "description": "ID of the user to assign color to"
+          },
+          "team_id": {
+            "type": "integer",
+            "title": "Team Id",
+            "description": "ID of the team the user belongs to"
+          },
+          "preferred_color": {
+            "anyOf": [
+              {},
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Preferred Color",
+            "description": "Preferred color (optional)"
+          }
+        },
+        "type": "object",
+        "required": [
+          "user_id",
+          "team_id"
+        ],
+        "title": "AssignColorRequest",
+        "description": "Assign Color Request: Request to assign a color to a user"
+      },
+      "AvailableColorsResponse": {
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "title": "Success"
+          },
+          "data": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Data"
+          },
+          "error": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Error"
+          }
+        },
+        "type": "object",
+        "required": [
+          "success"
+        ],
+        "title": "AvailableColorsResponse",
+        "description": "Available Colors Response: Response for available colors"
+      },
+      "AvailableTeam": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id",
+            "description": "Team identifier"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name",
+            "description": "Team name"
+          },
+          "members": {
+            "items": {},
+            "type": "array",
+            "title": "Members",
+            "description": "Current team members"
+          },
+          "player_count": {
+            "type": "integer",
+            "title": "Player Count",
+            "description": "Number of players in the team"
+          },
+          "max_players": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Max Players",
+            "description": "Maximum number of players allowed in the team"
+          },
+          "status": {
+            "title": "Status",
+            "description": "Current team status"
+          },
+          "game_session_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Game Session Id",
+            "description": "ID of active game session (if any)"
+          },
+          "game_status": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "lobby",
+                  "countdown",
+                  "active",
+                  "finished"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Game Status",
+            "description": "Status of active game session (if any)"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "members",
+          "player_count",
+          "status"
+        ],
+        "title": "AvailableTeam",
+        "description": "Available Team: Team that can accept new players"
+      },
+      "ColorAssignmentResponse": {
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "title": "Success"
+          },
+          "data": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Data"
+          },
+          "error": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Error"
+          }
+        },
+        "type": "object",
+        "required": [
+          "success"
+        ],
+        "title": "ColorAssignmentResponse",
+        "description": "Color Assignment Response: Response containing color assignment result"
+      },
+      "ColorConflictResolutionResponse": {
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "title": "Success"
+          },
+          "data": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Data"
+          },
+          "error": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Error"
+          }
+        },
+        "type": "object",
+        "required": [
+          "success"
+        ],
+        "title": "ColorConflictResolutionResponse",
+        "description": "Color Conflict Resolution Response: Response for color conflict resolution"
+      },
+      "GameSessionCreate": {
+        "properties": {
+          "team_id": {
+            "type": "integer",
+            "title": "Team Id",
+            "description": "ID of the team for this game session"
+          }
+        },
+        "type": "object",
+        "required": [
+          "team_id"
+        ],
+        "title": "GameSessionCreate",
+        "description": "Game Session Create: Request to create a new game session"
+      },
+      "GameSessionOut": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id",
+            "description": "Game session ID"
+          },
+          "team_id": {
+            "type": "integer",
+            "title": "Team Id",
+            "description": "Team ID"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "lobby",
+              "countdown",
+              "active",
+              "finished"
+            ],
+            "title": "Status",
+            "description": "Game session status"
+          },
+          "started_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Started At",
+            "description": "When the game started"
+          },
+          "ended_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ended At",
+            "description": "When the game ended"
+          },
+          "survival_time_seconds": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Survival Time Seconds",
+            "description": "How long the team survived in seconds"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "team_id",
+          "status"
+        ],
+        "title": "GameSessionOut",
+        "description": "Game Session Out: Game session response model"
+      },
+      "GameSessionStateUpdate": {
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "lobby",
+              "countdown",
+              "active",
+              "finished"
+            ],
+            "title": "Status",
+            "description": "New status for the game session"
+          }
+        },
+        "type": "object",
+        "required": [
+          "status"
+        ],
+        "title": "GameSessionStateUpdate",
+        "description": "Game Session State Update: Request to update game session state"
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "type": "array",
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "title": "HTTPValidationError"
+      },
+      "PuzzleAnswer": {
+        "properties": {
+          "puzzle_id": {
+            "type": "integer",
+            "title": "Puzzle Id",
+            "description": "ID of the puzzle being answered"
+          },
+          "answer": {
+            "type": "string",
+            "title": "Answer",
+            "description": "Player's answer to the puzzle"
+          }
+        },
+        "type": "object",
+        "required": [
+          "puzzle_id",
+          "answer"
+        ],
+        "title": "PuzzleAnswer",
+        "description": "Puzzle Answer: Request to submit a puzzle answer"
+      },
+      "PuzzleCreate": {
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": [
+              "memory",
+              "spatial",
+              "concentration",
+              "multitasking"
+            ],
+            "title": "Type",
+            "description": "Type of puzzle to create"
+          },
+          "game_session_id": {
+            "type": "integer",
+            "title": "Game Session Id",
+            "description": "ID of the game session"
+          },
+          "user_id": {
+            "type": "integer",
+            "title": "User Id",
+            "description": "ID of the user for this puzzle"
+          }
+        },
+        "type": "object",
+        "required": [
+          "type",
+          "game_session_id",
+          "user_id"
+        ],
+        "title": "PuzzleCreate",
+        "description": "Puzzle Create: Request to create a new puzzle"
+      },
+      "PuzzleResult": {
+        "properties": {
+          "correct": {
+            "type": "boolean",
+            "title": "Correct",
+            "description": "Whether the answer was correct"
+          },
+          "awarded_to_user_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Awarded To User Id",
+            "description": "ID of user who received points"
+          },
+          "points_awarded": {
+            "type": "integer",
+            "title": "Points Awarded",
+            "description": "Number of points awarded"
+          },
+          "next_puzzle_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Next Puzzle Id",
+            "description": "ID of next puzzle (if any)"
+          },
+          "next_puzzle": {
+            "anyOf": [
+              {},
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Next Puzzle",
+            "description": "Next puzzle data (if any)"
+          }
+        },
+        "type": "object",
+        "required": [
+          "correct",
+          "points_awarded"
+        ],
+        "title": "PuzzleResult",
+        "description": "Puzzle Result: Puzzle result response model"
+      },
+      "PuzzleState": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id",
+            "description": "Puzzle ID"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "memory",
+              "spatial",
+              "concentration",
+              "multitasking"
+            ],
+            "title": "Type",
+            "description": "Puzzle type"
+          },
+          "data": {
+            "title": "Data",
+            "description": "Puzzle-specific data"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "active",
+              "completed",
+              "failed"
+            ],
+            "title": "Status",
+            "description": "Puzzle status"
+          },
+          "correct_answer": {
+            "type": "string",
+            "title": "Correct Answer",
+            "description": "Correct answer for the puzzle"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "type",
+          "data",
+          "status",
+          "correct_answer"
+        ],
+        "title": "PuzzleState",
+        "description": "Puzzle State: Puzzle state response model"
+      },
+      "TeamColorValidationResponse": {
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "title": "Success"
+          },
+          "data": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Data"
+          },
+          "error": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Error"
+          }
+        },
+        "type": "object",
+        "required": [
+          "success"
+        ],
+        "title": "TeamColorValidationResponse",
+        "description": "Team Color Validation Response: Response for team color validation"
+      },
+      "TeamCreate": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "title": "Name",
+            "description": "Name for the new team"
+          }
+        },
+        "type": "object",
+        "required": [
+          "name"
+        ],
+        "title": "TeamCreate",
+        "description": "Team Create: Request to create a new team"
+      },
+      "TeamOut": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id",
+            "description": "Team ID"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name",
+            "description": "Team name"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "name"
+        ],
+        "title": "TeamOut",
+        "description": "Team Out: Team response model"
+      },
+      "TeamPoints": {
+        "properties": {
+          "team_id": {
+            "type": "integer",
+            "title": "Team Id",
+            "description": "Team ID"
+          },
+          "players": {
+            "items": {},
+            "type": "array",
+            "title": "Players",
+            "description": "List of players with their points"
+          }
+        },
+        "type": "object",
+        "required": [
+          "team_id",
+          "players"
+        ],
+        "title": "TeamPoints",
+        "description": "Team Points: Team points response model"
+      },
+      "TeamWithMembersOut": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id",
+            "description": "Team ID"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name",
+            "description": "Team name"
+          },
+          "members": {
+            "items": {},
+            "type": "array",
+            "title": "Members",
+            "description": "Team members"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "members"
+        ],
+        "title": "TeamWithMembersOut",
+        "description": "Team With Members Out: Team with members response model"
+      },
+      "UserCreate": {
+        "properties": {
+          "username": {
+            "type": "string",
+            "title": "Username",
+            "description": "Username for the new user"
+          }
+        },
+        "type": "object",
+        "required": [
+          "username"
+        ],
+        "title": "UserCreate",
+        "description": "User Create: Request to create a new user"
+      },
+      "UserOut": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id",
+            "description": "User ID"
+          },
+          "username": {
+            "type": "string",
+            "title": "Username",
+            "description": "Username"
+          },
+          "team_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Team Id",
+            "description": "Team ID"
+          },
+          "points": {
+            "type": "integer",
+            "title": "Points",
+            "description": "Current points"
+          },
+          "color": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Color",
+            "description": "Assigned color"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "username",
+          "points"
+        ],
+        "title": "UserOut",
+        "description": "User Out: User response model"
+      },
+      "ValidationError": {
+        "properties": {
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Location"
+          },
+          "msg": {
+            "type": "string",
+            "title": "Message"
+          },
+          "type": {
+            "type": "string",
+            "title": "Error Type"
+          }
+        },
+        "type": "object",
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError"
+      }
+    }
+  }
+}

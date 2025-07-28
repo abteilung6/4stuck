@@ -1,0 +1,299 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "4stuck/schemas/core/v1/puzzle.json",
+  "title": "Puzzle Domain Models",
+  "description": "All puzzle types and puzzle-related data models",
+  "definitions": {
+    "PuzzleType": {
+      "title": "Puzzle Type",
+      "description": "Available puzzle types in the game",
+      "type": "string",
+      "enum": ["memory", "spatial", "concentration", "multitasking"],
+      "description": "Types of puzzles available"
+    },
+    "PuzzleState": {
+      "title": "Puzzle State",
+      "description": "Current state of a puzzle for a player",
+      "type": "object",
+      "required": ["id", "user_id", "type", "data", "created_at"],
+      "properties": {
+        "id": {
+          "type": "integer",
+          "description": "Unique puzzle identifier"
+        },
+        "user_id": {
+          "type": "integer",
+          "description": "ID of the player this puzzle is for"
+        },
+        "type": {
+          "$ref": "#/definitions/PuzzleType",
+          "description": "Type of puzzle"
+        },
+        "data": {
+          "$ref": "#/definitions/PuzzleData",
+          "description": "Puzzle-specific data"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time",
+          "description": "When the puzzle was created"
+        },
+        "solved_at": {
+          "type": "string",
+          "format": "date-time",
+          "description": "When the puzzle was solved (if solved)"
+        },
+        "is_solved": {
+          "type": "boolean",
+          "description": "Whether the puzzle has been solved"
+        },
+        "time_limit": {
+          "type": "integer",
+          "description": "Time limit in seconds (if applicable)"
+        }
+      },
+      "examples": [
+        {
+          "id": 123,
+          "user_id": 1,
+          "type": "memory",
+          "data": {
+            "mapping": {"red": "1", "blue": "2", "green": "3"},
+            "question_number": "2",
+            "choices": ["red", "blue", "green"]
+          },
+          "created_at": "2024-01-15T10:30:00Z",
+          "is_solved": false
+        }
+      ]
+    },
+    "PuzzleData": {
+      "title": "Puzzle Data",
+      "description": "Union of all puzzle data types",
+      "oneOf": [
+        { "$ref": "#/definitions/MemoryPuzzleData" },
+        { "$ref": "#/definitions/SpatialPuzzleData" },
+        { "$ref": "#/definitions/ConcentrationPuzzleData" },
+        { "$ref": "#/definitions/MultitaskingPuzzleData" }
+      ]
+    },
+    "MemoryPuzzleData": {
+      "title": "Memory Puzzle Data",
+      "description": "Data for memory puzzle (color-number association)",
+      "type": "object",
+      "required": ["mapping", "question_number", "choices"],
+      "properties": {
+        "mapping": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          },
+          "description": "Color to number mapping"
+        },
+        "question_number": {
+          "type": "string",
+          "description": "Number to ask about"
+        },
+        "choices": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Available color choices"
+        }
+      },
+      "examples": [
+        {
+          "mapping": {"red": "1", "blue": "2", "green": "3"},
+          "question_number": "2",
+          "choices": ["red", "blue", "green"]
+        }
+      ]
+    },
+    "SpatialPuzzleData": {
+      "title": "Spatial Puzzle Data",
+      "description": "Data for spatial puzzle (drag circle through obstacles)",
+      "type": "object",
+      "required": ["start_position", "end_position", "obstacles"],
+      "properties": {
+        "start_position": {
+          "$ref": "4stuck/schemas/core/v1/communication.json#/definitions/Position",
+          "description": "Starting position for the draggable circle"
+        },
+        "end_position": {
+          "$ref": "4stuck/schemas/core/v1/communication.json#/definitions/Position",
+          "description": "Target end position"
+        },
+        "obstacles": {
+          "type": "array",
+          "items": {
+            "$ref": "4stuck/schemas/core/v1/communication.json#/definitions/Position"
+          },
+          "description": "Positions of obstacles to avoid"
+        },
+        "circle_radius": {
+          "type": "number",
+          "default": 10,
+          "description": "Radius of the draggable circle"
+        }
+      },
+      "examples": [
+        {
+          "start_position": {"x": 50, "y": 50},
+          "end_position": {"x": 350, "y": 250},
+          "obstacles": [
+            {"x": 150, "y": 100},
+            {"x": 200, "y": 150},
+            {"x": 250, "y": 200}
+          ]
+        }
+      ]
+    },
+    "ConcentrationPuzzleData": {
+      "title": "Concentration Puzzle Data",
+      "description": "Data for concentration puzzle (color-word matching)",
+      "type": "object",
+      "required": ["pairs", "correct_index", "duration"],
+      "properties": {
+        "pairs": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["color", "word"],
+            "properties": {
+              "color": {
+                "type": "string",
+                "description": "Color of the circle"
+              },
+              "word": {
+                "type": "string",
+                "description": "Text word to display"
+              }
+            }
+          },
+          "description": "Sequence of color-word pairs"
+        },
+        "correct_index": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Index of the correct matching pair"
+        },
+        "duration": {
+          "type": "integer",
+          "default": 2,
+          "description": "Duration in seconds each pair is shown"
+        }
+      },
+      "examples": [
+        {
+          "pairs": [
+            {"color": "red", "word": "blue"},
+            {"color": "blue", "word": "blue"},
+            {"color": "green", "word": "red"}
+          ],
+          "correct_index": 1,
+          "duration": 2
+        }
+      ]
+    },
+    "MultitaskingPuzzleData": {
+      "title": "Multitasking Puzzle Data",
+      "description": "Data for multitasking puzzle (find all sixes)",
+      "type": "object",
+      "required": ["rows", "six_positions", "time_limit"],
+      "properties": {
+        "rows": {
+          "type": "array",
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "description": "Grid of numbers (mostly 9s with one 6 per row)"
+        },
+        "six_positions": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["row", "column"],
+            "properties": {
+              "row": {
+                "type": "integer",
+                "minimum": 0,
+                "description": "Row index of the 6"
+              },
+              "column": {
+                "type": "integer",
+                "minimum": 0,
+                "description": "Column index of the 6"
+              }
+            }
+          },
+          "description": "Positions of all 6s in the grid"
+        },
+        "time_limit": {
+          "type": "integer",
+          "default": 10,
+          "description": "Time limit in seconds"
+        }
+      },
+      "examples": [
+        {
+          "rows": [
+            ["9", "9", "6", "9", "9", "9", "9", "9", "9"],
+            ["9", "9", "9", "9", "9", "9", "6", "9", "9"],
+            ["9", "6", "9", "9", "9", "9", "9", "9", "9"]
+          ],
+          "six_positions": [
+            {"row": 0, "column": 2},
+            {"row": 1, "column": 6},
+            {"row": 2, "column": 1}
+          ],
+          "time_limit": 10
+        }
+      ]
+    },
+    "PuzzleResult": {
+      "title": "Puzzle Result",
+      "description": "Result of submitting a puzzle answer",
+      "type": "object",
+      "required": ["correct"],
+      "properties": {
+        "correct": {
+          "type": "boolean",
+          "description": "Whether the answer was correct"
+        },
+        "next_puzzle": {
+          "$ref": "#/definitions/PuzzleState",
+          "description": "Next puzzle for the player (if any)"
+        },
+        "points_awarded": {
+          "type": "integer",
+          "description": "Points awarded to the next player"
+        },
+        "message": {
+          "type": "string",
+          "description": "Feedback message for the player"
+        },
+        "awarded_to_user_id": {
+          "type": "integer",
+          "description": "ID of the user who received the points"
+        },
+        "next_puzzle_id": {
+          "type": "integer",
+          "description": "ID of the next puzzle (if any)"
+        }
+      },
+      "examples": [
+        {
+          "correct": true,
+          "points_awarded": 5,
+          "message": "Correct! 5 points awarded to next player.",
+          "awarded_to_user_id": 2,
+          "next_puzzle_id": 123
+        }
+      ]
+    }
+  }
+} 

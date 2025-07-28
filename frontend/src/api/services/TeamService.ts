@@ -2,9 +2,9 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
+import type { AssignColorRequest } from '../models/AssignColorRequest';
 import type { AvailableColorsResponse } from '../models/AvailableColorsResponse';
-import type { AvailableTeamOut } from '../models/AvailableTeamOut';
-import type { ColorAssignmentRequest } from '../models/ColorAssignmentRequest';
+import type { AvailableTeam } from '../models/AvailableTeam';
 import type { ColorAssignmentResponse } from '../models/ColorAssignmentResponse';
 import type { ColorConflictResolutionResponse } from '../models/ColorConflictResolutionResponse';
 import type { TeamColorValidationResponse } from '../models/TeamColorValidationResponse';
@@ -86,7 +86,7 @@ export class TeamService {
      * @throws ApiError
      */
     public static assignColorToUserTeamAssignColorPost(
-        requestBody: ColorAssignmentRequest,
+        requestBody: AssignColorRequest,
     ): CancelablePromise<ColorAssignmentResponse> {
         return __request(OpenAPI, {
             method: 'POST',
@@ -167,10 +167,10 @@ export class TeamService {
      * A team is available if:
      * 1. It has fewer than 4 players
      * 2. It has no active game session (lobby, countdown, active)
-     * @returns AvailableTeamOut Successful Response
+     * @returns AvailableTeam Successful Response
      * @throws ApiError
      */
-    public static getAvailableTeamsTeamAvailableGet(): CancelablePromise<Array<AvailableTeamOut>> {
+    public static getAvailableTeamsTeamAvailableGet(): CancelablePromise<Array<AvailableTeam>> {
         return __request(OpenAPI, {
             method: 'GET',
             url: '/team/available',

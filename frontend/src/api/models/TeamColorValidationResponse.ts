@@ -2,9 +2,12 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
+/**
+ * Team Color Validation Response: Response for team color validation
+ */
 export type TeamColorValidationResponse = {
-    team_id: number;
-    is_valid: boolean;
-    conflicts: Array<Record<string, any>>;
+    success: boolean;
+    data?: (Record<string, any> | null);
+    error?: (string | null);
 };
 

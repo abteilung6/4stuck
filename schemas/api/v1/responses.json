@@ -1,0 +1,656 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "4stuck/schemas/api/v1/responses.json",
+  "title": "API Response Models",
+  "description": "REST API response models for all endpoints",
+  "definitions": {
+    "ApiResponse": {
+      "title": "API Response",
+      "description": "Base structure for all API responses",
+      "type": "object",
+      "required": ["success"],
+      "properties": {
+        "success": {
+          "type": "boolean",
+          "description": "Whether the request was successful"
+        },
+        "data": {
+          "description": "Response data (if successful)"
+        },
+        "error": {
+          "type": "string",
+          "description": "Error message (if not successful)"
+        },
+        "message": {
+          "type": "string",
+          "description": "Additional message or description"
+        }
+      },
+      "examples": [
+        {
+          "success": true,
+          "data": {
+            "id": 1,
+            "name": "Team Alpha"
+          }
+        },
+        {
+          "success": false,
+          "error": "Team not found",
+          "message": "The requested team does not exist"
+        }
+      ]
+    },
+    "TeamResponse": {
+      "title": "Team Response",
+      "description": "Response containing team information",
+      "type": "object",
+      "required": ["success"],
+      "properties": {
+        "success": {
+          "type": "boolean"
+        },
+        "data": {
+          "$ref": "4stuck/schemas/core/v1/player.json#/definitions/Team"
+        },
+        "error": {
+          "type": "string"
+        }
+      }
+    },
+    "AvailableTeamsResponse": {
+      "title": "Available Teams Response",
+      "description": "Response containing list of available teams",
+      "type": "object",
+      "required": ["success"],
+      "properties": {
+        "success": {
+          "type": "boolean"
+        },
+        "data": {
+          "type": "array",
+          "items": {
+            "$ref": "4stuck/schemas/core/v1/player.json#/definitions/AvailableTeam"
+          }
+        },
+        "error": {
+          "type": "string"
+        }
+      }
+    },
+    "PlayerResponse": {
+      "title": "Player Response",
+      "description": "Response containing player information",
+      "type": "object",
+      "required": ["success"],
+      "properties": {
+        "success": {
+          "type": "boolean"
+        },
+        "data": {
+          "$ref": "4stuck/schemas/core/v1/player.json#/definitions/Player"
+        },
+        "error": {
+          "type": "string"
+        }
+      }
+    },
+    "GameSessionResponse": {
+      "title": "Game Session Response",
+      "description": "Response containing game session information",
+      "type": "object",
+      "required": ["success"],
+      "properties": {
+        "success": {
+          "type": "boolean"
+        },
+        "data": {
+          "$ref": "4stuck/schemas/core/v1/game.json#/definitions/GameSession"
+        },
+        "error": {
+          "type": "string"
+        }
+      }
+    },
+    "GameStateResponse": {
+      "title": "Game State Response",
+      "description": "Response containing complete game state",
+      "type": "object",
+      "required": ["success"],
+      "properties": {
+        "success": {
+          "type": "boolean"
+        },
+        "data": {
+          "$ref": "4stuck/schemas/core/v1/game.json#/definitions/GameState"
+        },
+        "error": {
+          "type": "string"
+        }
+      }
+    },
+    "GameResultResponse": {
+      "title": "Game Result Response",
+      "description": "Response containing game result information",
+      "type": "object",
+      "required": ["success"],
+      "properties": {
+        "success": {
+          "type": "boolean"
+        },
+        "data": {
+          "$ref": "4stuck/schemas/core/v1/game.json#/definitions/GameResult"
+        },
+        "error": {
+          "type": "string"
+        }
+      }
+    },
+    "PuzzleResponse": {
+      "title": "Puzzle Response",
+      "description": "Response containing puzzle information",
+      "type": "object",
+      "required": ["success"],
+      "properties": {
+        "success": {
+          "type": "boolean"
+        },
+        "data": {
+          "$ref": "4stuck/schemas/core/v1/puzzle.json#/definitions/PuzzleState"
+        },
+        "error": {
+          "type": "string"
+        }
+      }
+    },
+    "PuzzleResultResponse": {
+      "title": "Puzzle Result Response",
+      "description": "Response containing puzzle submission result",
+      "type": "object",
+      "required": ["success"],
+      "properties": {
+        "success": {
+          "type": "boolean"
+        },
+        "data": {
+          "$ref": "4stuck/schemas/core/v1/puzzle.json#/definitions/PuzzleResult"
+        },
+        "error": {
+          "type": "string"
+        }
+      }
+    },
+    "ColorAssignmentResponse": {
+      "title": "Color Assignment Response",
+      "description": "Response containing color assignment result",
+      "type": "object",
+      "required": ["success"],
+      "properties": {
+        "success": {
+          "type": "boolean"
+        },
+        "data": {
+          "type": "object",
+          "required": ["color"],
+          "properties": {
+            "color": {
+              "$ref": "4stuck/schemas/core/v1/communication.json#/definitions/PlayerColor"
+            },
+            "message": {
+              "type": "string"
+            }
+          }
+        },
+        "error": {
+          "type": "string"
+        }
+      }
+    },
+    "CountdownResponse": {
+      "title": "Countdown Response",
+      "description": "Response containing countdown information",
+      "type": "object",
+      "required": ["success"],
+      "properties": {
+        "success": {
+          "type": "boolean"
+        },
+        "data": {
+          "type": "object",
+          "required": ["session_id", "countdown_remaining"],
+          "properties": {
+            "session_id": {
+              "type": "integer"
+            },
+            "countdown_remaining": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "status": {
+              "type": "string",
+              "enum": ["countdown", "active"]
+            }
+          }
+        },
+        "error": {
+          "type": "string"
+        }
+      }
+    },
+    "ErrorResponse": {
+      "title": "Error Response",
+      "description": "Standard error response",
+      "type": "object",
+      "required": ["success", "error"],
+      "properties": {
+        "success": {
+          "const": false
+        },
+        "error": {
+          "type": "string",
+          "description": "Error message"
+        },
+        "message": {
+          "type": "string",
+          "description": "Additional error details"
+        },
+        "code": {
+          "type": "string",
+          "description": "Error code"
+        },
+        "details": {
+          "type": "object",
+          "description": "Additional error details",
+          "additionalProperties": true
+        }
+      },
+      "examples": [
+        {
+          "success": false,
+          "error": "Validation error",
+          "message": "Invalid input data",
+          "code": "VALIDATION_ERROR",
+          "details": {
+            "field": "username",
+            "issue": "Username is required"
+          }
+        }
+      ]
+    },
+    "SuccessResponse": {
+      "title": "Success Response",
+      "description": "Standard success response",
+      "type": "object",
+      "required": ["success"],
+      "properties": {
+        "success": {
+          "const": true
+        },
+        "message": {
+          "type": "string",
+          "description": "Success message"
+        },
+        "data": {
+          "description": "Response data"
+        }
+      },
+      "examples": [
+        {
+          "success": true,
+          "message": "Operation completed successfully"
+        }
+      ]
+    },
+    "HealthCheckResponse": {
+      "title": "Health Check Response",
+      "description": "API health check response",
+      "type": "object",
+      "required": ["success", "status", "timestamp"],
+      "properties": {
+        "success": {
+          "const": true
+        },
+        "status": {
+          "type": "string",
+          "enum": ["healthy", "degraded", "unhealthy"]
+        },
+        "timestamp": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "version": {
+          "type": "string",
+          "description": "API version"
+        },
+        "uptime": {
+          "type": "number",
+          "description": "Server uptime in seconds"
+        }
+      },
+      "examples": [
+        {
+          "success": true,
+          "status": "healthy",
+          "timestamp": "2024-01-15T10:30:00Z",
+          "version": "1.0.0",
+          "uptime": 3600
+        }
+      ]
+    },
+    "TeamColorValidationResponse": {
+      "title": "Team Color Validation Response",
+      "description": "Response for team color validation",
+      "type": "object",
+      "required": ["success"],
+      "properties": {
+        "success": {
+          "type": "boolean"
+        },
+        "data": {
+          "type": "object",
+          "properties": {
+            "is_valid": {
+              "type": "boolean"
+            },
+            "conflicts": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "user_id": {
+                    "type": "integer"
+                  },
+                  "username": {
+                    "type": "string"
+                  },
+                  "color": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "error": {
+          "type": "string"
+        }
+      }
+    },
+    "ColorConflictResolutionResponse": {
+      "title": "Color Conflict Resolution Response",
+      "description": "Response for color conflict resolution",
+      "type": "object",
+      "required": ["success"],
+      "properties": {
+        "success": {
+          "type": "boolean"
+        },
+        "data": {
+          "type": "object",
+          "properties": {
+            "resolved_conflicts": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "user_id": {
+                    "type": "integer"
+                  },
+                  "old_color": {
+                    "type": "string"
+                  },
+                  "new_color": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "error": {
+          "type": "string"
+        }
+      }
+    },
+    "AvailableColorsResponse": {
+      "title": "Available Colors Response",
+      "description": "Response for available colors",
+      "type": "object",
+      "required": ["success"],
+      "properties": {
+        "success": {
+          "type": "boolean"
+        },
+        "data": {
+          "type": "object",
+          "properties": {
+            "available_colors": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "used_colors": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "user_id": {
+                    "type": "integer"
+                  },
+                  "username": {
+                    "type": "string"
+                  },
+                  "color": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "error": {
+          "type": "string"
+        }
+      }
+    },
+    "UserOut": {
+      "title": "User Out",
+      "description": "User response model",
+      "type": "object",
+      "required": ["id", "username", "points"],
+      "properties": {
+        "id": {
+          "type": "integer",
+          "description": "User ID"
+        },
+        "username": {
+          "type": "string",
+          "description": "Username"
+        },
+        "team_id": {
+          "type": "integer",
+          "description": "Team ID"
+        },
+        "points": {
+          "type": "integer",
+          "description": "Current points"
+        },
+        "color": {
+          "type": "string",
+          "description": "Assigned color"
+        }
+      }
+    },
+    "TeamOut": {
+      "title": "Team Out",
+      "description": "Team response model",
+      "type": "object",
+      "required": ["id", "name"],
+      "properties": {
+        "id": {
+          "type": "integer",
+          "description": "Team ID"
+        },
+        "name": {
+          "type": "string",
+          "description": "Team name"
+        }
+      }
+    },
+    "TeamWithMembersOut": {
+      "title": "Team With Members Out",
+      "description": "Team with members response model",
+      "type": "object",
+      "required": ["id", "name", "members"],
+      "properties": {
+        "id": {
+          "type": "integer",
+          "description": "Team ID"
+        },
+        "name": {
+          "type": "string",
+          "description": "Team name"
+        },
+        "members": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/UserOut"
+          },
+          "description": "Team members"
+        }
+      }
+    },
+    "GameSessionOut": {
+      "title": "Game Session Out",
+      "description": "Game session response model",
+      "type": "object",
+      "required": ["id", "team_id", "status"],
+      "properties": {
+        "id": {
+          "type": "integer",
+          "description": "Game session ID"
+        },
+        "team_id": {
+          "type": "integer",
+          "description": "Team ID"
+        },
+        "status": {
+          "type": "string",
+          "enum": ["lobby", "countdown", "active", "finished"],
+          "description": "Game session status"
+        },
+        "started_at": {
+          "type": "string",
+          "format": "date-time",
+          "description": "When the game started"
+        },
+        "ended_at": {
+          "type": "string",
+          "format": "date-time",
+          "description": "When the game ended"
+        },
+        "survival_time_seconds": {
+          "type": "integer",
+          "description": "How long the team survived in seconds"
+        }
+      }
+    },
+    "PuzzleState": {
+      "title": "Puzzle State",
+      "description": "Puzzle state response model",
+      "type": "object",
+      "required": ["id", "type", "data", "status", "correct_answer"],
+      "properties": {
+        "id": {
+          "type": "integer",
+          "description": "Puzzle ID"
+        },
+        "type": {
+          "type": "string",
+          "enum": ["memory", "spatial", "concentration", "multitasking"],
+          "description": "Puzzle type"
+        },
+        "data": {
+          "description": "Puzzle-specific data"
+        },
+        "status": {
+          "type": "string",
+          "enum": ["active", "completed", "failed"],
+          "description": "Puzzle status"
+        },
+        "correct_answer": {
+          "type": "string",
+          "description": "Correct answer for the puzzle"
+        }
+      }
+    },
+    "PuzzleResult": {
+      "title": "Puzzle Result",
+      "description": "Puzzle result response model",
+      "type": "object",
+      "required": ["correct", "points_awarded"],
+      "properties": {
+        "correct": {
+          "type": "boolean",
+          "description": "Whether the answer was correct"
+        },
+        "awarded_to_user_id": {
+          "type": "integer",
+          "description": "ID of user who received points"
+        },
+        "points_awarded": {
+          "type": "integer",
+          "description": "Number of points awarded"
+        },
+        "next_puzzle_id": {
+          "type": "integer",
+          "description": "ID of next puzzle (if any)"
+        },
+        "next_puzzle": {
+          "$ref": "#/definitions/PuzzleState",
+          "description": "Next puzzle data (if any)"
+        }
+      }
+    },
+    "PlayerPoints": {
+      "title": "Player Points",
+      "description": "Player points response model",
+      "type": "object",
+      "required": ["user_id", "username", "points"],
+      "properties": {
+        "user_id": {
+          "type": "integer",
+          "description": "User ID"
+        },
+        "username": {
+          "type": "string",
+          "description": "Username"
+        },
+        "points": {
+          "type": "integer",
+          "description": "Current points"
+        }
+      }
+    },
+    "TeamPoints": {
+      "title": "Team Points",
+      "description": "Team points response model",
+      "type": "object",
+      "required": ["team_id", "players"],
+      "properties": {
+        "team_id": {
+          "type": "integer",
+          "description": "Team ID"
+        },
+        "players": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/PlayerPoints"
+          },
+          "description": "List of players with their points"
+        }
+      }
+    }
+  }
+} 

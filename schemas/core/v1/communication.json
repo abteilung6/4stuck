@@ -1,0 +1,133 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "4stuck/schemas/core/v1/communication.json",
+  "title": "Communication Domain Models",
+  "description": "Core communication primitives used across the game",
+  "definitions": {
+    "Position": {
+      "title": "Position",
+      "description": "2D position coordinates",
+      "type": "object",
+      "required": ["x", "y"],
+      "properties": {
+        "x": {
+          "type": "number",
+          "description": "X coordinate"
+        },
+        "y": {
+          "type": "number",
+          "description": "Y coordinate"
+        }
+      },
+      "examples": [
+        {
+          "x": 100,
+          "y": 200
+        }
+      ]
+    },
+    "PlayerColor": {
+      "title": "Player Color",
+      "description": "Color assigned to a player for identification",
+      "type": "string",
+      "enum": ["yellow", "red", "blue", "green", "gray"],
+      "description": "Available player colors"
+    },
+    "MousePosition": {
+      "title": "Mouse Position",
+      "description": "Real-time mouse cursor position for a player",
+      "type": "object",
+      "required": ["user_id", "x", "y", "timestamp"],
+      "properties": {
+        "user_id": {
+          "type": "integer",
+          "description": "ID of the player whose mouse position this represents"
+        },
+        "x": {
+          "type": "number",
+          "description": "X coordinate of mouse position"
+        },
+        "y": {
+          "type": "number",
+          "description": "Y coordinate of mouse position"
+        },
+        "timestamp": {
+          "type": "string",
+          "format": "date-time",
+          "description": "When this position was recorded"
+        },
+        "color": {
+          "$ref": "#/definitions/PlayerColor",
+          "description": "Color of the player for cursor display"
+        },
+        "normalized_x": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Normalized X coordinate (0-1) for cross-browser consistency"
+        },
+        "normalized_y": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Normalized Y coordinate (0-1) for cross-browser consistency"
+        }
+      },
+      "examples": [
+        {
+          "user_id": 1,
+          "x": 150,
+          "y": 200,
+          "timestamp": "2024-01-15T10:30:00Z",
+          "color": "blue",
+          "normalized_x": 0.5,
+          "normalized_y": 0.6
+        }
+      ]
+    },
+    "PuzzleInteraction": {
+      "title": "Puzzle Interaction",
+      "description": "Player interaction with a puzzle",
+      "type": "object",
+      "required": ["user_id", "puzzle_id", "interaction_type"],
+      "properties": {
+        "user_id": {
+          "type": "integer",
+          "description": "ID of the player making the interaction"
+        },
+        "puzzle_id": {
+          "type": "integer",
+          "description": "ID of the puzzle being interacted with"
+        },
+        "interaction_type": {
+          "type": "string",
+          "enum": ["click", "drag", "submit", "timeout", "start", "complete"],
+          "description": "Type of interaction performed"
+        },
+        "interaction_data": {
+          "type": "object",
+          "description": "Additional data specific to the interaction type",
+          "additionalProperties": true
+        },
+        "timestamp": {
+          "type": "string",
+          "format": "date-time",
+          "description": "When the interaction occurred"
+        }
+      },
+      "examples": [
+        {
+          "user_id": 1,
+          "puzzle_id": 123,
+          "interaction_type": "click",
+          "interaction_data": {
+            "x": 100,
+            "y": 150,
+            "target": "circle"
+          },
+          "timestamp": "2024-01-15T10:30:00Z"
+        }
+      ]
+    }
+  }
+} 

@@ -71,18 +71,22 @@ def test_submit_answer_correct_and_incorrect():
     puzzle = resp.json()
     # Correct answer
     correct = puzzle["data"]["mapping"][str(puzzle["data"]["question_number"])]
-    answer_resp = client.post("/puzzle/answer", json={"puzzle_id": puzzle["id"], "answer": correct})
+    answer_resp = client.post("/puzzle/answer", json={"puzzle_id": puzzle["id"], "answer": correct, "user_id": user_id})
     assert answer_resp.status_code == 200
     result = answer_resp.json()
     assert result["correct"] is True
-    assert result["points_awarded"] in [0, 5]
-    assert result["next_puzzle_id"] is not None
+    assert result["points_awarded"] == 0  # Single player team, no points awarded
+    
+    # Create a new puzzle for incorrect answer test
+    resp2 = client.post("/puzzle/create", json={"type": "memory", "game_session_id": session_id, "user_id": user_id})
+    puzzle2 = resp2.json()
     # Incorrect answer
     wrong = "notacolor"
-    answer_resp2 = client.post("/puzzle/answer", json={"puzzle_id": result["next_puzzle_id"], "answer": wrong})
+    answer_resp2 = client.post("/puzzle/answer", json={"puzzle_id": puzzle2["id"], "answer": wrong, "user_id": user_id})
     assert answer_resp2.status_code == 200
     result2 = answer_resp2.json()
     assert result2["correct"] is False
+    assert result2["points_awarded"] == 0
     tmp.close()
 
 def test_team_points_and_decay():
@@ -129,7 +133,7 @@ def test_player_elimination_and_game_over():
     db.close()
     # Try to answer puzzle as eliminated user
     answer = puzzle["data"]["mapping"][str(puzzle["data"]["question_number"])]
-    answer_resp = client.post("/puzzle/answer", json={"puzzle_id": puzzle["id"], "answer": answer})
+    answer_resp = client.post("/puzzle/answer", json={"puzzle_id": puzzle["id"], "answer": answer, "user_id": user1_id})
     assert answer_resp.status_code == 400
     # Simulate user2 elimination and check game over logic (all points 0)
     db = TestingSessionLocal()
@@ -164,7 +168,7 @@ def test_create_concentration_puzzle():
     assert puzzle["correct_answer"].isdigit()  # Should be the index as string
     
     # Test correct answer (submit the correct index)
-    answer_resp = client.post("/puzzle/answer", json={"puzzle_id": puzzle["id"], "answer": puzzle["correct_answer"]})
+    answer_resp = client.post("/puzzle/answer", json={"puzzle_id": puzzle["id"], "answer": puzzle["correct_answer"], "user_id": user_id})
     assert answer_resp.status_code == 200
     result = answer_resp.json()
     assert result["correct"] is True
@@ -208,7 +212,7 @@ def test_memory_puzzle_data_structure():
     assert correct_answer in puzzle["data"]["choices"]
     
     # Test correct answer submission
-    answer_resp = client.post("/puzzle/answer", json={"puzzle_id": puzzle["id"], "answer": correct_answer})
+    answer_resp = client.post("/puzzle/answer", json={"puzzle_id": puzzle["id"], "answer": correct_answer, "user_id": user_id})
     assert answer_resp.status_code == 200
     result = answer_resp.json()
     assert result["correct"] is True

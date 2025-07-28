@@ -6,11 +6,15 @@ from ..utils.websocket_broadcast import cache_user_color
 from fastapi.middleware.cors import CORSMiddleware
 from typing import Optional
 from ..services.color_assignment_service import ColorAssignmentService
-from ..schemas import (
-    ColorAssignmentRequest, ColorAssignmentResponse, 
-    TeamColorValidationResponse, ColorConflictResolutionResponse,
-    AvailableColorsResponse
+from ..schemas.v1.api.requests import (
+    AssignColorRequest, UserCreate, TeamCreate
 )
+from ..schemas.v1.api.responses import (
+    ColorAssignmentResponse, TeamColorValidationResponse, 
+    ColorConflictResolutionResponse, AvailableColorsResponse,
+    UserOut, TeamOut, TeamWithMembersOut
+)
+from ..schemas.v1.core.player import AvailableTeam
 
 router = APIRouter(prefix="/team", tags=["team"])
 
@@ -46,8 +50,8 @@ def get_team_availability_status(team: models.Team, db: Session) -> tuple[str, O
     # Team is available (has fewer than 4 players and no active game)
     return "available", None, None
 
-@router.post("/register", response_model=schemas.UserOut)
-def register_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
+@router.post("/register", response_model=UserOut)
+def register_user(user: UserCreate, db: Session = Depends(get_db)):
     db_user = db.query(models.User).filter(models.User.username == user.username).first()
     if db_user:
         raise HTTPException(status_code=400, detail="Username already registered")
@@ -57,8 +61,8 @@ def register_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
     db.refresh(new_user)
     return new_user
 
-@router.post("/create", response_model=schemas.TeamOut)
-def create_team(team: schemas.TeamCreate, db: Session = Depends(get_db)):
+@router.post("/create", response_model=TeamOut)
+def create_team(team: TeamCreate, db: Session = Depends(get_db)):
     db_team = db.query(models.Team).filter(models.Team.name == team.name).first()
     if db_team:
         raise HTTPException(status_code=400, detail="Team name already exists")
@@ -68,7 +72,7 @@ def create_team(team: schemas.TeamCreate, db: Session = Depends(get_db)):
     db.refresh(new_team)
     return new_team
 
-@router.post("/join", response_model=schemas.UserOut)
+@router.post("/join", response_model=UserOut)
 def join_team(username: str, team_id: int, db: Session = Depends(get_db)):
     user = db.query(models.User).filter(models.User.username == username).first()
     team = db.query(models.Team).filter(models.Team.id == team_id).first()
@@ -120,7 +124,7 @@ def join_team(username: str, team_id: int, db: Session = Depends(get_db)):
 
 @router.post("/assign-color", response_model=ColorAssignmentResponse)
 def assign_color_to_user(
-    request: ColorAssignmentRequest,
+    request: AssignColorRequest,
     db: Session = Depends(get_db)
 ):
     """Assign a unique color to a user within their team."""
@@ -205,7 +209,7 @@ def get_available_colors(team_id: int, db: Session = Depends(get_db)):
             used_colors=[]
         )
 
-@router.get("/available", response_model=list[schemas.AvailableTeamOut])
+@router.get("/available", response_model=list[AvailableTeam])
 def get_available_teams(db: Session = Depends(get_db)):
     """
     Get only teams that are available for players to join.
@@ -219,16 +223,17 @@ def get_available_teams(db: Session = Depends(get_db)):
         status, game_session_id, game_status = get_team_availability_status(team, db)
         # Only include available teams
         if status == "available":
-            members = [schemas.UserOut.model_validate(user) for user in team.users]
+            members = [UserOut.model_validate(user) for user in team.users]
             # Debug log: print team and member colors
             print(f"[API /team/available] Team {team.id} - {team.name}")
             for user in team.users:
                 print(f"  Member: {user.username}, color: {user.color}")
-            team_out = schemas.AvailableTeamOut(
+            team_out = AvailableTeam(
                 id=team.id,
                 name=team.name,
                 members=members,
                 player_count=len(team.users),
+                max_players=4,
                 status=status,
                 game_session_id=game_session_id,
                 game_status=game_status
@@ -236,7 +241,7 @@ def get_available_teams(db: Session = Depends(get_db)):
             available_teams.append(team_out)
     return available_teams
 
-@router.get("/", response_model=list[schemas.TeamWithMembersOut])
+@router.get("/", response_model=list[TeamWithMembersOut])
 def list_teams(db: Session = Depends(get_db)):
     """
     List all teams (for admin/debug purposes).
@@ -246,8 +251,8 @@ def list_teams(db: Session = Depends(get_db)):
     result = []
     
     for team in teams:
-        members = [schemas.UserOut.model_validate(user) for user in team.users]
-        team_out = schemas.TeamWithMembersOut(
+        members = [UserOut.model_validate(user) for user in team.users]
+        team_out = TeamWithMembersOut(
             id=team.id,
             name=team.name,
             members=members

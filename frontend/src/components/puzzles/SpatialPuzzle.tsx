@@ -142,16 +142,7 @@ export const SpatialPuzzle: React.FC<SpatialPuzzleProps> = ({
     }
   }, [isGameActive, startGameLoop, stopGameLoop]);
 
-  // Restart game loop when puzzle changes or game is reset
-  useEffect(() => {
-    if (puzzle?.type && isGameActive) {
-      const timer = setTimeout(() => {
-        startGameLoop();
-      }, 100);
-      
-      return () => clearTimeout(timer);
-    }
-  }, [puzzle?.type, isGameActive, resetCounter, startGameLoop]);
+  // Remove the redundant game loop restart effect that was causing multiple submissions
 
   // Add a log when checking win condition
   const checkWin = useCallback((

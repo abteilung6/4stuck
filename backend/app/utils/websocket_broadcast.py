@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session
 from .. import models
 import json
 import logging
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
 logger = logging.getLogger(__name__)
 
@@ -41,7 +41,7 @@ def update_player_activity(session_id: int, user_id: int, activity_data: Dict[st
     
     player_activity[session_id][user_id] = {
         **activity_data,
-        "timestamp": datetime.utcnow().isoformat()
+        "timestamp": datetime.now(timezone.utc).isoformat()
     }
     
     # Clean up old activity data (older than 30 seconds)
@@ -56,7 +56,7 @@ def update_mouse_position(session_id: int, user_id: int, x: int, y: int, puzzle_
         "x": x,
         "y": y,
         "puzzle_area": puzzle_area,
-        "timestamp": datetime.utcnow().isoformat()
+        "timestamp": datetime.now(timezone.utc).isoformat()
     }
 
 def cache_user_color(session_id: int, user_id: int, color: str):
@@ -76,7 +76,7 @@ def clear_user_colors(session_id: int):
 
 def cleanup_old_activity(session_id: int, max_age_seconds: int = 30):
     """Clean up old activity data"""
-    cutoff_time = datetime.utcnow() - timedelta(seconds=max_age_seconds)
+    cutoff_time = datetime.now(timezone.utc) - timedelta(seconds=max_age_seconds)
     
     if session_id in player_activity:
         for user_id in list(player_activity[session_id].keys()):
@@ -98,106 +98,222 @@ async def broadcast_message(session_id: int, message_type: str, data: Dict[str, 
     message = {
         "type": message_type,
         "data": data,
-        "timestamp": datetime.utcnow().isoformat()
+        "timestamp": datetime.now(timezone.utc).isoformat()
     }
     
-    for ws in list(connections[session_id]):
+    message_json = json.dumps(message)
+    disconnected = set()
+    
+    for websocket in connections[session_id]:
         try:
-            await ws.send_text(json.dumps(message))
+            await websocket.send_text(message_json)
         except Exception as e:
-            logger.warning(f"Failed to send {message_type} to WebSocket: {e}")
-            connections[session_id].discard(ws)
+            logger.error(f"Failed to send message to WebSocket: {e}")
+            disconnected.add(websocket)
+    
+    # Remove disconnected WebSockets
+    for websocket in disconnected:
+        remove_connection(session_id, websocket)
 
 async def broadcast_state(session_id: int, db: Session):
-    """Broadcast the current game state to all connected clients in a session"""
-    try:
-        # Gather full game state for the session
-        session = db.query(models.GameSession).filter(models.GameSession.id == session_id).first()
-        if not session:
-            return
-            
-        team = db.query(models.Team).filter(models.Team.id == session.team_id).first()
-        if not team:
-            return
-            
-        users = db.query(models.User).filter(models.User.team_id == team.id).all()
-        puzzles = db.query(models.Puzzle).filter(models.Puzzle.game_session_id == session_id).all()
-        
-        # Get current player activity (but NOT mouse positions - those are handled separately)
-        current_activity = player_activity.get(session_id, {})
-        
-        state = {
-            "type": "state_update",
-            "data": {
-                "session": {"id": session.id, "status": session.status},
-                "team": {"id": team.id, "name": team.name},
-                "players": [
-                    {
-                        "id": u.id, 
-                        "username": u.username, 
-                        "points": u.points,
-                        "activity": current_activity.get(int(u.id), {})
-                        # Removed mouse_position - this is now handled by separate mouse_cursor messages
-                    } for u in users
-                ],
-                "puzzles": [
-                    {"id": p.id, "user_id": p.user_id, "type": p.type, "status": p.status, "data": p.data} for p in puzzles
-                ]
-            },
-            "timestamp": datetime.utcnow().isoformat()
-        }
-        
-        # Broadcast to all connected clients in this session
-        if session_id in connections:
-            for ws in list(connections[session_id]):
-                try:
-                    await ws.send_text(json.dumps(state))
-                except Exception as e:
-                    logger.warning(f"Failed to send state to WebSocket: {e}")
-                    connections[session_id].discard(ws)
-    except Exception as e:
-        logger.error(f"Error broadcasting state for session {session_id}: {e}")
+    """Broadcast current game state to all connected clients"""
+    if session_id not in connections:
+        return
+    
+    # Get current game session
+    session = db.query(models.GameSession).filter(models.GameSession.id == session_id).first()
+    if not session:
+        return
+    
+    # Get team and users
+    team = db.query(models.Team).filter(models.Team.id == session.team_id).first()
+    if not team:
+        return
+    
+    users = db.query(models.User).filter(models.User.team_id == team.id).all()
+    
+    # Get current puzzles for each user
+    puzzles = db.query(models.Puzzle).filter(
+        models.Puzzle.game_session_id == session_id,
+        models.Puzzle.status == "active"
+    ).all()
+    
+    # Create user puzzle mapping
+    user_puzzles = {puzzle.user_id: puzzle for puzzle in puzzles}
+    
+    # Build state data
+    state_data = {
+        "session": {
+            "id": session.id,
+            "status": session.status,
+            "started_at": session.started_at.isoformat() if session.started_at else None,
+            "ended_at": session.ended_at.isoformat() if session.ended_at else None,
+            "survival_time_seconds": session.survival_time_seconds
+        },
+        "team": {
+            "id": team.id,
+            "name": team.name
+        },
+        "players": [
+            {
+                "id": user.id,
+                "username": user.username,
+                "points": user.points,
+                "color": user.color,
+                "puzzle": {
+                    "id": user_puzzles[user.id].id,
+                    "type": user_puzzles[user.id].type,
+                    "data": user_puzzles[user.id].data,
+                    "status": user_puzzles[user.id].status
+                } if user.id in user_puzzles else None
+            }
+            for user in users
+        ],
+        "puzzles": [
+            {
+                "id": puzzle.id,
+                "type": puzzle.type,
+                "data": puzzle.data,
+                "status": puzzle.status,
+                "user_id": puzzle.user_id
+            }
+            for puzzle in puzzles
+        ],
+        "mouse_positions": mouse_positions.get(session_id, {}),
+        "player_activity": player_activity.get(session_id, {})
+    }
+    
+    message = {
+        "type": "state_update",
+        "data": state_data,
+        "timestamp": datetime.now(timezone.utc).isoformat()
+    }
+    
+    message_json = json.dumps(message)
+    disconnected = set()
+    
+    for websocket in connections[session_id]:
+        try:
+            await websocket.send_text(message_json)
+        except Exception as e:
+            logger.error(f"Failed to send state update to WebSocket: {e}")
+            disconnected.add(websocket)
+    
+    # Remove disconnected WebSockets
+    for websocket in disconnected:
+        remove_connection(session_id, websocket)
 
 async def broadcast_puzzle_interaction(session_id: int, user_id: int, puzzle_id: int, interaction_type: str, interaction_data: Dict[str, Any]):
-    """Broadcast puzzle interaction events"""
-    await broadcast_message(session_id, "puzzle_interaction", {
+    """Broadcast puzzle interaction to all connected clients"""
+    message_data = {
         "user_id": user_id,
         "puzzle_id": puzzle_id,
-        "interaction_type": interaction_type,  # "click", "drag_start", "drag_end", "hover"
-        "interaction_data": interaction_data,
-        "timestamp": datetime.utcnow().isoformat()
-    })
+        "interaction_type": interaction_type,
+        "interaction_data": interaction_data
+    }
+    
+    message = {
+        "type": "puzzle_interaction",
+        "data": message_data,
+        "timestamp": datetime.now(timezone.utc).isoformat()
+    }
+    
+    message_json = json.dumps(message)
+    disconnected = set()
+    
+    for websocket in connections[session_id]:
+        try:
+            await websocket.send_text(message_json)
+        except Exception as e:
+            logger.error(f"Failed to send puzzle interaction to WebSocket: {e}")
+            disconnected.add(websocket)
+    
+    # Remove disconnected WebSockets
+    for websocket in disconnected:
+        remove_connection(session_id, websocket)
 
 async def broadcast_team_communication(session_id: int, user_id: int, message_type: str, message_data: Dict[str, Any]):
-    """Broadcast team communication events"""
-    await broadcast_message(session_id, "team_communication", {
+    """Broadcast team communication to all connected clients"""
+    message_data = {
         "user_id": user_id,
-        "message_type": message_type,  # "emoji_reaction", "thinking", "stress_indicator", "strategy_cue"
-        "message_data": message_data,
-        "timestamp": datetime.utcnow().isoformat()
-    })
+        "message_type": message_type,
+        "message_data": message_data
+    }
+    
+    message = {
+        "type": "team_communication",
+        "data": message_data,
+        "timestamp": datetime.now(timezone.utc).isoformat()
+    }
+    
+    message_json = json.dumps(message)
+    disconnected = set()
+    
+    for websocket in connections[session_id]:
+        try:
+            await websocket.send_text(message_json)
+        except Exception as e:
+            logger.error(f"Failed to send team communication to WebSocket: {e}")
+            disconnected.add(websocket)
+    
+    # Remove disconnected WebSockets
+    for websocket in disconnected:
+        remove_connection(session_id, websocket)
 
 async def broadcast_achievement(session_id: int, user_id: int, achievement_type: str, achievement_data: Dict[str, Any]):
-    """Broadcast player achievements"""
-    await broadcast_message(session_id, "achievement", {
+    """Broadcast achievement to all connected clients"""
+    message_data = {
         "user_id": user_id,
-        "achievement_type": achievement_type,  # "puzzle_solved", "fast_solve", "team_support"
-        "achievement_data": achievement_data,
-        "timestamp": datetime.utcnow().isoformat()
-    })
+        "achievement_type": achievement_type,
+        "achievement_data": achievement_data
+    }
+    
+    message = {
+        "type": "achievement",
+        "data": message_data,
+        "timestamp": datetime.now(timezone.utc).isoformat()
+    }
+    
+    message_json = json.dumps(message)
+    disconnected = set()
+    
+    for websocket in connections[session_id]:
+        try:
+            await websocket.send_text(message_json)
+        except Exception as e:
+            logger.error(f"Failed to send achievement to WebSocket: {e}")
+            disconnected.add(websocket)
+    
+    # Remove disconnected WebSockets
+    for websocket in disconnected:
+        remove_connection(session_id, websocket)
 
 async def broadcast_mouse_cursor(session_id: int, user_id: int, x: int, y: int, color: str, viewport: Optional[Dict[str, Any]] = None):
-    """Broadcast mouse cursor position to all players in the session"""
+    """Broadcast mouse cursor position to all connected clients"""
     message_data = {
         "user_id": user_id,
         "x": x,
         "y": y,
         "color": color,
-        "timestamp": datetime.utcnow().isoformat()
+        "viewport": viewport
     }
     
-    # Include viewport information if provided
-    if viewport:
-        message_data["viewport"] = viewport
+    message = {
+        "type": "mouse_cursor",
+        "data": message_data,
+        "timestamp": datetime.now(timezone.utc).isoformat()
+    }
     
-    await broadcast_message(session_id, "mouse_cursor", message_data) 
+    message_json = json.dumps(message)
+    disconnected = set()
+    
+    for websocket in connections[session_id]:
+        try:
+            await websocket.send_text(message_json)
+        except Exception as e:
+            logger.error(f"Failed to send mouse cursor to WebSocket: {e}")
+            disconnected.add(websocket)
+    
+    # Remove disconnected WebSockets
+    for websocket in disconnected:
+        remove_connection(session_id, websocket) 

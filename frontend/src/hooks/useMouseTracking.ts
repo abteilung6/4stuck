@@ -56,13 +56,11 @@ export const useMouseTracking = ({
       }
     };
 
-    console.log('🔍 useMouseTracking: Sending mouse position:', message);
     websocket.send(JSON.stringify(message));
     lastSentPosition.current = { x, y };
   }, [websocket, userId]);
 
   const handleMouseMove = useCallback((event: MouseEvent) => {
-    console.log('🔍 useMouseTracking: Mouse moved to:', { x: event.clientX, y: event.clientY });
     
     // Clear existing timeout
     if (throttleTimeoutRef.current) {

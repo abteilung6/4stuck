@@ -2,9 +2,12 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
+/**
+ * Available Colors Response: Response for available colors
+ */
 export type AvailableColorsResponse = {
-    team_id: number;
-    available_colors: Array<string>;
-    used_colors: Array<string>;
+    success: boolean;
+    data?: (Record<string, any> | null);
+    error?: (string | null);
 };
 
