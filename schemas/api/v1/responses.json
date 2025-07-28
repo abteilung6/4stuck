@@ -336,6 +336,123 @@
           "uptime": 3600
         }
       ]
+    },
+    "TeamColorValidationResponse": {
+      "title": "Team Color Validation Response",
+      "description": "Response for team color validation",
+      "type": "object",
+      "required": ["success"],
+      "properties": {
+        "success": {
+          "type": "boolean"
+        },
+        "data": {
+          "type": "object",
+          "properties": {
+            "is_valid": {
+              "type": "boolean"
+            },
+            "conflicts": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "user_id": {
+                    "type": "integer"
+                  },
+                  "username": {
+                    "type": "string"
+                  },
+                  "color": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "error": {
+          "type": "string"
+        }
+      }
+    },
+    "ColorConflictResolutionResponse": {
+      "title": "Color Conflict Resolution Response",
+      "description": "Response for color conflict resolution",
+      "type": "object",
+      "required": ["success"],
+      "properties": {
+        "success": {
+          "type": "boolean"
+        },
+        "data": {
+          "type": "object",
+          "properties": {
+            "resolved_conflicts": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "user_id": {
+                    "type": "integer"
+                  },
+                  "old_color": {
+                    "type": "string"
+                  },
+                  "new_color": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "error": {
+          "type": "string"
+        }
+      }
+    },
+    "AvailableColorsResponse": {
+      "title": "Available Colors Response",
+      "description": "Response for available colors",
+      "type": "object",
+      "required": ["success"],
+      "properties": {
+        "success": {
+          "type": "boolean"
+        },
+        "data": {
+          "type": "object",
+          "properties": {
+            "available_colors": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "used_colors": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "user_id": {
+                    "type": "integer"
+                  },
+                  "username": {
+                    "type": "string"
+                  },
+                  "color": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "error": {
+          "type": "string"
+        }
+      }
     }
   }
 } 

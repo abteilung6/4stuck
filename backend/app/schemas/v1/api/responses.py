@@ -136,3 +136,30 @@ class HealthCheckResponse(BaseModel):
 
     class Config:
         from_attributes = True
+
+class TeamColorValidationResponse(BaseModel):
+    """Team Color Validation Response: Response for team color validation"""
+    success: bool
+    data: Optional[Dict[str, Any]]
+    error: Optional[str]
+
+    class Config:
+        from_attributes = True
+
+class ColorConflictResolutionResponse(BaseModel):
+    """Color Conflict Resolution Response: Response for color conflict resolution"""
+    success: bool
+    data: Optional[Dict[str, Any]]
+    error: Optional[str]
+
+    class Config:
+        from_attributes = True
+
+class AvailableColorsResponse(BaseModel):
+    """Available Colors Response: Response for available colors"""
+    success: bool
+    data: Optional[Dict[str, Any]]
+    error: Optional[str]
+
+    class Config:
+        from_attributes = True

@@ -87,13 +87,13 @@ class PythonGenerator:
         else:
             return 'Any'
     
-    def generate_field(self, name: str, schema: Dict[str, Any]) -> str:
+    def generate_field(self, name: str, schema: Dict[str, Any], required_fields: List[str]) -> str:
         """Generate a Pydantic field definition."""
         field_type = self.python_type_for_schema(schema)
         
         # Handle required fields
-        required = schema.get('required', True)
-        if not required:
+        is_required = name in required_fields
+        if not is_required:
             field_type = f"Optional[{field_type}]"
         
         # Add field description
@@ -122,8 +122,7 @@ class PythonGenerator:
         required = schema.get('required', [])
         
         for field_name, field_schema in properties.items():
-            field_schema['required'] = field_name in required
-            field_line = self.generate_field(field_name, field_schema)
+            field_line = self.generate_field(field_name, field_schema, required)
             lines.append(field_line)
         
         # Add model config
