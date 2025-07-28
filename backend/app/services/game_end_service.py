@@ -1,7 +1,8 @@
 import asyncio
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import List, Optional
 from sqlalchemy.orm import Session
+from sqlalchemy import and_
 from .. import models, database
 from ..utils.websocket_broadcast import broadcast_state
 
@@ -84,13 +85,20 @@ class GameEndService:
         try:
             # Transition to finished state
             session.status = "finished"
-            session.ended_at = datetime.utcnow()
+            session.ended_at = datetime.now(timezone.utc)
             
             # Calculate survival time
             if session.started_at:
-                session.survival_time_seconds = int(
-                    (session.ended_at - session.started_at).total_seconds()
-                )
+                # Handle both timezone-aware and timezone-naive datetimes
+                started_at = session.started_at
+                ended_at = session.ended_at
+                
+                # If started_at is timezone-naive, assume UTC
+                if started_at.tzinfo is None:
+                    started_at = started_at.replace(tzinfo=timezone.utc)
+                
+                survival_time = (ended_at - started_at).total_seconds()
+                session.survival_time_seconds = int(survival_time)
             
             print(f"Game session {session.id} ended. Survival time: {session.survival_time_seconds} seconds")
             

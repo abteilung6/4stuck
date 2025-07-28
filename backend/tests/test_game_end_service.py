@@ -7,6 +7,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from app.models import Base, User, GameSession, Team
 from app.services.game_end_service import GameEndService
+from datetime import datetime, timezone, timedelta
 
 # Helper to create a fresh app and DB for each test
 def create_test_app_and_client():
@@ -160,8 +161,7 @@ class TestGameEndService:
             
             # Create a game session with started_at timestamp
             db = TestingSessionLocal()
-            from datetime import datetime, timedelta
-            started_at = datetime.utcnow() - timedelta(minutes=5)  # 5 minutes ago
+            started_at = datetime.now(timezone.utc) - timedelta(minutes=5)  # 5 minutes ago
             session = GameSession(
                 team_id=team_id, 
                 status="active",

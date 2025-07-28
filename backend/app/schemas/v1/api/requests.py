@@ -121,9 +121,10 @@ class PuzzleCreate(BaseModel):
         from_attributes = True
 
 class PuzzleAnswer(BaseModel):
-    """Puzzle Answer: Request to submit a puzzle answer"""
+    """Puzzle Answer: Answer submission for a puzzle"""
     puzzle_id: int = Field(description="ID of the puzzle being answered")
-    answer: str = Field(description="Player's answer to the puzzle")
+    answer: str = Field(description="The answer submitted by the user")
+    user_id: int = Field(description="ID of the user submitting the answer")
 
     class Config:
         from_attributes = True

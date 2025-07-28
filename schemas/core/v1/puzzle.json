@@ -275,13 +275,23 @@
         "message": {
           "type": "string",
           "description": "Feedback message for the player"
+        },
+        "awarded_to_user_id": {
+          "type": "integer",
+          "description": "ID of the user who received the points"
+        },
+        "next_puzzle_id": {
+          "type": "integer",
+          "description": "ID of the next puzzle (if any)"
         }
       },
       "examples": [
         {
           "correct": true,
           "points_awarded": 5,
-          "message": "Correct! 5 points awarded to next player."
+          "message": "Correct! 5 points awarded to next player.",
+          "awarded_to_user_id": 2,
+          "next_puzzle_id": 123
         }
       ]
     }

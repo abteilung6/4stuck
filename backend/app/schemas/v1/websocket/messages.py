@@ -25,7 +25,7 @@ class WebSocketMessage(BaseModel):
 
 class IncomingMessage(BaseModel):
     """Incoming Message: Message sent from client to server"""
-    type: Literal['mouse_position', 'puzzle_interaction', 'ping']
+    type: Literal['mouse_position', 'puzzle_interaction', 'ping', 'team_communication', 'player_activity', 'achievement']
     user_id: Optional[int] = Field(default=None, description="ID of the user sending the message")
     x: Optional[float] = Field(default=None, description="X coordinate (for mouse_position)")
     y: Optional[float] = Field(default=None, description="Y coordinate (for mouse_position)")
@@ -35,6 +35,9 @@ class IncomingMessage(BaseModel):
     interaction_type: Optional[Literal['click', 'drag', 'submit', 'timeout', 'start', 'complete']] = Field(default=None, description="Type of puzzle interaction")
     interaction_data: Optional[Dict[str, Any]] = Field(default=None, description="Additional interaction data")
     answer: Optional[str] = Field(default=None, description="Puzzle answer (for submit interaction)")
+    message_type: Optional[str] = Field(default=None, description="Type of team communication or achievement")
+    message_data: Optional[Dict[str, Any]] = Field(default=None, description="Additional data for team communication or achievement")
+    activity_data: Optional[Dict[str, Any]] = Field(default=None, description="Player activity data")
 
     class Config:
         from_attributes = True

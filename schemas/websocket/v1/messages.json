@@ -68,7 +68,7 @@
       "properties": {
         "type": {
           "type": "string",
-          "enum": ["mouse_position", "puzzle_interaction", "ping"]
+          "enum": ["mouse_position", "puzzle_interaction", "ping", "team_communication", "player_activity", "achievement"]
         },
         "user_id": {
           "type": "integer",
@@ -111,6 +111,20 @@
         "answer": {
           "type": "string",
           "description": "Puzzle answer (for submit interaction)"
+        },
+        "message_type": {
+          "type": "string",
+          "description": "Type of team communication or achievement"
+        },
+        "message_data": {
+          "type": "object",
+          "description": "Additional data for team communication or achievement",
+          "additionalProperties": true
+        },
+        "activity_data": {
+          "type": "object",
+          "description": "Player activity data",
+          "additionalProperties": true
         }
       },
       "examples": [
@@ -131,6 +145,23 @@
         },
         {
           "type": "ping"
+        },
+        {
+          "type": "team_communication",
+          "user_id": 1,
+          "message_type": "encouragement",
+          "message_data": {"text": "Great job team!"}
+        },
+        {
+          "type": "player_activity",
+          "user_id": 1,
+          "activity_data": {"status": "focused", "puzzle_type": "memory"}
+        },
+        {
+          "type": "achievement",
+          "user_id": 1,
+          "message_type": "puzzle_solved",
+          "message_data": {"puzzle_id": 123, "time": 15.5}
         }
       ]
     },

@@ -8,7 +8,7 @@ from app.routers.team import router as team_router, get_db as get_db_team
 from app.routers.game import router as game_router, get_db as get_db_game
 from app.routers.puzzle import router as puzzle_router, get_db as get_db_puzzle
 from uuid import uuid4
-from datetime import datetime
+from datetime import datetime, timezone, timedelta
 
 # Helper to create a fresh app and DB for each test
 def create_test_app_and_client():
@@ -115,7 +115,7 @@ def test_get_available_teams_in_game_excluded():
     game_session = GameSession(
         team_id=team_id,
         status="active",
-        started_at=datetime.utcnow()
+        started_at=datetime.now(timezone.utc)
     )
     db.add(game_session)
     db.commit()
@@ -145,7 +145,7 @@ def test_get_available_teams_mixed_scenarios():
     game_session = GameSession(
         team_id=game_team_id,
         status="active",
-        started_at=datetime.utcnow()
+        started_at=datetime.now(timezone.utc)
     )
     db.add(game_session)
     db.commit()
@@ -229,8 +229,8 @@ def test_get_available_teams_finished_game_included():
     game_session = GameSession(
         team_id=team_id,
         status="finished",
-        started_at=datetime.utcnow(),
-        ended_at=datetime.utcnow()
+        started_at=datetime.now(timezone.utc),
+        ended_at=datetime.now(timezone.utc)
     )
     db.add(game_session)
     db.commit()
@@ -260,8 +260,8 @@ def test_get_available_teams_finished_game_full_team_excluded():
     game_session = GameSession(
         team_id=team_id,
         status="finished",
-        started_at=datetime.utcnow(),
-        ended_at=datetime.utcnow()
+        started_at=datetime.now(timezone.utc),
+        ended_at=datetime.now(timezone.utc)
     )
     db.add(game_session)
     db.commit()

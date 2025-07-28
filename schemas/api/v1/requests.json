@@ -314,9 +314,9 @@
     },
     "PuzzleAnswer": {
       "title": "Puzzle Answer",
-      "description": "Request to submit a puzzle answer",
+      "description": "Answer submission for a puzzle",
       "type": "object",
-      "required": ["puzzle_id", "answer"],
+      "required": ["puzzle_id", "answer", "user_id"],
       "properties": {
         "puzzle_id": {
           "type": "integer",
@@ -324,13 +324,18 @@
         },
         "answer": {
           "type": "string",
-          "description": "Player's answer to the puzzle"
+          "description": "The answer submitted by the user"
+        },
+        "user_id": {
+          "type": "integer",
+          "description": "ID of the user submitting the answer"
         }
       },
       "examples": [
         {
           "puzzle_id": 123,
-          "answer": "blue"
+          "answer": "blue",
+          "user_id": 1
         }
       ]
     }

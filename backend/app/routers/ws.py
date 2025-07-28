@@ -40,6 +40,8 @@ async def websocket_endpoint(websocket: WebSocket, session_id: int, db: Session 
                     incoming_message = IncomingMessage.model_validate_json(data)
                 except ValidationError as e:
                     # Send error message back to client for invalid messages
+                    print(f"WebSocket validation error: {e.errors()}") # Debugging line
+                    print(f"Received data: {data}") # Debugging line
                     error_message = {
                         "type": "error",
                         "message": "Invalid message format",
@@ -70,6 +72,29 @@ async def websocket_endpoint(websocket: WebSocket, session_id: int, db: Session 
                         await broadcast_puzzle_interaction(
                             session_id, incoming_message.user_id, incoming_message.puzzle_id, 
                             incoming_message.interaction_type, incoming_message.interaction_data or {}
+                        )
+                
+                elif incoming_message.type == "team_communication":
+                    # Handle team communication events
+                    if incoming_message.user_id and incoming_message.interaction_type:
+                        await broadcast_team_communication(
+                            session_id, incoming_message.user_id, incoming_message.interaction_type, 
+                            incoming_message.interaction_data or {}
+                        )
+                
+                elif incoming_message.type == "player_activity":
+                    # Handle player activity updates
+                    if incoming_message.user_id and incoming_message.interaction_data:
+                        update_player_activity(session_id, incoming_message.user_id, incoming_message.interaction_data)
+                        # Broadcast to other players
+                        await broadcast_state(session_id, db)
+                
+                elif incoming_message.type == "achievement":
+                    # Handle achievement broadcasts
+                    if incoming_message.user_id and incoming_message.interaction_type:
+                        await broadcast_achievement(
+                            session_id, incoming_message.user_id, incoming_message.interaction_type, 
+                            incoming_message.interaction_data or {}
                         )
                 
                 else:

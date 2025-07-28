@@ -75,6 +75,8 @@ class PuzzleResult(BaseModel):
     next_puzzle: Optional[Any] = Field(default=None, description="Next puzzle for the player (if any)")
     points_awarded: Optional[int] = Field(default=None, description="Points awarded to the next player")
     message: Optional[str] = Field(default=None, description="Feedback message for the player")
+    awarded_to_user_id: Optional[int] = Field(default=None, description="ID of the user who received the points")
+    next_puzzle_id: Optional[int] = Field(default=None, description="ID of the next puzzle (if any)")
 
     class Config:
         from_attributes = True

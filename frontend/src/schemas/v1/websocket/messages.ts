@@ -22,7 +22,7 @@ export interface WebSocketMessage {
 
 /** Incoming Message: Message sent from client to server */
 export interface IncomingMessage {
-  type: ('mouse_position' | 'puzzle_interaction' | 'ping');
+  type: ('mouse_position' | 'puzzle_interaction' | 'ping' | 'team_communication' | 'player_activity' | 'achievement');
   /** ID of the user sending the message */
   user_id?: number;
   /** X coordinate (for mouse_position) */
@@ -41,6 +41,12 @@ export interface IncomingMessage {
   interaction_data?: Record<string, any>;
   /** Puzzle answer (for submit interaction) */
   answer?: string;
+  /** Type of team communication or achievement */
+  message_type?: string;
+  /** Additional data for team communication or achievement */
+  message_data?: Record<string, any>;
+  /** Player activity data */
+  activity_data?: Record<string, any>;
 }
 
 /** Outgoing Message: Message sent from server to client */

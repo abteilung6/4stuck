@@ -5,6 +5,7 @@ from .. import models, database
 from ..schemas.v1.api.requests import PuzzleCreate, PuzzleAnswer
 from ..schemas.v1.api.responses import PuzzleState, PuzzleResult, PlayerPoints, TeamPoints
 from ..utils.websocket_broadcast import broadcast_state
+from datetime import datetime, timezone
 import random
 
 router = APIRouter(prefix="/puzzle", tags=["puzzle"])
@@ -98,130 +99,119 @@ def create_puzzle(puzzle: PuzzleCreate, db: Session = Depends(get_db)):
     db.add(new_puzzle)
     db.commit()
     db.refresh(new_puzzle)
-    return PuzzleState.model_validate(new_puzzle)
+    
+    return new_puzzle
 
 @router.get("/current/{user_id}", response_model=PuzzleState)
 def get_current_puzzle(user_id: int, db: Session = Depends(get_db)):
-    puzzle = db.query(models.Puzzle).filter(and_(models.Puzzle.user_id == user_id, models.Puzzle.status == "active")).first()
+    puzzle = db.query(models.Puzzle).filter(
+        and_(models.Puzzle.user_id == user_id, models.Puzzle.status == "active")
+    ).first()
     if not puzzle:
-        raise HTTPException(status_code=404, detail="No active puzzle for this user")
-    return PuzzleState.model_validate(puzzle)
+        raise HTTPException(status_code=404, detail="No active puzzle found for this user")
+    return puzzle
 
 @router.post("/answer", response_model=PuzzleResult)
 async def submit_answer(answer: PuzzleAnswer, db: Session = Depends(get_db)):
+    """Submit an answer to a puzzle and handle point distribution"""
+    # Get the puzzle
     puzzle = db.query(models.Puzzle).filter(models.Puzzle.id == answer.puzzle_id).first()
-    if not puzzle or puzzle.status != "active":
-        raise HTTPException(status_code=404, detail="Puzzle not found or not active")
-    user = db.query(models.User).filter(models.User.id == puzzle.user_id).first()
-    if not user or user.points <= 0:
-        raise HTTPException(status_code=400, detail="User not found or out of points")
-    # Special logic for concentration puzzle
-    if puzzle.type == "concentration":
-        if answer.answer == puzzle.correct_answer:
-            correct = True
-        else:
-            correct = False
-    else:
-        correct = (answer.answer == puzzle.correct_answer)
+    if not puzzle:
+        raise HTTPException(status_code=404, detail="Puzzle not found")
+    
+    if puzzle.status != "active":
+        raise HTTPException(status_code=400, detail="Puzzle is not active")
+    
+    # Get the user who submitted the answer
+    user = db.query(models.User).filter(models.User.id == answer.user_id).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    # Check if user is eliminated (0 points)
+    if user.points <= 0:
+        raise HTTPException(status_code=400, detail="Eliminated players cannot answer puzzles")
+    
+    # Check if answer is correct
+    correct = puzzle.correct_answer == answer.answer
+    puzzle.status = "solved" if correct else "failed"
+    puzzle.solved_at = datetime.now(timezone.utc)
+    
+    # Get the team
+    team = db.query(models.Team).filter(models.Team.id == user.team_id).first()
+    if not team:
+        raise HTTPException(status_code=404, detail="Team not found")
+    
+    # Get all team members
+    team_users = db.query(models.User).filter(models.User.team_id == team.id).order_by(models.User.id).all()
+    
     awarded_to_user_id = None
-    points_awarded = 0
-    next_puzzle_id = None
+    
     if correct:
-        # Mark puzzle as solved
-        puzzle.status = "solved"
-        from datetime import datetime
-        puzzle.solved_at = datetime.utcnow()
-        db.commit()
-        # Find next player in team
-        team_users = db.query(models.User).filter(models.User.team_id == user.team_id).order_by(models.User.id).all()
-        if len(team_users) > 1:
-            idx = [u.id for u in team_users].index(user.id)
-            next_idx = (idx + 1) % len(team_users)
-            next_user = team_users[next_idx]
+        # Find the next player in the team (round-robin)
+        current_user_index = next((i for i, u in enumerate(team_users) if u.id == user.id), -1)
+        if current_user_index != -1 and len(team_users) > 1:
+            next_user_index = (current_user_index + 1) % len(team_users)
+            next_user = team_users[next_user_index]
+            
+            # Only award points if the next player is not eliminated
             if next_user.points > 0:
                 next_user.points += POINTS_AWARD
                 awarded_to_user_id = next_user.id
-                points_awarded = POINTS_AWARD
-                db.commit()
-        # Assign new puzzle to solver (randomly choose puzzle type)
-        puzzle_types = ["memory", "spatial", "concentration", "multitasking"]
-        new_type = random.choice(puzzle_types)
-        
-        if new_type == "memory":
-            new_data, new_correct = generate_memory_puzzle()
-        elif new_type == "spatial":
-            new_data = {}
-            new_correct = "solved"
-        elif new_type == "concentration":
-            new_data, new_correct = generate_concentration_puzzle()
-        elif new_type == "multitasking":
-            new_data = {}
-            new_correct = "solved"
-        
-        new_puzzle = models.Puzzle(
-            type=new_type,
-            data=new_data,
-            correct_answer=new_correct,
-            status="active",
-            game_session_id=puzzle.game_session_id,
-            user_id=user.id
-        )
-        db.add(new_puzzle)
-        db.commit()
-        db.refresh(new_puzzle)
-        next_puzzle_id = new_puzzle.id
-        
-        # Broadcast updated state to all connected clients
-        await broadcast_state(int(puzzle.game_session_id), db)
+                
+                print(f"[Puzzle Solved] User {user.username} solved puzzle {puzzle.id}. "
+                      f"Awarded {POINTS_AWARD} points to {next_user.username} (next in team)")
+            else:
+                print(f"[Puzzle Solved] User {user.username} solved puzzle {puzzle.id}. "
+                      f"Next player {next_user.username} is eliminated, no points awarded")
+        else:
+            print(f"[Puzzle Solved] User {user.username} solved puzzle {puzzle.id}. "
+                  f"Single player team or could not find next user, no points awarded")
     else:
-        # Mark puzzle as failed
-        puzzle.status = "failed"
-        db.commit()
-        
-        # Create a new puzzle for the user to try again (same as correct answer logic)
-        puzzle_types = ["memory", "spatial", "concentration", "multitasking"]
-        new_type = random.choice(puzzle_types)
-        
-        if new_type == "memory":
-            new_data, new_correct = generate_memory_puzzle()
-        elif new_type == "spatial":
-            new_data = {}
-            new_correct = "solved"
-        elif new_type == "concentration":
-            new_data, new_correct = generate_concentration_puzzle()
-        elif new_type == "multitasking":
-            new_data = {}
-            new_correct = "solved"
-        
-        new_puzzle = models.Puzzle(
-            type=new_type,
-            data=new_data,
-            correct_answer=new_correct,
-            status="active",
-            game_session_id=puzzle.game_session_id,
-            user_id=user.id
-        )
-        db.add(new_puzzle)
-        db.commit()
-        db.refresh(new_puzzle)
-        next_puzzle_id = new_puzzle.id
-        
-        # Broadcast updated state to all connected clients
-        await broadcast_state(int(puzzle.game_session_id), db)
+        print(f"[Puzzle Failed] User {user.username} failed puzzle {puzzle.id}. "
+              f"Answer: {answer.answer}, Correct: {puzzle.correct_answer}")
     
-    # Return the new puzzle data if one was created
-    next_puzzle_data = None
-    if next_puzzle_id:
-        next_puzzle = db.query(models.Puzzle).filter(models.Puzzle.id == next_puzzle_id).first()
-        if next_puzzle:
-            next_puzzle_data = PuzzleState.model_validate(next_puzzle)
+    db.commit()
+    
+    # Create next puzzle for the user who answered the current one (both correct and incorrect)
+    # Generate a new random puzzle
+    import random
+    puzzle_types = ["memory", "spatial", "concentration", "multitasking"]
+    next_puzzle_type = random.choice(puzzle_types)
+    
+    if next_puzzle_type == "memory":
+        data, correct_answer = generate_memory_puzzle()
+    elif next_puzzle_type == "spatial":
+        data = {}
+        correct_answer = "solved"
+    elif next_puzzle_type == "concentration":
+        data, correct_answer = generate_concentration_puzzle()
+    elif next_puzzle_type == "multitasking":
+        data = {}
+        correct_answer = "solved"
+    
+    next_puzzle = models.Puzzle(
+        type=next_puzzle_type,
+        data=data,
+        correct_answer=correct_answer,
+        status="active",
+        game_session_id=puzzle.game_session_id,
+        user_id=user.id
+    )
+    db.add(next_puzzle)
+    db.commit()
+    db.refresh(next_puzzle)
+    
+    # Convert to response model
+    from ..schemas.v1.api.responses import PuzzleState
+    next_puzzle_data = PuzzleState.model_validate(next_puzzle)
     
     return PuzzleResult(
         correct=correct,
+        points_awarded=POINTS_AWARD if awarded_to_user_id else 0,
+        message=f"{'Correct' if correct else 'Incorrect'}! {POINTS_AWARD if awarded_to_user_id else 0} points awarded to next player." if correct else "Incorrect answer. Try again!",
+        next_puzzle=next_puzzle_data,
         awarded_to_user_id=awarded_to_user_id,
-        points_awarded=points_awarded,
-        next_puzzle_id=next_puzzle_id,
-        next_puzzle=next_puzzle_data
+        next_puzzle_id=next_puzzle.id
     )
 
 @router.get("/points/{team_id}", response_model=TeamPoints)
@@ -230,12 +220,36 @@ def get_team_points(team_id: int, db: Session = Depends(get_db)):
     players = [PlayerPoints(user_id=u.id, username=u.username, points=u.points) for u in users]
     return TeamPoints(team_id=team_id, players=players)
 
-# Endpoint to trigger point decay for all players in a team (for now, call manually or via cron)
 @router.post("/decay/{team_id}")
 def decay_points(team_id: int, db: Session = Depends(get_db)):
+    """Decay points for all players in a team (called by background task)"""
     users = db.query(models.User).filter(models.User.team_id == team_id).all()
+    
     for user in users:
         if user.points > 0:
             user.points = max(0, user.points - POINTS_LOST_PER_DECAY)
+            print(f"[Point Decay] User {user.username} lost {POINTS_LOST_PER_DECAY} point(s). "
+                  f"New total: {user.points}")
+    
     db.commit()
-    return {"detail": "Points decayed for all players in team."} 
+    
+    # Broadcast updated state
+    # Find the active game session for this team
+    session = db.query(models.GameSession).filter(
+        and_(
+            models.GameSession.team_id == team_id,
+            models.GameSession.status == "active"
+        )
+    ).first()
+    
+    if session:
+        import asyncio
+        try:
+            loop = asyncio.new_event_loop()
+            asyncio.set_event_loop(loop)
+            loop.run_until_complete(broadcast_state(session.id, db))
+            loop.close()
+        except Exception as e:
+            print(f"Failed to broadcast point decay for session {session.id}: {e}")
+    
+    return {"message": f"Decayed {POINTS_LOST_PER_DECAY} point(s) for {len(users)} users"} 
