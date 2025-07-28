@@ -1,7 +1,9 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from sqlalchemy import and_
-from .. import models, schemas, database
+from .. import models, database
+from ..schemas.v1.api.requests import PuzzleCreate, PuzzleAnswer
+from ..schemas.v1.api.responses import PuzzleState, PuzzleResult, PlayerPoints, TeamPoints
 from ..utils.websocket_broadcast import broadcast_state
 import random
 
@@ -67,8 +69,8 @@ def generate_concentration_puzzle(num_pairs: int = 10):
 
 
 
-@router.post("/create", response_model=schemas.PuzzleState)
-def create_puzzle(puzzle: schemas.PuzzleCreate, db: Session = Depends(get_db)):
+@router.post("/create", response_model=PuzzleState)
+def create_puzzle(puzzle: PuzzleCreate, db: Session = Depends(get_db)):
     # Support multiple puzzle types
     if puzzle.type == "memory":
         data, correct_answer = generate_memory_puzzle()
@@ -96,17 +98,17 @@ def create_puzzle(puzzle: schemas.PuzzleCreate, db: Session = Depends(get_db)):
     db.add(new_puzzle)
     db.commit()
     db.refresh(new_puzzle)
-    return schemas.PuzzleState.from_orm(new_puzzle)
+    return PuzzleState.model_validate(new_puzzle)
 
-@router.get("/current/{user_id}", response_model=schemas.PuzzleState)
+@router.get("/current/{user_id}", response_model=PuzzleState)
 def get_current_puzzle(user_id: int, db: Session = Depends(get_db)):
     puzzle = db.query(models.Puzzle).filter(and_(models.Puzzle.user_id == user_id, models.Puzzle.status == "active")).first()
     if not puzzle:
         raise HTTPException(status_code=404, detail="No active puzzle for this user")
-    return schemas.PuzzleState.from_orm(puzzle)
+    return PuzzleState.model_validate(puzzle)
 
-@router.post("/answer", response_model=schemas.PuzzleResult)
-async def submit_answer(answer: schemas.PuzzleAnswer, db: Session = Depends(get_db)):
+@router.post("/answer", response_model=PuzzleResult)
+async def submit_answer(answer: PuzzleAnswer, db: Session = Depends(get_db)):
     puzzle = db.query(models.Puzzle).filter(models.Puzzle.id == answer.puzzle_id).first()
     if not puzzle or puzzle.status != "active":
         raise HTTPException(status_code=404, detail="Puzzle not found or not active")
@@ -212,9 +214,9 @@ async def submit_answer(answer: schemas.PuzzleAnswer, db: Session = Depends(get_
     if next_puzzle_id:
         next_puzzle = db.query(models.Puzzle).filter(models.Puzzle.id == next_puzzle_id).first()
         if next_puzzle:
-            next_puzzle_data = schemas.PuzzleState.from_orm(next_puzzle)
+            next_puzzle_data = PuzzleState.model_validate(next_puzzle)
     
-    return schemas.PuzzleResult(
+    return PuzzleResult(
         correct=correct,
         awarded_to_user_id=awarded_to_user_id,
         points_awarded=points_awarded,
@@ -222,11 +224,11 @@ async def submit_answer(answer: schemas.PuzzleAnswer, db: Session = Depends(get_
         next_puzzle=next_puzzle_data
     )
 
-@router.get("/points/{team_id}", response_model=schemas.TeamPoints)
+@router.get("/points/{team_id}", response_model=TeamPoints)
 def get_team_points(team_id: int, db: Session = Depends(get_db)):
     users = db.query(models.User).filter(models.User.team_id == team_id).all()
-    players = [schemas.PlayerPoints(user_id=u.id, username=u.username, points=u.points) for u in users]
-    return schemas.TeamPoints(team_id=team_id, players=players)
+    players = [PlayerPoints(user_id=u.id, username=u.username, points=u.points) for u in users]
+    return TeamPoints(team_id=team_id, players=players)
 
 # Endpoint to trigger point decay for all players in a team (for now, call manually or via cron)
 @router.post("/decay/{team_id}")

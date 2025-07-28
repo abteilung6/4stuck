@@ -1,6 +1,8 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
-from .. import models, schemas, database
+from .. import models, database
+from ..schemas.v1.api.requests import GameSessionCreate, GameSessionStateUpdate
+from ..schemas.v1.api.responses import GameSessionOut
 from ..services.countdown_service import countdown_service
 from ..utils.websocket_broadcast import cache_user_color
 
@@ -13,8 +15,8 @@ def get_db():
     finally:
         db.close()
 
-@router.post("/session", response_model=schemas.GameSessionOut)
-def create_game_session(session: schemas.GameSessionCreate, db: Session = Depends(get_db)):
+@router.post("/session", response_model=GameSessionOut)
+def create_game_session(session: GameSessionCreate, db: Session = Depends(get_db)):
     team = db.query(models.Team).filter(models.Team.id == session.team_id).first()
     if not team:
         raise HTTPException(status_code=404, detail="Team not found")
@@ -57,14 +59,14 @@ def create_game_session(session: schemas.GameSessionCreate, db: Session = Depend
     
     return new_session
 
-@router.get("/session/{team_id}", response_model=schemas.GameSessionOut)
+@router.get("/session/{team_id}", response_model=GameSessionOut)
 def get_current_session(team_id: int, db: Session = Depends(get_db)):
     session = db.query(models.GameSession).filter_by(team_id=team_id).order_by(models.GameSession.id.desc()).first()
     if not session:
         raise HTTPException(status_code=404, detail="No game session for this team")
     return session
 
-@router.post("/session/{session_id}/start", response_model=schemas.GameSessionOut)
+@router.post("/session/{session_id}/start", response_model=GameSessionOut)
 def start_game_session(session_id: int, db: Session = Depends(get_db)):
     """Start the game (transition from countdown to active)"""
     session = db.query(models.GameSession).filter(models.GameSession.id == session_id).first()
@@ -93,8 +95,8 @@ def start_game_session(session_id: int, db: Session = Depends(get_db)):
     
     return session
 
-@router.post("/session/{session_id}/state", response_model=schemas.GameSessionOut)
-def update_game_session_state(session_id: int, state_update: schemas.GameSessionStateUpdate, db: Session = Depends(get_db)):
+@router.post("/session/{session_id}/state", response_model=GameSessionOut)
+def update_game_session_state(session_id: int, state_update: GameSessionStateUpdate, db: Session = Depends(get_db)):
     """Update game session state (lobby, countdown, active, finished)"""
     session = db.query(models.GameSession).filter(models.GameSession.id == session_id).first()
     if not session:

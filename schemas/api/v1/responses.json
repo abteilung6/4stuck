@@ -453,6 +453,204 @@
           "type": "string"
         }
       }
+    },
+    "UserOut": {
+      "title": "User Out",
+      "description": "User response model",
+      "type": "object",
+      "required": ["id", "username", "points"],
+      "properties": {
+        "id": {
+          "type": "integer",
+          "description": "User ID"
+        },
+        "username": {
+          "type": "string",
+          "description": "Username"
+        },
+        "team_id": {
+          "type": "integer",
+          "description": "Team ID"
+        },
+        "points": {
+          "type": "integer",
+          "description": "Current points"
+        },
+        "color": {
+          "type": "string",
+          "description": "Assigned color"
+        }
+      }
+    },
+    "TeamOut": {
+      "title": "Team Out",
+      "description": "Team response model",
+      "type": "object",
+      "required": ["id", "name"],
+      "properties": {
+        "id": {
+          "type": "integer",
+          "description": "Team ID"
+        },
+        "name": {
+          "type": "string",
+          "description": "Team name"
+        }
+      }
+    },
+    "TeamWithMembersOut": {
+      "title": "Team With Members Out",
+      "description": "Team with members response model",
+      "type": "object",
+      "required": ["id", "name", "members"],
+      "properties": {
+        "id": {
+          "type": "integer",
+          "description": "Team ID"
+        },
+        "name": {
+          "type": "string",
+          "description": "Team name"
+        },
+        "members": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/UserOut"
+          },
+          "description": "Team members"
+        }
+      }
+    },
+    "GameSessionOut": {
+      "title": "Game Session Out",
+      "description": "Game session response model",
+      "type": "object",
+      "required": ["id", "team_id", "status"],
+      "properties": {
+        "id": {
+          "type": "integer",
+          "description": "Game session ID"
+        },
+        "team_id": {
+          "type": "integer",
+          "description": "Team ID"
+        },
+        "status": {
+          "type": "string",
+          "enum": ["lobby", "countdown", "active", "finished"],
+          "description": "Game session status"
+        },
+        "started_at": {
+          "type": "string",
+          "format": "date-time",
+          "description": "When the game started"
+        },
+        "ended_at": {
+          "type": "string",
+          "format": "date-time",
+          "description": "When the game ended"
+        },
+        "survival_time_seconds": {
+          "type": "integer",
+          "description": "How long the team survived in seconds"
+        }
+      }
+    },
+    "PuzzleState": {
+      "title": "Puzzle State",
+      "description": "Puzzle state response model",
+      "type": "object",
+      "required": ["id", "type", "data", "status", "correct_answer"],
+      "properties": {
+        "id": {
+          "type": "integer",
+          "description": "Puzzle ID"
+        },
+        "type": {
+          "type": "string",
+          "enum": ["memory", "spatial", "concentration", "multitasking"],
+          "description": "Puzzle type"
+        },
+        "data": {
+          "description": "Puzzle-specific data"
+        },
+        "status": {
+          "type": "string",
+          "enum": ["active", "completed", "failed"],
+          "description": "Puzzle status"
+        },
+        "correct_answer": {
+          "type": "string",
+          "description": "Correct answer for the puzzle"
+        }
+      }
+    },
+    "PuzzleResult": {
+      "title": "Puzzle Result",
+      "description": "Puzzle result response model",
+      "type": "object",
+      "required": ["correct", "points_awarded"],
+      "properties": {
+        "correct": {
+          "type": "boolean",
+          "description": "Whether the answer was correct"
+        },
+        "awarded_to_user_id": {
+          "type": "integer",
+          "description": "ID of user who received points"
+        },
+        "points_awarded": {
+          "type": "integer",
+          "description": "Number of points awarded"
+        },
+        "next_puzzle_id": {
+          "type": "integer",
+          "description": "ID of next puzzle (if any)"
+        },
+        "next_puzzle": {
+          "$ref": "#/definitions/PuzzleState",
+          "description": "Next puzzle data (if any)"
+        }
+      }
+    },
+    "PlayerPoints": {
+      "title": "Player Points",
+      "description": "Player points response model",
+      "type": "object",
+      "required": ["user_id", "username", "points"],
+      "properties": {
+        "user_id": {
+          "type": "integer",
+          "description": "User ID"
+        },
+        "username": {
+          "type": "string",
+          "description": "Username"
+        },
+        "points": {
+          "type": "integer",
+          "description": "Current points"
+        }
+      }
+    },
+    "TeamPoints": {
+      "title": "Team Points",
+      "description": "Team points response model",
+      "type": "object",
+      "required": ["team_id", "players"],
+      "properties": {
+        "team_id": {
+          "type": "integer",
+          "description": "Team ID"
+        },
+        "players": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/PlayerPoints"
+          },
+          "description": "List of players with their points"
+        }
+      }
     }
   }
 } 

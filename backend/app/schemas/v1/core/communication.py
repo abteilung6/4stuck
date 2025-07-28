@@ -26,9 +26,9 @@ class MousePosition(BaseModel):
     x: float = Field(description="X coordinate of mouse position")
     y: float = Field(description="Y coordinate of mouse position")
     timestamp: datetime = Field(description="When this position was recorded")
-    color: Optional[Any] = Field(description="Color of the player for cursor display")
-    normalized_x: Optional[float] = Field(description="Normalized X coordinate (0-1) for cross-browser consistency")
-    normalized_y: Optional[float] = Field(description="Normalized Y coordinate (0-1) for cross-browser consistency")
+    color: Optional[Any] = Field(default=None, description="Color of the player for cursor display")
+    normalized_x: Optional[float] = Field(default=None, description="Normalized X coordinate (0-1) for cross-browser consistency")
+    normalized_y: Optional[float] = Field(default=None, description="Normalized Y coordinate (0-1) for cross-browser consistency")
 
     class Config:
         from_attributes = True
@@ -38,8 +38,8 @@ class PuzzleInteraction(BaseModel):
     user_id: int = Field(description="ID of the player making the interaction")
     puzzle_id: int = Field(description="ID of the puzzle being interacted with")
     interaction_type: Literal['click', 'drag', 'submit', 'timeout', 'start', 'complete'] = Field(description="Type of interaction performed")
-    interaction_data: Optional[Dict[str, Any]] = Field(description="Additional data specific to the interaction type")
-    timestamp: Optional[datetime] = Field(description="When the interaction occurred")
+    interaction_data: Optional[Dict[str, Any]] = Field(default=None, description="Additional data specific to the interaction type")
+    timestamp: Optional[datetime] = Field(default=None, description="When the interaction occurred")
 
     class Config:
         from_attributes = True

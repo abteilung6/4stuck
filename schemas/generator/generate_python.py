@@ -96,12 +96,18 @@ class PythonGenerator:
         if not is_required:
             field_type = f"Optional[{field_type}]"
         
-        # Add field description
+        # Add field description and default value for optional fields
         description = schema.get('description', '')
         if description:
-            return f'    {name}: {field_type} = Field(description="{description}")'
+            if is_required:
+                return f'    {name}: {field_type} = Field(description="{description}")'
+            else:
+                return f'    {name}: {field_type} = Field(default=None, description="{description}")'
         else:
-            return f'    {name}: {field_type}'
+            if is_required:
+                return f'    {name}: {field_type}'
+            else:
+                return f'    {name}: {field_type} = Field(default=None)'
     
     def generate_model(self, name: str, schema: Dict[str, Any]) -> str:
         """Generate a Pydantic model from a schema definition."""

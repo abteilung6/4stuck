@@ -144,6 +144,11 @@
           "maximum": 4,
           "description": "Number of players in the team"
         },
+        "max_players": {
+          "type": "integer",
+          "default": 4,
+          "description": "Maximum number of players allowed in the team"
+        },
         "status": {
           "$ref": "#/definitions/TeamStatus",
           "description": "Current team status"

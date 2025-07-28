@@ -120,11 +120,15 @@
       "title": "Assign Color Request",
       "description": "Request to assign a color to a user",
       "type": "object",
-      "required": ["user_id"],
+      "required": ["user_id", "team_id"],
       "properties": {
         "user_id": {
           "type": "integer",
           "description": "ID of the user to assign color to"
+        },
+        "team_id": {
+          "type": "integer",
+          "description": "ID of the team the user belongs to"
         },
         "preferred_color": {
           "$ref": "4stuck/schemas/core/v1/communication.json#/definitions/PlayerColor",
@@ -208,6 +212,125 @@
       "examples": [
         {
           "team_id": 1
+        }
+      ]
+    },
+    "UserCreate": {
+      "title": "User Create",
+      "description": "Request to create a new user",
+      "type": "object",
+      "required": ["username"],
+      "properties": {
+        "username": {
+          "type": "string",
+          "description": "Username for the new user"
+        }
+      },
+      "examples": [
+        {
+          "username": "player1"
+        }
+      ]
+    },
+    "TeamCreate": {
+      "title": "Team Create",
+      "description": "Request to create a new team",
+      "type": "object",
+      "required": ["name"],
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Name for the new team"
+        }
+      },
+      "examples": [
+        {
+          "name": "Team Alpha"
+        }
+      ]
+    },
+    "GameSessionCreate": {
+      "title": "Game Session Create",
+      "description": "Request to create a new game session",
+      "type": "object",
+      "required": ["team_id"],
+      "properties": {
+        "team_id": {
+          "type": "integer",
+          "description": "ID of the team for this game session"
+        }
+      },
+      "examples": [
+        {
+          "team_id": 1
+        }
+      ]
+    },
+    "GameSessionStateUpdate": {
+      "title": "Game Session State Update",
+      "description": "Request to update game session state",
+      "type": "object",
+      "required": ["status"],
+      "properties": {
+        "status": {
+          "type": "string",
+          "enum": ["lobby", "countdown", "active", "finished"],
+          "description": "New status for the game session"
+        }
+      },
+      "examples": [
+        {
+          "status": "active"
+        }
+      ]
+    },
+    "PuzzleCreate": {
+      "title": "Puzzle Create",
+      "description": "Request to create a new puzzle",
+      "type": "object",
+      "required": ["type", "game_session_id", "user_id"],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": ["memory", "spatial", "concentration", "multitasking"],
+          "description": "Type of puzzle to create"
+        },
+        "game_session_id": {
+          "type": "integer",
+          "description": "ID of the game session"
+        },
+        "user_id": {
+          "type": "integer",
+          "description": "ID of the user for this puzzle"
+        }
+      },
+      "examples": [
+        {
+          "type": "memory",
+          "game_session_id": 1,
+          "user_id": 1
+        }
+      ]
+    },
+    "PuzzleAnswer": {
+      "title": "Puzzle Answer",
+      "description": "Request to submit a puzzle answer",
+      "type": "object",
+      "required": ["puzzle_id", "answer"],
+      "properties": {
+        "puzzle_id": {
+          "type": "integer",
+          "description": "ID of the puzzle being answered"
+        },
+        "answer": {
+          "type": "string",
+          "description": "Player's answer to the puzzle"
+        }
+      },
+      "examples": [
+        {
+          "puzzle_id": 123,
+          "answer": "blue"
         }
       ]
     }

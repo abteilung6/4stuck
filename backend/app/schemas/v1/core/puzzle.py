@@ -19,9 +19,9 @@ class PuzzleState(BaseModel):
     type: Any = Field(description="Type of puzzle")
     data: Any = Field(description="Puzzle-specific data")
     created_at: datetime = Field(description="When the puzzle was created")
-    solved_at: Optional[datetime] = Field(description="When the puzzle was solved (if solved)")
-    is_solved: Optional[bool] = Field(description="Whether the puzzle has been solved")
-    time_limit: Optional[int] = Field(description="Time limit in seconds (if applicable)")
+    solved_at: Optional[datetime] = Field(default=None, description="When the puzzle was solved (if solved)")
+    is_solved: Optional[bool] = Field(default=None, description="Whether the puzzle has been solved")
+    time_limit: Optional[int] = Field(default=None, description="Time limit in seconds (if applicable)")
 
     class Config:
         from_attributes = True
@@ -46,7 +46,7 @@ class SpatialPuzzleData(BaseModel):
     start_position: Any = Field(description="Starting position for the draggable circle")
     end_position: Any = Field(description="Target end position")
     obstacles: List[Any] = Field(description="Positions of obstacles to avoid")
-    circle_radius: Optional[float] = Field(description="Radius of the draggable circle")
+    circle_radius: Optional[float] = Field(default=None, description="Radius of the draggable circle")
 
     class Config:
         from_attributes = True
@@ -72,9 +72,9 @@ class MultitaskingPuzzleData(BaseModel):
 class PuzzleResult(BaseModel):
     """Puzzle Result: Result of submitting a puzzle answer"""
     correct: bool = Field(description="Whether the answer was correct")
-    next_puzzle: Optional[Any] = Field(description="Next puzzle for the player (if any)")
-    points_awarded: Optional[int] = Field(description="Points awarded to the next player")
-    message: Optional[str] = Field(description="Feedback message for the player")
+    next_puzzle: Optional[Any] = Field(default=None, description="Next puzzle for the player (if any)")
+    points_awarded: Optional[int] = Field(default=None, description="Points awarded to the next player")
+    message: Optional[str] = Field(default=None, description="Feedback message for the player")
 
     class Config:
         from_attributes = True
