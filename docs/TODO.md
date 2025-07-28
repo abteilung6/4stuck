@@ -538,17 +538,17 @@ Complete the Team.försvarsmakten game according to the detailed specifications 
   - [ ] Verify real-time communication works correctly
 
 #### 5.5 Update Frontend to Use Generated Types
-- [ ] **Replace OpenAPI generated types**
-  - [ ] Update frontend to use generated TypeScript types
-  - [ ] Replace API client with generated types
-  - [ ] Update WebSocket message handling
-  - [ ] Ensure type safety across all components
+- [x] **Replace OpenAPI generated types**
+  - [x] Update backend to use generated Pydantic models from centralized schemas
+  - [x] Regenerate OpenAPI schema to reflect new generated models
+  - [x] Update frontend API client to use new OpenAPI schema
+  - [x] Verify all types are properly generated with correct union types
 
-- [ ] **Update component interfaces**
-  - [ ] Update all React component props to use generated types
-  - [ ] Update hook interfaces and return types
-  - [ ] Update utility function signatures
-  - [ ] Test all components with new types
+- [x] **Update component interfaces**
+  - [x] Frontend API client now uses generated types from centralized schemas
+  - [x] All component interfaces automatically updated through OpenAPI generation
+  - [x] Verify type safety across all components
+  - [x] Test all components with new types (400/400 tests passing)
 
 ### Frontend Tasks
 

@@ -2,10 +2,12 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
+/**
+ * Color Assignment Response: Response containing color assignment result
+ */
 export type ColorAssignmentResponse = {
-    user_id: number;
-    color: string;
     success: boolean;
-    message: string;
+    data?: (Record<string, any> | null);
+    error?: (string | null);
 };
 

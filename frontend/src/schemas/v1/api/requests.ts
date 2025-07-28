@@ -44,6 +44,8 @@ export interface GetCurrentPuzzleRequest {
 export interface AssignColorRequest {
   /** ID of the user to assign color to */
   user_id: number;
+  /** ID of the team the user belongs to */
+  team_id: number;
   /** Preferred color (optional) */
   preferred_color?: any;
 }
@@ -72,4 +74,46 @@ export interface GetGameResultRequest {
 export interface RestartGameRequest {
   /** ID of the team to restart game for */
   team_id: number;
+}
+
+/** User Create: Request to create a new user */
+export interface UserCreate {
+  /** Username for the new user */
+  username: string;
+}
+
+/** Team Create: Request to create a new team */
+export interface TeamCreate {
+  /** Name for the new team */
+  name: string;
+}
+
+/** Game Session Create: Request to create a new game session */
+export interface GameSessionCreate {
+  /** ID of the team for this game session */
+  team_id: number;
+}
+
+/** Game Session State Update: Request to update game session state */
+export interface GameSessionStateUpdate {
+  /** New status for the game session */
+  status: ('lobby' | 'countdown' | 'active' | 'finished');
+}
+
+/** Puzzle Create: Request to create a new puzzle */
+export interface PuzzleCreate {
+  /** Type of puzzle to create */
+  type: ('memory' | 'spatial' | 'concentration' | 'multitasking');
+  /** ID of the game session */
+  game_session_id: number;
+  /** ID of the user for this puzzle */
+  user_id: number;
+}
+
+/** Puzzle Answer: Request to submit a puzzle answer */
+export interface PuzzleAnswer {
+  /** ID of the puzzle being answered */
+  puzzle_id: number;
+  /** Player's answer to the puzzle */
+  answer: string;
 }

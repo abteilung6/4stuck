@@ -52,10 +52,12 @@ export interface AvailableTeam {
   members: any[];
   /** Number of players in the team */
   player_count: number;
+  /** Maximum number of players allowed in the team */
+  max_players?: number;
   /** Current team status */
   status: any;
   /** ID of active game session (if any) */
   game_session_id?: number;
   /** Status of active game session (if any) */
-  game_status?: 'lobby | countdown | active | finished';
+  game_status?: ('lobby' | 'countdown' | 'active' | 'finished');
 }

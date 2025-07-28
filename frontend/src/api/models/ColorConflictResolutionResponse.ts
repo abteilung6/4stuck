@@ -2,10 +2,12 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
+/**
+ * Color Conflict Resolution Response: Response for color conflict resolution
+ */
 export type ColorConflictResolutionResponse = {
-    team_id: number;
-    reassignments: Record<string, string>;
     success: boolean;
-    message: string;
+    data?: (Record<string, any> | null);
+    error?: (string | null);
 };
 

@@ -53,7 +53,8 @@ class TypeScriptGenerator:
         
         if schema_type == 'string':
             if 'enum' in schema:
-                return f"'{' | '.join(schema['enum'])}'"
+                enum_values = [f"'{val}'" for val in schema['enum']]
+                return f"({' | '.join(enum_values)})"
             elif schema.get('format') == 'date-time':
                 return 'string'  # ISO date string
             else:

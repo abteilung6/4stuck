@@ -55,6 +55,86 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/team/assign-color": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Assign Color To User
+         * @description Assign a unique color to a user within their team.
+         */
+        post: operations["assign_color_to_user_team_assign_color_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/team/{team_id}/validate-colors": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Validate Team Colors
+         * @description Validate that all players in a team have unique colors.
+         */
+        get: operations["validate_team_colors_team__team_id__validate_colors_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/team/{team_id}/resolve-conflicts": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Resolve Color Conflicts
+         * @description Resolve any color conflicts in a team by reassigning colors.
+         */
+        post: operations["resolve_color_conflicts_team__team_id__resolve_conflicts_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/team/{team_id}/available-colors": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Available Colors
+         * @description Get available and used colors for a team.
+         */
+        get: operations["get_available_colors_team__team_id__available_colors_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/team/available": {
         parameters: {
             query?: never;
@@ -279,152 +359,400 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
-        /** AvailableTeamOut */
-        AvailableTeamOut: {
-            /** Id */
+        /**
+         * AssignColorRequest
+         * @description Assign Color Request: Request to assign a color to a user
+         */
+        AssignColorRequest: {
+            /**
+             * User Id
+             * @description ID of the user to assign color to
+             */
+            user_id: number;
+            /**
+             * Team Id
+             * @description ID of the team the user belongs to
+             */
+            team_id: number;
+            /**
+             * Preferred Color
+             * @description Preferred color (optional)
+             */
+            preferred_color?: unknown | null;
+        };
+        /**
+         * AvailableColorsResponse
+         * @description Available Colors Response: Response for available colors
+         */
+        AvailableColorsResponse: {
+            /** Success */
+            success: boolean;
+            /** Data */
+            data?: {
+                [key: string]: unknown;
+            } | null;
+            /** Error */
+            error?: string | null;
+        };
+        /**
+         * AvailableTeam
+         * @description Available Team: Team that can accept new players
+         */
+        AvailableTeam: {
+            /**
+             * Id
+             * @description Team identifier
+             */
             id: number;
-            /** Name */
+            /**
+             * Name
+             * @description Team name
+             */
             name: string;
-            /** Members */
-            members: components["schemas"]["UserOut"][];
-            /** Player Count */
+            /**
+             * Members
+             * @description Current team members
+             */
+            members: unknown[];
+            /**
+             * Player Count
+             * @description Number of players in the team
+             */
             player_count: number;
             /**
              * Max Players
-             * @default 4
+             * @description Maximum number of players allowed in the team
              */
-            max_players: number;
-            /** Status */
-            status: string;
-            /** Game Session Id */
+            max_players?: number | null;
+            /**
+             * Status
+             * @description Current team status
+             */
+            status: unknown;
+            /**
+             * Game Session Id
+             * @description ID of active game session (if any)
+             */
             game_session_id?: number | null;
-            /** Game Status */
-            game_status?: string | null;
+            /**
+             * Game Status
+             * @description Status of active game session (if any)
+             */
+            game_status?: ("lobby" | "countdown" | "active" | "finished") | null;
         };
-        /** GameSessionCreate */
+        /**
+         * ColorAssignmentResponse
+         * @description Color Assignment Response: Response containing color assignment result
+         */
+        ColorAssignmentResponse: {
+            /** Success */
+            success: boolean;
+            /** Data */
+            data?: {
+                [key: string]: unknown;
+            } | null;
+            /** Error */
+            error?: string | null;
+        };
+        /**
+         * ColorConflictResolutionResponse
+         * @description Color Conflict Resolution Response: Response for color conflict resolution
+         */
+        ColorConflictResolutionResponse: {
+            /** Success */
+            success: boolean;
+            /** Data */
+            data?: {
+                [key: string]: unknown;
+            } | null;
+            /** Error */
+            error?: string | null;
+        };
+        /**
+         * GameSessionCreate
+         * @description Game Session Create: Request to create a new game session
+         */
         GameSessionCreate: {
-            /** Team Id */
+            /**
+             * Team Id
+             * @description ID of the team for this game session
+             */
             team_id: number;
         };
-        /** GameSessionOut */
+        /**
+         * GameSessionOut
+         * @description Game Session Out: Game session response model
+         */
         GameSessionOut: {
-            /** Id */
+            /**
+             * Id
+             * @description Game session ID
+             */
             id: number;
-            /** Team Id */
+            /**
+             * Team Id
+             * @description Team ID
+             */
             team_id: number;
-            /** Status */
-            status: string;
-            /** Started At */
+            /**
+             * Status
+             * @description Game session status
+             * @enum {string}
+             */
+            status: "lobby" | "countdown" | "active" | "finished";
+            /**
+             * Started At
+             * @description When the game started
+             */
             started_at?: string | null;
-            /** Ended At */
+            /**
+             * Ended At
+             * @description When the game ended
+             */
             ended_at?: string | null;
-            /** Survival Time Seconds */
+            /**
+             * Survival Time Seconds
+             * @description How long the team survived in seconds
+             */
             survival_time_seconds?: number | null;
         };
-        /** GameSessionStateUpdate */
+        /**
+         * GameSessionStateUpdate
+         * @description Game Session State Update: Request to update game session state
+         */
         GameSessionStateUpdate: {
-            /** Status */
-            status: string;
+            /**
+             * Status
+             * @description New status for the game session
+             * @enum {string}
+             */
+            status: "lobby" | "countdown" | "active" | "finished";
         };
         /** HTTPValidationError */
         HTTPValidationError: {
             /** Detail */
             detail?: components["schemas"]["ValidationError"][];
         };
-        /** PlayerPoints */
-        PlayerPoints: {
-            /** User Id */
-            user_id: number;
-            /** Username */
-            username: string;
-            /** Points */
-            points: number;
-        };
-        /** PuzzleAnswer */
+        /**
+         * PuzzleAnswer
+         * @description Puzzle Answer: Request to submit a puzzle answer
+         */
         PuzzleAnswer: {
-            /** Puzzle Id */
+            /**
+             * Puzzle Id
+             * @description ID of the puzzle being answered
+             */
             puzzle_id: number;
-            /** Answer */
+            /**
+             * Answer
+             * @description Player's answer to the puzzle
+             */
             answer: string;
         };
-        /** PuzzleCreate */
+        /**
+         * PuzzleCreate
+         * @description Puzzle Create: Request to create a new puzzle
+         */
         PuzzleCreate: {
-            /** Type */
-            type: string;
-            /** Game Session Id */
+            /**
+             * Type
+             * @description Type of puzzle to create
+             * @enum {string}
+             */
+            type: "memory" | "spatial" | "concentration" | "multitasking";
+            /**
+             * Game Session Id
+             * @description ID of the game session
+             */
             game_session_id: number;
-            /** User Id */
+            /**
+             * User Id
+             * @description ID of the user for this puzzle
+             */
             user_id: number;
         };
-        /** PuzzleResult */
+        /**
+         * PuzzleResult
+         * @description Puzzle Result: Puzzle result response model
+         */
         PuzzleResult: {
-            /** Correct */
+            /**
+             * Correct
+             * @description Whether the answer was correct
+             */
             correct: boolean;
-            /** Awarded To User Id */
-            awarded_to_user_id: number | null;
-            /** Points Awarded */
+            /**
+             * Awarded To User Id
+             * @description ID of user who received points
+             */
+            awarded_to_user_id?: number | null;
+            /**
+             * Points Awarded
+             * @description Number of points awarded
+             */
             points_awarded: number;
-            /** Next Puzzle Id */
-            next_puzzle_id: number | null;
-            next_puzzle?: components["schemas"]["PuzzleState"] | null;
+            /**
+             * Next Puzzle Id
+             * @description ID of next puzzle (if any)
+             */
+            next_puzzle_id?: number | null;
+            /**
+             * Next Puzzle
+             * @description Next puzzle data (if any)
+             */
+            next_puzzle?: unknown | null;
         };
-        /** PuzzleState */
+        /**
+         * PuzzleState
+         * @description Puzzle State: Puzzle state response model
+         */
         PuzzleState: {
-            /** Id */
+            /**
+             * Id
+             * @description Puzzle ID
+             */
             id: number;
-            /** Type */
-            type: string;
-            /** Data */
+            /**
+             * Type
+             * @description Puzzle type
+             * @enum {string}
+             */
+            type: "memory" | "spatial" | "concentration" | "multitasking";
+            /**
+             * Data
+             * @description Puzzle-specific data
+             */
             data: unknown;
-            /** Status */
-            status: string;
-            /** Correct Answer */
+            /**
+             * Status
+             * @description Puzzle status
+             * @enum {string}
+             */
+            status: "active" | "completed" | "failed";
+            /**
+             * Correct Answer
+             * @description Correct answer for the puzzle
+             */
             correct_answer: string;
         };
-        /** TeamCreate */
+        /**
+         * TeamColorValidationResponse
+         * @description Team Color Validation Response: Response for team color validation
+         */
+        TeamColorValidationResponse: {
+            /** Success */
+            success: boolean;
+            /** Data */
+            data?: {
+                [key: string]: unknown;
+            } | null;
+            /** Error */
+            error?: string | null;
+        };
+        /**
+         * TeamCreate
+         * @description Team Create: Request to create a new team
+         */
         TeamCreate: {
-            /** Name */
+            /**
+             * Name
+             * @description Name for the new team
+             */
             name: string;
         };
-        /** TeamOut */
+        /**
+         * TeamOut
+         * @description Team Out: Team response model
+         */
         TeamOut: {
-            /** Id */
+            /**
+             * Id
+             * @description Team ID
+             */
             id: number;
-            /** Name */
+            /**
+             * Name
+             * @description Team name
+             */
             name: string;
         };
-        /** TeamPoints */
+        /**
+         * TeamPoints
+         * @description Team Points: Team points response model
+         */
         TeamPoints: {
-            /** Team Id */
+            /**
+             * Team Id
+             * @description Team ID
+             */
             team_id: number;
-            /** Players */
-            players: components["schemas"]["PlayerPoints"][];
+            /**
+             * Players
+             * @description List of players with their points
+             */
+            players: unknown[];
         };
-        /** TeamWithMembersOut */
+        /**
+         * TeamWithMembersOut
+         * @description Team With Members Out: Team with members response model
+         */
         TeamWithMembersOut: {
-            /** Id */
+            /**
+             * Id
+             * @description Team ID
+             */
             id: number;
-            /** Name */
+            /**
+             * Name
+             * @description Team name
+             */
             name: string;
-            /** Members */
-            members: components["schemas"]["UserOut"][];
+            /**
+             * Members
+             * @description Team members
+             */
+            members: unknown[];
         };
-        /** UserCreate */
+        /**
+         * UserCreate
+         * @description User Create: Request to create a new user
+         */
         UserCreate: {
-            /** Username */
+            /**
+             * Username
+             * @description Username for the new user
+             */
             username: string;
         };
-        /** UserOut */
+        /**
+         * UserOut
+         * @description User Out: User response model
+         */
         UserOut: {
-            /** Id */
+            /**
+             * Id
+             * @description User ID
+             */
             id: number;
-            /** Username */
+            /**
+             * Username
+             * @description Username
+             */
             username: string;
-            /** Team Id */
-            team_id: number | null;
-            /** Points */
+            /**
+             * Team Id
+             * @description Team ID
+             */
+            team_id?: number | null;
+            /**
+             * Points
+             * @description Current points
+             */
             points: number;
-            /** Color */
+            /**
+             * Color
+             * @description Assigned color
+             */
             color?: string | null;
         };
         /** ValidationError */
@@ -543,6 +871,132 @@ export interface operations {
             };
         };
     };
+    assign_color_to_user_team_assign_color_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AssignColorRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ColorAssignmentResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    validate_team_colors_team__team_id__validate_colors_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                team_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TeamColorValidationResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    resolve_color_conflicts_team__team_id__resolve_conflicts_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                team_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ColorConflictResolutionResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_available_colors_team__team_id__available_colors_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                team_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AvailableColorsResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     get_available_teams_team_available_get: {
         parameters: {
             query?: never;
@@ -558,7 +1012,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["AvailableTeamOut"][];
+                    "application/json": components["schemas"]["AvailableTeam"][];
                 };
             };
         };

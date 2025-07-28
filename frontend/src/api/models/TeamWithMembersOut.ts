@@ -2,10 +2,21 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-import type { UserOut } from './UserOut';
+/**
+ * Team With Members Out: Team with members response model
+ */
 export type TeamWithMembersOut = {
+    /**
+     * Team ID
+     */
     id: number;
+    /**
+     * Team name
+     */
     name: string;
-    members: Array<UserOut>;
+    /**
+     * Team members
+     */
+    members: Array<any>;
 };
 

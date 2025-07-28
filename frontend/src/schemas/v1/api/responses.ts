@@ -109,10 +109,125 @@ export interface SuccessResponse {
 /** Health Check Response: API health check response */
 export interface HealthCheckResponse {
   success: any;
-  status: 'healthy | degraded | unhealthy';
+  status: ('healthy' | 'degraded' | 'unhealthy');
   timestamp: string;
   /** API version */
   version?: string;
   /** Server uptime in seconds */
   uptime?: number;
+}
+
+/** Team Color Validation Response: Response for team color validation */
+export interface TeamColorValidationResponse {
+  success: boolean;
+  data?: Record<string, any>;
+  error?: string;
+}
+
+/** Color Conflict Resolution Response: Response for color conflict resolution */
+export interface ColorConflictResolutionResponse {
+  success: boolean;
+  data?: Record<string, any>;
+  error?: string;
+}
+
+/** Available Colors Response: Response for available colors */
+export interface AvailableColorsResponse {
+  success: boolean;
+  data?: Record<string, any>;
+  error?: string;
+}
+
+/** User Out: User response model */
+export interface UserOut {
+  /** User ID */
+  id: number;
+  /** Username */
+  username: string;
+  /** Team ID */
+  team_id?: number;
+  /** Current points */
+  points: number;
+  /** Assigned color */
+  color?: string;
+}
+
+/** Team Out: Team response model */
+export interface TeamOut {
+  /** Team ID */
+  id: number;
+  /** Team name */
+  name: string;
+}
+
+/** Team With Members Out: Team with members response model */
+export interface TeamWithMembersOut {
+  /** Team ID */
+  id: number;
+  /** Team name */
+  name: string;
+  /** Team members */
+  members: any[];
+}
+
+/** Game Session Out: Game session response model */
+export interface GameSessionOut {
+  /** Game session ID */
+  id: number;
+  /** Team ID */
+  team_id: number;
+  /** Game session status */
+  status: ('lobby' | 'countdown' | 'active' | 'finished');
+  /** When the game started */
+  started_at?: string;
+  /** When the game ended */
+  ended_at?: string;
+  /** How long the team survived in seconds */
+  survival_time_seconds?: number;
+}
+
+/** Puzzle State: Puzzle state response model */
+export interface PuzzleState {
+  /** Puzzle ID */
+  id: number;
+  /** Puzzle type */
+  type: ('memory' | 'spatial' | 'concentration' | 'multitasking');
+  /** Puzzle-specific data */
+  data: any;
+  /** Puzzle status */
+  status: ('active' | 'completed' | 'failed');
+  /** Correct answer for the puzzle */
+  correct_answer: string;
+}
+
+/** Puzzle Result: Puzzle result response model */
+export interface PuzzleResult {
+  /** Whether the answer was correct */
+  correct: boolean;
+  /** ID of user who received points */
+  awarded_to_user_id?: number;
+  /** Number of points awarded */
+  points_awarded: number;
+  /** ID of next puzzle (if any) */
+  next_puzzle_id?: number;
+  /** Next puzzle data (if any) */
+  next_puzzle?: any;
+}
+
+/** Player Points: Player points response model */
+export interface PlayerPoints {
+  /** User ID */
+  user_id: number;
+  /** Username */
+  username: string;
+  /** Current points */
+  points: number;
+}
+
+/** Team Points: Team points response model */
+export interface TeamPoints {
+  /** Team ID */
+  team_id: number;
+  /** List of players with their points */
+  players: any[];
 }

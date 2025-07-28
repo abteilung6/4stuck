@@ -2,9 +2,17 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-import type { PlayerPoints } from './PlayerPoints';
+/**
+ * Team Points: Team points response model
+ */
 export type TeamPoints = {
+    /**
+     * Team ID
+     */
     team_id: number;
-    players: Array<PlayerPoints>;
+    /**
+     * List of players with their points
+     */
+    players: Array<any>;
 };
 

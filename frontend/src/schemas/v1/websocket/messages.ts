@@ -22,7 +22,7 @@ export interface WebSocketMessage {
 
 /** Incoming Message: Message sent from client to server */
 export interface IncomingMessage {
-  type: 'mouse_position | puzzle_interaction | ping';
+  type: ('mouse_position' | 'puzzle_interaction' | 'ping');
   /** ID of the user sending the message */
   user_id?: number;
   /** X coordinate (for mouse_position) */
@@ -36,7 +36,7 @@ export interface IncomingMessage {
   /** Puzzle ID (for puzzle_interaction) */
   puzzle_id?: number;
   /** Type of puzzle interaction */
-  interaction_type?: 'click | drag | submit | timeout | start | complete';
+  interaction_type?: ('click' | 'drag' | 'submit' | 'timeout' | 'start' | 'complete');
   /** Additional interaction data */
   interaction_data?: Record<string, any>;
   /** Puzzle answer (for submit interaction) */

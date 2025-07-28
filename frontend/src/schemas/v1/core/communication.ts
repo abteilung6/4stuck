@@ -39,7 +39,7 @@ export interface PuzzleInteraction {
   /** ID of the puzzle being interacted with */
   puzzle_id: number;
   /** Type of interaction performed */
-  interaction_type: 'click | drag | submit | timeout | start | complete';
+  interaction_type: ('click' | 'drag' | 'submit' | 'timeout' | 'start' | 'complete');
   /** Additional data specific to the interaction type */
   interaction_data?: Record<string, any>;
   /** When the interaction occurred */
