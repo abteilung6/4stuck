@@ -493,23 +493,23 @@ Complete the Team.försvarsmakten game according to the detailed specifications 
   - [x] Add comprehensive examples and documentation
 
 #### 5.2 Create Code Generators
-- [ ] **Build Python/Pydantic generator**
+- [x] **Build Python/Pydantic generator**
   - [x] Create `schemas/generator/generate_python.py` script
-  - [ ] Implement JSON Schema to Pydantic model conversion
-  - [ ] Add support for complex types (unions, arrays, nested objects)
-  - [ ] Generate proper imports and type hints
+  - [x] Implement JSON Schema to Pydantic model conversion
+  - [x] Add support for complex types (unions, arrays, nested objects)
+  - [x] Generate proper imports and type hints
 
-- [ ] **Build TypeScript generator**
-  - [ ] Create `schemas/generator/generate_typescript.py` script
-  - [ ] Implement JSON Schema to TypeScript interface conversion
-  - [ ] Generate proper type unions and optional properties
-  - [ ] Create index files for easy imports
+- [x] **Build TypeScript generator**
+  - [x] Create `schemas/generator/generate_typescript.py` script
+  - [x] Implement JSON Schema to TypeScript interface conversion
+  - [x] Generate proper type unions and optional properties
+  - [x] Create index files for easy imports
 
-- [ ] **Add validation and testing**
-  - [ ] Create schema validation tests
-  - [ ] Test code generation with existing models
-  - [ ] Ensure generated code matches current functionality
-  - [ ] Add integration tests for generated models
+- [x] **Add validation and testing**
+  - [x] Create schema validation tests
+  - [x] Test code generation with existing models
+  - [x] Ensure generated code matches current functionality
+  - [x] Add integration tests for generated models
 
 #### 5.3 Migrate REST API to Generated Models
 - [ ] **Update FastAPI endpoints**

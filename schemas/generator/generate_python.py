@@ -3,6 +3,7 @@
 JSON Schema to Pydantic Model Generator
 
 This script converts JSON Schema definitions to Pydantic models for the FastAPI backend.
+Supports v1 subdirectory structure and selective generation.
 """
 
 import json
@@ -10,16 +11,17 @@ import os
 import re
 import sys
 from pathlib import Path
-from typing import Dict, List, Any, Optional
+from typing import Dict, List, Any, Optional, Set
 import argparse
 
 
 class PythonGenerator:
     """Generates Python/Pydantic code from JSON Schema definitions."""
     
-    def __init__(self, schemas_dir: str, output_dir: str):
+    def __init__(self, schemas_dir: str, output_dir: str, include_types: Optional[Set[str]] = None):
         self.schemas_dir = Path(schemas_dir)
         self.output_dir = Path(output_dir)
+        self.include_types = include_types or set()  # e.g., {'websocket', 'core', 'api'}
         self.schemas: Dict[str, Dict[str, Any]] = {}
         self.generated_files: List[str] = []
         
@@ -34,12 +36,23 @@ class PythonGenerator:
                     self.schemas[schema_id] = schema_data
                     print(f"Loaded schema: {schema_file}")
     
+    def should_generate_schema(self, schema_id: str) -> bool:
+        """Check if schema should be generated based on include_types filter."""
+        if not self.include_types:
+            return True  # Generate all if no filter specified
+        
+        # Check if schema type is in include_types
+        for schema_type in self.include_types:
+            if schema_type in schema_id:
+                return True
+        return False
+    
     def resolve_ref(self, ref: str) -> Optional[Dict[str, Any]]:
         """Resolve a $ref to its target definition."""
         if ref.startswith('#'):
             # Local reference within same schema
             return None  # Will be handled by the schema processor
-        elif ref.startswith('http'):
+        elif ref.startswith('http') or ref.startswith('4stuck'):
             # External reference
             return self.schemas.get(ref)
         return None
@@ -165,29 +178,40 @@ class PythonGenerator:
         # Remove .json extension
         return filename.replace('.json', '')
     
+    def get_schema_type(self, schema_id: str) -> str:
+        """Extract schema type from schema ID (core, websocket, api)."""
+        if 'core' in schema_id:
+            return 'core'
+        elif 'websocket' in schema_id:
+            return 'websocket'
+        elif 'api' in schema_id:
+            return 'api'
+        else:
+            return 'unknown'
+    
     def generate_all(self) -> None:
         """Generate all Python files from loaded schemas."""
-        # Create output directory structure
+        # Create output directory structure with v1 subdirectory
         self.output_dir.mkdir(parents=True, exist_ok=True)
         
-        # Generate __init__.py
+        # Generate __init__.py for main schemas directory
         init_content = [
             '"""',
             'Auto-generated schemas from JSON Schema definitions',
             '"""',
             '',
             '# Core schemas',
-            'from .core.game import *',
-            'from .core.player import *',
-            'from .core.puzzle import *',
-            'from .core.communication import *',
+            'from .v1.core.game import *',
+            'from .v1.core.player import *',
+            'from .v1.core.puzzle import *',
+            'from .v1.core.communication import *',
             '',
             '# WebSocket schemas',
-            'from .websocket.messages import *',
+            'from .v1.websocket.messages import *',
             '',
             '# API schemas',
-            'from .api.requests import *',
-            'from .api.responses import *',
+            'from .v1.api.requests import *',
+            'from .v1.api.responses import *',
             ''
         ]
         
@@ -195,33 +219,83 @@ class PythonGenerator:
         with open(init_path, 'w') as f:
             f.write('\n'.join(init_content))
         
+        # Create v1 subdirectory
+        v1_dir = self.output_dir / 'v1'
+        v1_dir.mkdir(exist_ok=True)
+        
+        # Generate v1 __init__.py
+        v1_init_content = [
+            '"""',
+            'Version 1 schemas',
+            '"""',
+            '',
+            'from .core import *',
+            'from .websocket import *',
+            'from .api import *',
+            ''
+        ]
+        
+        v1_init_path = v1_dir / '__init__.py'
+        with open(v1_init_path, 'w') as f:
+            f.write('\n'.join(v1_init_content))
+        
         # Generate schema files
         for schema_id, schema_data in self.schemas.items():
-            module_name = self.get_module_name(schema_id)
+            # Check if this schema should be generated
+            if not self.should_generate_schema(schema_id):
+                print(f"Skipping schema (not in include filter): {schema_id}")
+                continue
             
-            # Determine output path based on schema type
-            if 'core' in schema_id:
-                output_path = self.output_dir / 'core' / f'{module_name}.py'
-            elif 'websocket' in schema_id:
-                output_path = self.output_dir / 'websocket' / f'{module_name}.py'
-            elif 'api' in schema_id:
-                output_path = self.output_dir / 'api' / f'{module_name}.py'
+            module_name = self.get_module_name(schema_id)
+            schema_type = self.get_schema_type(schema_id)
+            
+            # Determine output path with v1 subdirectory structure
+            if schema_type == 'core':
+                output_path = v1_dir / 'core' / f'{module_name}.py'
+            elif schema_type == 'websocket':
+                output_path = v1_dir / 'websocket' / f'{module_name}.py'
+            elif schema_type == 'api':
+                output_path = v1_dir / 'api' / f'{module_name}.py'
             else:
-                output_path = self.output_dir / f'{module_name}.py'
+                output_path = v1_dir / f'{module_name}.py'
             
             self.generate_schema_file(schema_data, output_path)
         
-        print(f"\nGenerated {len(self.generated_files)} files in {self.output_dir}")
+        # Generate __init__.py files for subdirectories
+        for subdir in ['core', 'websocket', 'api']:
+            subdir_path = v1_dir / subdir
+            if subdir_path.exists():
+                subdir_init_content = [
+                    '"""',
+                    f'{subdir.title()} schemas',
+                    '"""',
+                    ''
+                ]
+                
+                # Add imports for all modules in this subdirectory
+                for py_file in subdir_path.glob('*.py'):
+                    if py_file.name != '__init__.py':
+                        module_name = py_file.stem
+                        subdir_init_content.append(f'from .{module_name} import *')
+                
+                subdir_init_path = subdir_path / '__init__.py'
+                with open(subdir_init_path, 'w') as f:
+                    f.write('\n'.join(subdir_init_content))
+        
+        print(f"\nGenerated {len(self.generated_files)} files in {self.output_dir}/v1/")
 
 
 def main():
     parser = argparse.ArgumentParser(description='Generate Python/Pydantic models from JSON Schema')
     parser.add_argument('--schemas-dir', default='.', help='Directory containing JSON Schema files')
     parser.add_argument('--output-dir', required=True, help='Output directory for generated Python files')
+    parser.add_argument('--include', nargs='*', help='Only generate schemas of these types (core, websocket, api)')
     
     args = parser.parse_args()
     
-    generator = PythonGenerator(args.schemas_dir, args.output_dir)
+    include_types = set(args.include) if args.include else set()
+    
+    generator = PythonGenerator(args.schemas_dir, args.output_dir, include_types)
     generator.load_schemas()
     generator.generate_all()
 
