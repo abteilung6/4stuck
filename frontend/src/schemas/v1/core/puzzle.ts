@@ -82,4 +82,8 @@ export interface PuzzleResult {
   points_awarded?: number;
   /** Feedback message for the player */
   message?: string;
+  /** ID of the user who received the points */
+  awarded_to_user_id?: number;
+  /** ID of the next puzzle (if any) */
+  next_puzzle_id?: number;
 }

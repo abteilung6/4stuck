@@ -52,6 +52,7 @@ export class PuzzleService {
     }
     /**
      * Submit Answer
+     * Submit an answer to a puzzle and handle point distribution
      * @param requestBody
      * @returns PuzzleResult Successful Response
      * @throws ApiError
@@ -91,6 +92,7 @@ export class PuzzleService {
     }
     /**
      * Decay Points
+     * Decay points for all players in a team (called by background task)
      * @param teamId
      * @returns any Successful Response
      * @throws ApiError

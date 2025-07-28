@@ -5,6 +5,7 @@ from typing import Dict, Optional
 from sqlalchemy.orm import Session
 from .. import models, database
 from ..utils.websocket_broadcast import broadcast_state
+import random
 
 class CountdownService:
     def __init__(self):
@@ -50,6 +51,75 @@ class CountdownService:
         """Check if a countdown is running for a session"""
         return session_id in self.active_countdowns
     
+    def _generate_memory_puzzle(self):
+        """Generate a memory puzzle"""
+        colors = ["red", "blue", "yellow", "green"]
+        numbers = list(range(1, len(colors) + 1))
+        random.shuffle(colors)
+        mapping = {str(num): color for num, color in zip(numbers, colors)}
+        question_number = random.choice(numbers)
+        correct_answer = mapping[str(question_number)]
+        data = {
+            "mapping": mapping,
+            "question_number": str(question_number),
+            "choices": colors
+        }
+        return data, correct_answer
+    
+    def _generate_concentration_puzzle(self, num_pairs: int = 10):
+        """Generate a concentration puzzle"""
+        colors = ["red", "blue", "yellow", "green", "purple", "orange"]
+        pairs = []
+        correct_index = random.randint(0, num_pairs - 1)
+        for i in range(num_pairs):
+            if i == correct_index:
+                color_word = random.choice(colors)
+                circle_color = color_word
+                is_match = True
+            else:
+                color_word = random.choice(colors)
+                available_colors = [c for c in colors if c != color_word]
+                circle_color = random.choice(available_colors)
+                is_match = False
+            pairs.append({
+                "color_word": color_word,
+                "circle_color": circle_color,
+                "is_match": is_match
+            })
+        data = {
+            "pairs": pairs,
+            "duration": 2  # seconds per pair
+        }
+        correct_answer = str(correct_index)
+        return data, correct_answer
+    
+    def _create_initial_puzzle_for_user(self, user_id: int, session_id: int, db: Session):
+        """Create an initial puzzle for a user"""
+        puzzle_types = ["memory", "spatial", "concentration", "multitasking"]
+        puzzle_type = random.choice(puzzle_types)
+        
+        if puzzle_type == "memory":
+            data, correct_answer = self._generate_memory_puzzle()
+        elif puzzle_type == "spatial":
+            data = {}
+            correct_answer = "solved"
+        elif puzzle_type == "concentration":
+            data, correct_answer = self._generate_concentration_puzzle()
+        elif puzzle_type == "multitasking":
+            data = {}
+            correct_answer = "solved"
+        
+        new_puzzle = models.Puzzle(
+            type=puzzle_type,
+            data=data,
+            correct_answer=correct_answer,
+            status="active",
+            game_session_id=session_id,
+            user_id=user_id
+        )
+        db.add(new_puzzle)
+        return new_puzzle
+    
     async def _run_countdown(self, session_id: int, duration_seconds: int):
         """Run the countdown and transition to active state"""
         try:
@@ -69,12 +139,16 @@ class CountdownService:
                     for user in team_users:
                         user.points = 15  # Reset to starting points
                     
+                    # Create initial puzzles for all players
+                    for user in team_users:
+                        self._create_initial_puzzle_for_user(user.id, session_id, db)
+                    
                     db.commit()
                     
                     # Broadcast state update
                     await broadcast_state(session_id, db)
                     
-                    print(f"Countdown completed for session {session_id}. Game is now active.")
+                    print(f"Countdown completed for session {session_id}. Game is now active with {len(team_users)} players.")
                 else:
                     print(f"Session {session_id} not found or not in countdown state")
             finally:

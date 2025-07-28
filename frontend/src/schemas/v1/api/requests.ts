@@ -110,10 +110,12 @@ export interface PuzzleCreate {
   user_id: number;
 }
 
-/** Puzzle Answer: Request to submit a puzzle answer */
+/** Puzzle Answer: Answer submission for a puzzle */
 export interface PuzzleAnswer {
   /** ID of the puzzle being answered */
   puzzle_id: number;
-  /** Player's answer to the puzzle */
+  /** The answer submitted by the user */
   answer: string;
+  /** ID of the user submitting the answer */
+  user_id: number;
 }

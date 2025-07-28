@@ -39,6 +39,7 @@ export function useSpatialGameLoop({
   const gameConfigRef = useRef<GameConfig>(gameConfig);
   const callbacksRef = useRef<GameCallbacks>(callbacks);
   const stateSettersRef = useRef<StateSetters>(stateSetters);
+  const hasSubmittedRef = useRef<boolean>(false);
 
   // Update refs when dependencies change
   useEffect(() => {
@@ -62,6 +63,7 @@ export function useSpatialGameLoop({
       cancelAnimationFrame(animationRef.current);
       animationRef.current = undefined;
     }
+    hasSubmittedRef.current = false;
   }, []);
 
   const startGameLoop = useCallback(() => {
@@ -80,14 +82,17 @@ export function useSpatialGameLoop({
       currentStateSetters.setObstacleDirection(newState.obstacleDirection);
 
       // Handle game end conditions
-      if (shouldEndGame && gameResult) {
+      if (shouldEndGame && gameResult && !hasSubmittedRef.current) {
+        hasSubmittedRef.current = true;
         if (gameResult.type === 'lost') {
           currentStateSetters.setGameLost(true);
           currentCallbacks.setAnswer('collision');
+          // Only submit once for loss
           currentCallbacks.submitAnswerWithAnswer('collision');
         } else if (gameResult.type === 'won') {
           currentStateSetters.setGameWon(true);
           currentCallbacks.setAnswer('solved');
+          // Only submit once for win, with correct answer format
           setTimeout(() => currentCallbacks.submitAnswerWithAnswer('solved'), 500);
         }
         stopGameLoop();
