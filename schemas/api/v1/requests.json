@@ -1,0 +1,215 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "4stuck/schemas/api/v1/requests.json",
+  "title": "API Request Models",
+  "description": "REST API request models for all endpoints",
+  "definitions": {
+    "CreateTeamRequest": {
+      "title": "Create Team Request",
+      "description": "Request to create a new team",
+      "type": "object",
+      "required": ["name"],
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 50,
+          "description": "Name for the new team"
+        }
+      },
+      "examples": [
+        {
+          "name": "Team Alpha"
+        }
+      ]
+    },
+    "JoinTeamRequest": {
+      "title": "Join Team Request",
+      "description": "Request to join an existing team",
+      "type": "object",
+      "required": ["username", "team_id"],
+      "properties": {
+        "username": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 50,
+          "description": "Username for the player joining the team"
+        },
+        "team_id": {
+          "type": "integer",
+          "description": "ID of the team to join"
+        }
+      },
+      "examples": [
+        {
+          "username": "Alice",
+          "team_id": 1
+        }
+      ]
+    },
+    "StartGameRequest": {
+      "title": "Start Game Request",
+      "description": "Request to start a game session",
+      "type": "object",
+      "required": ["team_id"],
+      "properties": {
+        "team_id": {
+          "type": "integer",
+          "description": "ID of the team starting the game"
+        },
+        "countdown_duration": {
+          "type": "integer",
+          "default": 5,
+          "minimum": 1,
+          "maximum": 30,
+          "description": "Countdown duration in seconds before game starts"
+        }
+      },
+      "examples": [
+        {
+          "team_id": 1,
+          "countdown_duration": 5
+        }
+      ]
+    },
+    "SubmitAnswerRequest": {
+      "title": "Submit Answer Request",
+      "description": "Request to submit a puzzle answer",
+      "type": "object",
+      "required": ["puzzle_id", "answer"],
+      "properties": {
+        "puzzle_id": {
+          "type": "integer",
+          "description": "ID of the puzzle being answered"
+        },
+        "answer": {
+          "type": "string",
+          "description": "Player's answer to the puzzle"
+        },
+        "user_id": {
+          "type": "integer",
+          "description": "ID of the user submitting the answer"
+        }
+      },
+      "examples": [
+        {
+          "puzzle_id": 123,
+          "answer": "blue",
+          "user_id": 1
+        }
+      ]
+    },
+    "GetCurrentPuzzleRequest": {
+      "title": "Get Current Puzzle Request",
+      "description": "Request to get the current puzzle for a user",
+      "type": "object",
+      "required": ["user_id"],
+      "properties": {
+        "user_id": {
+          "type": "integer",
+          "description": "ID of the user to get puzzle for"
+        }
+      },
+      "examples": [
+        {
+          "user_id": 1
+        }
+      ]
+    },
+    "AssignColorRequest": {
+      "title": "Assign Color Request",
+      "description": "Request to assign a color to a user",
+      "type": "object",
+      "required": ["user_id"],
+      "properties": {
+        "user_id": {
+          "type": "integer",
+          "description": "ID of the user to assign color to"
+        },
+        "preferred_color": {
+          "$ref": "4stuck/schemas/core/v1/communication.json#/definitions/PlayerColor",
+          "description": "Preferred color (optional)"
+        }
+      },
+      "examples": [
+        {
+          "user_id": 1,
+          "preferred_color": "blue"
+        }
+      ]
+    },
+    "UpdatePlayerReadyRequest": {
+      "title": "Update Player Ready Request",
+      "description": "Request to update player ready status",
+      "type": "object",
+      "required": ["user_id", "is_ready"],
+      "properties": {
+        "user_id": {
+          "type": "integer",
+          "description": "ID of the user to update"
+        },
+        "is_ready": {
+          "type": "boolean",
+          "description": "Whether the player is ready to start"
+        }
+      },
+      "examples": [
+        {
+          "user_id": 1,
+          "is_ready": true
+        }
+      ]
+    },
+    "GetGameStateRequest": {
+      "title": "Get Game State Request",
+      "description": "Request to get current game state",
+      "type": "object",
+      "required": ["session_id"],
+      "properties": {
+        "session_id": {
+          "type": "integer",
+          "description": "ID of the game session"
+        }
+      },
+      "examples": [
+        {
+          "session_id": 1
+        }
+      ]
+    },
+    "GetGameResultRequest": {
+      "title": "Get Game Result Request",
+      "description": "Request to get game result",
+      "type": "object",
+      "required": ["session_id"],
+      "properties": {
+        "session_id": {
+          "type": "integer",
+          "description": "ID of the completed game session"
+        }
+      },
+      "examples": [
+        {
+          "session_id": 1
+        }
+      ]
+    },
+    "RestartGameRequest": {
+      "title": "Restart Game Request",
+      "description": "Request to restart a game session",
+      "type": "object",
+      "required": ["team_id"],
+      "properties": {
+        "team_id": {
+          "type": "integer",
+          "description": "ID of the team to restart game for"
+        }
+      },
+      "examples": [
+        {
+          "team_id": 1
+        }
+      ]
+    }
+  }
+} 

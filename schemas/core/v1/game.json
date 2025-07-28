@@ -1,0 +1,260 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "4stuck/schemas/core/v1/game.json",
+  "title": "Game Domain Models",
+  "description": "Game sessions, game states, and game flow models",
+  "definitions": {
+    "GameStatus": {
+      "title": "Game Status",
+      "description": "Current status of a game session",
+      "type": "string",
+      "enum": ["lobby", "countdown", "active", "finished"],
+      "description": "Available game statuses"
+    },
+    "GameSession": {
+      "title": "Game Session",
+      "description": "A game session for a team",
+      "type": "object",
+      "required": ["id", "team_id", "status", "created_at"],
+      "properties": {
+        "id": {
+          "type": "integer",
+          "description": "Unique game session identifier"
+        },
+        "team_id": {
+          "type": "integer",
+          "description": "ID of the team playing this session"
+        },
+        "status": {
+          "$ref": "#/definitions/GameStatus",
+          "description": "Current status of the game session"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time",
+          "description": "When the game session was created"
+        },
+        "started_at": {
+          "type": "string",
+          "format": "date-time",
+          "description": "When the game started (active status)"
+        },
+        "ended_at": {
+          "type": "string",
+          "format": "date-time",
+          "description": "When the game ended (finished status)"
+        },
+        "survival_time_seconds": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "How long the team survived in seconds"
+        },
+        "countdown_duration": {
+          "type": "integer",
+          "default": 5,
+          "description": "Countdown duration in seconds before game starts"
+        }
+      },
+      "examples": [
+        {
+          "id": 1,
+          "team_id": 1,
+          "status": "active",
+          "created_at": "2024-01-15T10:00:00Z",
+          "started_at": "2024-01-15T10:05:00Z",
+          "survival_time_seconds": 300
+        }
+      ]
+    },
+    "GameState": {
+      "title": "Game State",
+      "description": "Complete current state of a game",
+      "type": "object",
+      "required": ["session", "players", "timestamp"],
+      "properties": {
+        "session": {
+          "$ref": "#/definitions/GameSession",
+          "description": "Current game session information"
+        },
+        "players": {
+          "type": "array",
+          "items": {
+            "$ref": "4stuck/schemas/core/v1/player.json#/definitions/Player"
+          },
+          "description": "All players in the game with current state"
+        },
+        "puzzles": {
+          "type": "array",
+          "items": {
+            "$ref": "4stuck/schemas/core/v1/puzzle.json#/definitions/PuzzleState"
+          },
+          "description": "Current puzzles for all players"
+        },
+        "timestamp": {
+          "type": "string",
+          "format": "date-time",
+          "description": "When this game state was captured"
+        },
+        "countdown_remaining": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Seconds remaining in countdown (if in countdown status)"
+        },
+        "next_point_decay": {
+          "type": "string",
+          "format": "date-time",
+          "description": "When the next point decay will occur"
+        }
+      },
+      "examples": [
+        {
+          "session": {
+            "id": 1,
+            "team_id": 1,
+            "status": "active",
+            "created_at": "2024-01-15T10:00:00Z",
+            "started_at": "2024-01-15T10:05:00Z"
+          },
+          "players": [
+            {
+              "id": 1,
+              "username": "Alice",
+              "team_id": 1,
+              "color": "blue",
+              "points": 15,
+              "is_eliminated": false
+            }
+          ],
+          "timestamp": "2024-01-15T10:30:00Z",
+          "next_point_decay": "2024-01-15T10:35:00Z"
+        }
+      ]
+    },
+    "GameConfig": {
+      "title": "Game Configuration",
+      "description": "Configuration parameters for the game",
+      "type": "object",
+      "required": ["starting_points", "point_decay_interval", "points_lost_per_decay", "points_awarded_for_solving"],
+      "properties": {
+        "starting_points": {
+          "type": "integer",
+          "default": 15,
+          "minimum": 1,
+          "description": "Starting points for each player"
+        },
+        "point_decay_interval": {
+          "type": "integer",
+          "default": 5,
+          "minimum": 1,
+          "description": "Seconds between point decay events"
+        },
+        "points_lost_per_decay": {
+          "type": "integer",
+          "default": 1,
+          "minimum": 1,
+          "description": "Points lost per decay event"
+        },
+        "points_awarded_for_solving": {
+          "type": "integer",
+          "default": 5,
+          "minimum": 1,
+          "description": "Points awarded to next player when puzzle is solved"
+        },
+        "max_team_size": {
+          "type": "integer",
+          "default": 4,
+          "minimum": 2,
+          "maximum": 8,
+          "description": "Maximum number of players per team"
+        },
+        "countdown_duration": {
+          "type": "integer",
+          "default": 5,
+          "minimum": 1,
+          "description": "Countdown duration in seconds before game starts"
+        }
+      },
+      "examples": [
+        {
+          "starting_points": 15,
+          "point_decay_interval": 5,
+          "points_lost_per_decay": 1,
+          "points_awarded_for_solving": 5,
+          "max_team_size": 4,
+          "countdown_duration": 5
+        }
+      ]
+    },
+    "GameResult": {
+      "title": "Game Result",
+      "description": "Final result of a completed game session",
+      "type": "object",
+      "required": ["session", "survival_time_seconds", "final_players"],
+      "properties": {
+        "session": {
+          "$ref": "#/definitions/GameSession",
+          "description": "The completed game session"
+        },
+        "survival_time_seconds": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Total survival time in seconds"
+        },
+        "final_players": {
+          "type": "array",
+          "items": {
+            "$ref": "4stuck/schemas/core/v1/player.json#/definitions/Player"
+          },
+          "description": "Final state of all players"
+        },
+        "puzzles_solved_per_player": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "integer"
+          },
+          "description": "Number of puzzles solved by each player"
+        },
+        "points_given_per_player": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "integer"
+          },
+          "description": "Total points given by each player to teammates"
+        },
+        "points_received_per_player": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "integer"
+          },
+          "description": "Total points received by each player from teammates"
+        }
+      },
+      "examples": [
+        {
+          "session": {
+            "id": 1,
+            "team_id": 1,
+            "status": "finished",
+            "created_at": "2024-01-15T10:00:00Z",
+            "started_at": "2024-01-15T10:05:00Z",
+            "ended_at": "2024-01-15T10:15:00Z",
+            "survival_time_seconds": 600
+          },
+          "survival_time_seconds": 600,
+          "puzzles_solved_per_player": {
+            "1": 5,
+            "2": 3,
+            "3": 4,
+            "4": 2
+          },
+          "points_given_per_player": {
+            "1": 25,
+            "2": 15,
+            "3": 20,
+            "4": 10
+          }
+        }
+      ]
+    }
+  }
+} 

@@ -461,7 +461,126 @@ Complete the Team.försvarsmakten game according to the detailed specifications 
 
 ---
 
-## 📋 Phase 5: Testing & Polish (Week 5)
+## 📋 Phase 5: Centralized Schema Architecture (Week 5)
+**Priority: HIGH** - Technical debt and maintainability
+
+### Backend Tasks
+
+#### 5.1 Define Core Models in JSON Schema
+- [x] **Create schema directory structure**
+  - [x] Create `schemas/core/` for game, player, puzzle models
+  - [x] Create `schemas/websocket/` for WebSocket message types
+  - [x] Create `schemas/api/` for REST API request/response models
+  - [x] Create `schemas/generator/` for code generation tools
+
+- [x] **Define core game models**
+  - [x] Create `schemas/core/game.v1.json` with GameState, GameSession models
+  - [x] Create `schemas/core/player.v1.json` with Player, Team models
+  - [x] Create `schemas/core/puzzle.v1.json` with all puzzle type models
+  - [x] Create `schemas/core/communication.v1.json` with Position, PlayerColor, MousePosition models
+  - [x] Ensure all models are properly typed and documented
+
+- [x] **Define WebSocket message schemas**
+  - [x] Create `schemas/websocket/messages.v1.json` with message types
+  - [x] Define MousePositionMessage, PuzzleInteractionMessage, StateUpdateMessage
+  - [x] Include IncomingMessage and OutgoingMessage structures
+  - [x] Ensure WebSocket schemas align with REST API models
+
+- [x] **Define API request/response schemas**
+  - [x] Create `schemas/api/requests.v1.json` with all request models
+  - [x] Create `schemas/api/responses.v1.json` with all response models
+  - [x] Include proper error handling and validation
+  - [x] Add comprehensive examples and documentation
+
+#### 5.2 Create Code Generators
+- [ ] **Build Python/Pydantic generator**
+  - [x] Create `schemas/generator/generate_python.py` script
+  - [ ] Implement JSON Schema to Pydantic model conversion
+  - [ ] Add support for complex types (unions, arrays, nested objects)
+  - [ ] Generate proper imports and type hints
+
+- [ ] **Build TypeScript generator**
+  - [ ] Create `schemas/generator/generate_typescript.py` script
+  - [ ] Implement JSON Schema to TypeScript interface conversion
+  - [ ] Generate proper type unions and optional properties
+  - [ ] Create index files for easy imports
+
+- [ ] **Add validation and testing**
+  - [ ] Create schema validation tests
+  - [ ] Test code generation with existing models
+  - [ ] Ensure generated code matches current functionality
+  - [ ] Add integration tests for generated models
+
+#### 5.3 Migrate REST API to Generated Models
+- [ ] **Update FastAPI endpoints**
+  - [ ] Replace manual Pydantic models with generated ones
+  - [ ] Update all router files to use generated schemas
+  - [ ] Ensure API responses match generated models
+  - [ ] Test all endpoints with new models
+
+- [ ] **Update database models**
+  - [ ] Ensure SQLAlchemy models align with generated schemas
+  - [ ] Update model validation and serialization
+  - [ ] Test database operations with new schemas
+  - [ ] Verify data integrity
+
+#### 5.4 Add WebSocket Message Validation
+- [ ] **Implement runtime validation**
+  - [ ] Create WebSocket message validators using generated models
+  - [ ] Add validation to all WebSocket handlers
+  - [ ] Implement proper error handling for invalid messages
+  - [ ] Add logging for validation failures
+
+- [ ] **Update WebSocket message handling**
+  - [ ] Replace manual message parsing with validated models
+  - [ ] Ensure type safety in WebSocket callbacks
+  - [ ] Test all WebSocket message types
+  - [ ] Verify real-time communication works correctly
+
+#### 5.5 Update Frontend to Use Generated Types
+- [ ] **Replace OpenAPI generated types**
+  - [ ] Update frontend to use generated TypeScript types
+  - [ ] Replace API client with generated types
+  - [ ] Update WebSocket message handling
+  - [ ] Ensure type safety across all components
+
+- [ ] **Update component interfaces**
+  - [ ] Update all React component props to use generated types
+  - [ ] Update hook interfaces and return types
+  - [ ] Update utility function signatures
+  - [ ] Test all components with new types
+
+### Frontend Tasks
+
+#### 5.6 Integration and Testing
+- [ ] **End-to-end testing**
+  - [ ] Test complete game flow with new schemas
+  - [ ] Verify WebSocket communication works
+  - [ ] Test all puzzle types with generated models
+  - [ ] Ensure no regression in functionality
+
+- [ ] **Performance testing**
+  - [ ] Test code generation performance
+  - [ ] Verify runtime validation doesn't impact performance
+  - [ ] Test WebSocket message processing speed
+  - [ ] Ensure no memory leaks
+
+#### 5.7 Documentation and Cleanup
+- [ ] **Update documentation**
+  - [ ] Document schema structure and conventions
+  - [ ] Create code generation usage guide
+  - [ ] Update API documentation
+  - [ ] Create migration guide for future changes
+
+- [ ] **Clean up legacy code**
+  - [ ] Remove old Pydantic model definitions
+  - [ ] Remove old TypeScript type definitions
+  - [ ] Clean up unused imports and dependencies
+  - [ ] Update build scripts and CI/CD
+
+---
+
+## 📋 Phase 6: Testing & Polish (Week 6)
 **Priority: MEDIUM** - Quality assurance
 
 ### Testing Tasks
@@ -649,4 +768,15 @@ Complete the Team.försvarsmakten game according to the detailed specifications 
 - [x] Task completed: Add comprehensive tests for service and hook (28/28 passing)
 - [x] Task completed: Color consistency features - badges, life circles, mouse cursors, fallback handling
 - [x] Issues encountered: Fixed TypeScript linter errors, resolved test database isolation issues
-- [x] Next day plan: Continue with remaining color-related tasks - team list colors, consistency throughout game session 
+- [x] Next day plan: Continue with remaining color-related tasks - team list colors, consistency throughout game session
+
+### Day 11:
+- [x] Task completed: 5.1 - Define Core Models in JSON Schema (all subtasks) - Complete schema architecture setup
+- [x] Task completed: Create comprehensive schema directory structure with core, websocket, api, and generator directories
+- [x] Task completed: Define all core domain models (game, player, puzzle, communication) with proper typing and documentation
+- [x] Task completed: Create WebSocket message schemas with comprehensive message types and structures
+- [x] Task completed: Define API request/response schemas with proper error handling and validation
+- [x] Task completed: Create basic Python code generator with Pydantic model generation capabilities
+- [x] Task completed: Add comprehensive documentation and examples for all schemas
+- [x] Issues encountered: None - schema architecture implementation went smoothly
+- [x] Next day plan: Continue with code generator implementation and schema validation tools 

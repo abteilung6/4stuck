@@ -1,0 +1,341 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "4stuck/schemas/api/v1/responses.json",
+  "title": "API Response Models",
+  "description": "REST API response models for all endpoints",
+  "definitions": {
+    "ApiResponse": {
+      "title": "API Response",
+      "description": "Base structure for all API responses",
+      "type": "object",
+      "required": ["success"],
+      "properties": {
+        "success": {
+          "type": "boolean",
+          "description": "Whether the request was successful"
+        },
+        "data": {
+          "description": "Response data (if successful)"
+        },
+        "error": {
+          "type": "string",
+          "description": "Error message (if not successful)"
+        },
+        "message": {
+          "type": "string",
+          "description": "Additional message or description"
+        }
+      },
+      "examples": [
+        {
+          "success": true,
+          "data": {
+            "id": 1,
+            "name": "Team Alpha"
+          }
+        },
+        {
+          "success": false,
+          "error": "Team not found",
+          "message": "The requested team does not exist"
+        }
+      ]
+    },
+    "TeamResponse": {
+      "title": "Team Response",
+      "description": "Response containing team information",
+      "type": "object",
+      "required": ["success"],
+      "properties": {
+        "success": {
+          "type": "boolean"
+        },
+        "data": {
+          "$ref": "4stuck/schemas/core/v1/player.json#/definitions/Team"
+        },
+        "error": {
+          "type": "string"
+        }
+      }
+    },
+    "AvailableTeamsResponse": {
+      "title": "Available Teams Response",
+      "description": "Response containing list of available teams",
+      "type": "object",
+      "required": ["success"],
+      "properties": {
+        "success": {
+          "type": "boolean"
+        },
+        "data": {
+          "type": "array",
+          "items": {
+            "$ref": "4stuck/schemas/core/v1/player.json#/definitions/AvailableTeam"
+          }
+        },
+        "error": {
+          "type": "string"
+        }
+      }
+    },
+    "PlayerResponse": {
+      "title": "Player Response",
+      "description": "Response containing player information",
+      "type": "object",
+      "required": ["success"],
+      "properties": {
+        "success": {
+          "type": "boolean"
+        },
+        "data": {
+          "$ref": "4stuck/schemas/core/v1/player.json#/definitions/Player"
+        },
+        "error": {
+          "type": "string"
+        }
+      }
+    },
+    "GameSessionResponse": {
+      "title": "Game Session Response",
+      "description": "Response containing game session information",
+      "type": "object",
+      "required": ["success"],
+      "properties": {
+        "success": {
+          "type": "boolean"
+        },
+        "data": {
+          "$ref": "4stuck/schemas/core/v1/game.json#/definitions/GameSession"
+        },
+        "error": {
+          "type": "string"
+        }
+      }
+    },
+    "GameStateResponse": {
+      "title": "Game State Response",
+      "description": "Response containing complete game state",
+      "type": "object",
+      "required": ["success"],
+      "properties": {
+        "success": {
+          "type": "boolean"
+        },
+        "data": {
+          "$ref": "4stuck/schemas/core/v1/game.json#/definitions/GameState"
+        },
+        "error": {
+          "type": "string"
+        }
+      }
+    },
+    "GameResultResponse": {
+      "title": "Game Result Response",
+      "description": "Response containing game result information",
+      "type": "object",
+      "required": ["success"],
+      "properties": {
+        "success": {
+          "type": "boolean"
+        },
+        "data": {
+          "$ref": "4stuck/schemas/core/v1/game.json#/definitions/GameResult"
+        },
+        "error": {
+          "type": "string"
+        }
+      }
+    },
+    "PuzzleResponse": {
+      "title": "Puzzle Response",
+      "description": "Response containing puzzle information",
+      "type": "object",
+      "required": ["success"],
+      "properties": {
+        "success": {
+          "type": "boolean"
+        },
+        "data": {
+          "$ref": "4stuck/schemas/core/v1/puzzle.json#/definitions/PuzzleState"
+        },
+        "error": {
+          "type": "string"
+        }
+      }
+    },
+    "PuzzleResultResponse": {
+      "title": "Puzzle Result Response",
+      "description": "Response containing puzzle submission result",
+      "type": "object",
+      "required": ["success"],
+      "properties": {
+        "success": {
+          "type": "boolean"
+        },
+        "data": {
+          "$ref": "4stuck/schemas/core/v1/puzzle.json#/definitions/PuzzleResult"
+        },
+        "error": {
+          "type": "string"
+        }
+      }
+    },
+    "ColorAssignmentResponse": {
+      "title": "Color Assignment Response",
+      "description": "Response containing color assignment result",
+      "type": "object",
+      "required": ["success"],
+      "properties": {
+        "success": {
+          "type": "boolean"
+        },
+        "data": {
+          "type": "object",
+          "required": ["color"],
+          "properties": {
+            "color": {
+              "$ref": "4stuck/schemas/core/v1/communication.json#/definitions/PlayerColor"
+            },
+            "message": {
+              "type": "string"
+            }
+          }
+        },
+        "error": {
+          "type": "string"
+        }
+      }
+    },
+    "CountdownResponse": {
+      "title": "Countdown Response",
+      "description": "Response containing countdown information",
+      "type": "object",
+      "required": ["success"],
+      "properties": {
+        "success": {
+          "type": "boolean"
+        },
+        "data": {
+          "type": "object",
+          "required": ["session_id", "countdown_remaining"],
+          "properties": {
+            "session_id": {
+              "type": "integer"
+            },
+            "countdown_remaining": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "status": {
+              "type": "string",
+              "enum": ["countdown", "active"]
+            }
+          }
+        },
+        "error": {
+          "type": "string"
+        }
+      }
+    },
+    "ErrorResponse": {
+      "title": "Error Response",
+      "description": "Standard error response",
+      "type": "object",
+      "required": ["success", "error"],
+      "properties": {
+        "success": {
+          "const": false
+        },
+        "error": {
+          "type": "string",
+          "description": "Error message"
+        },
+        "message": {
+          "type": "string",
+          "description": "Additional error details"
+        },
+        "code": {
+          "type": "string",
+          "description": "Error code"
+        },
+        "details": {
+          "type": "object",
+          "description": "Additional error details",
+          "additionalProperties": true
+        }
+      },
+      "examples": [
+        {
+          "success": false,
+          "error": "Validation error",
+          "message": "Invalid input data",
+          "code": "VALIDATION_ERROR",
+          "details": {
+            "field": "username",
+            "issue": "Username is required"
+          }
+        }
+      ]
+    },
+    "SuccessResponse": {
+      "title": "Success Response",
+      "description": "Standard success response",
+      "type": "object",
+      "required": ["success"],
+      "properties": {
+        "success": {
+          "const": true
+        },
+        "message": {
+          "type": "string",
+          "description": "Success message"
+        },
+        "data": {
+          "description": "Response data"
+        }
+      },
+      "examples": [
+        {
+          "success": true,
+          "message": "Operation completed successfully"
+        }
+      ]
+    },
+    "HealthCheckResponse": {
+      "title": "Health Check Response",
+      "description": "API health check response",
+      "type": "object",
+      "required": ["success", "status", "timestamp"],
+      "properties": {
+        "success": {
+          "const": true
+        },
+        "status": {
+          "type": "string",
+          "enum": ["healthy", "degraded", "unhealthy"]
+        },
+        "timestamp": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "version": {
+          "type": "string",
+          "description": "API version"
+        },
+        "uptime": {
+          "type": "number",
+          "description": "Server uptime in seconds"
+        }
+      },
+      "examples": [
+        {
+          "success": true,
+          "status": "healthy",
+          "timestamp": "2024-01-15T10:30:00Z",
+          "version": "1.0.0",
+          "uptime": 3600
+        }
+      ]
+    }
+  }
+} 
