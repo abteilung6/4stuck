@@ -3,21 +3,37 @@ repos:
     rev: v0.3.3
     hooks:
       - id: ruff
-        args: [--fix, --exit-non-zero-on-fix]
+        args: [--config=pyproject.toml, --fix, --exit-non-zero-on-fix]
+        exclude: ^backend/app/schemas/.*
       - id: ruff-format
+        args: [--config=pyproject.toml]
+        exclude: ^backend/app/schemas/.*
+
+  - repo: https://github.com/pre-commit/mirrors-mypy
+    rev: v1.8.0
+    hooks:
+      - id: mypy
+        additional_dependencies: [
+          "types-requests>=2.31.0",
+          "types-PyYAML>=6.0.12",
+          "sqlalchemy[mypy]>=2.0.39",
+          "pydantic[mypy]>=2.11.7",
+        ]
+        args: [--config-file=pyproject.toml, --ignore-missing-imports]
+        exclude: ^backend/app/schemas/
 
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v4.5.0
     hooks:
       - id: trailing-whitespace
-        exclude: ^frontend/src/api/|^frontend/src/schemas/
+        exclude: ^frontend/src/api/|^frontend/src/schemas/|^backend/app/schemas/
       - id: end-of-file-fixer
-        exclude: ^frontend/src/api/|^frontend/src/schemas/
+        exclude: ^frontend/src/api/|^frontend/src/schemas/|^backend/app/schemas/
       - id: check-yaml
       - id: check-added-large-files
       - id: check-merge-conflict
       - id: check-case-conflict
       - id: check-json
-        exclude: ^frontend/src/api/|^frontend/src/schemas/
+        exclude: ^frontend/src/api/|^frontend/src/schemas/|^backend/app/schemas/
       - id: check-toml
       - id: debug-statements

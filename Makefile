@@ -34,7 +34,7 @@ install-dev:
 # Format code with Ruff
 format:
 	@echo "🎨 Formatting code with Ruff..."
-	ruff format backend/ schemas/
+	ruff format backend/app/ schemas/ --exclude backend/app/schemas/
 	@echo "✅ Code formatted!"
 
 # Lint code with Ruff
@@ -46,7 +46,7 @@ lint:
 # Run type checking with MyPy
 type-check:
 	@echo "🔍 Running type checks with MyPy..."
-	mypy backend/ schemas/
+	cd backend && . venv/bin/activate && mypy --explicit-package-bases . ../schemas/
 	@echo "✅ Type checks completed!"
 
 # Run all checks
@@ -75,13 +75,13 @@ clean:
 # Generate backend schemas
 generate-backend:
 	@echo "🔧 Generating backend schemas..."
-	cd backend && python -m schemas.generator.generate_python --schemas-dir ../schemas --output-dir app/schemas
+	cd backend && . venv/bin/activate && python ../schemas/generator/generate_python.py --schemas-dir ../schemas --output-dir app/schemas
 	@echo "✅ Backend schemas generated!"
 
 # Generate frontend schemas
 generate-frontend:
 	@echo "🔧 Generating frontend schemas..."
-	cd frontend && python ../schemas/generator/generate_typescript.py --schemas-dir ../schemas --output-dir src/schemas
+	cd backend && . venv/bin/activate && python ../schemas/generator/generate_typescript.py --schemas-dir ../schemas --output-dir ../frontend/src/schemas
 	@echo "✅ Frontend schemas generated!"
 
 # Generate all schemas

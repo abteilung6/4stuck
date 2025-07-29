@@ -38,7 +38,7 @@ export interface Team {
   created_at?: string;
 }
 
-/** Team Status: Team availability status */
+/** Team Status: Current status of a team */
 export interface TeamStatus {
 }
 

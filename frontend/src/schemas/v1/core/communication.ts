@@ -10,7 +10,7 @@ export interface Position {
   y: number;
 }
 
-/** Player Color: Available player colors */
+/** Player Color: Color assigned to a player for identification */
 export interface PlayerColor {
 }
 

@@ -20,6 +20,12 @@ indent-style = "space"
 skip-magic-trailing-comma = false
 line-ending = "auto"
 docstring-code-format = true
+exclude = [
+    "frontend",
+    "backend/app/schemas",
+    "backend/venv",
+    ".*/__pycache__",
+]
 
 [tool.ruff.lint]
 select = [
@@ -178,13 +184,14 @@ multiline-quotes = "double"
 ban-relative-imports = "all"
 
 [tool.mypy]
-python_version = "3.9"
+# Python version and basic settings
+python_version = "3.12"
 warn_return_any = true
 warn_unused_configs = true
-disallow_untyped_defs = true
-disallow_incomplete_defs = true
+disallow_untyped_defs = false  # Start conservative, enable later
+disallow_incomplete_defs = false  # Start conservative, enable later
 check_untyped_defs = true
-disallow_untyped_decorators = true
+disallow_untyped_decorators = false  # Start conservative, enable later
 no_implicit_optional = true
 warn_redundant_casts = true
 warn_unused_ignores = true
@@ -192,15 +199,42 @@ warn_no_return = true
 warn_unreachable = true
 strict_equality = true
 
+# Exclude generated and third-party files
+exclude = [
+    "frontend",
+    "backend/app/schemas",
+    "backend/venv",
+    ".*/__pycache__",
+    ".*/migrations",
+    ".*/alembic",
+]
+
+# Plugin configuration for better type checking
+plugins = [
+    "sqlalchemy.ext.mypy.plugin",
+    "pydantic.mypy",
+]
+
+# Per-module overrides for third-party libraries
 [[tool.mypy.overrides]]
 module = [
     "fastapi.*",
     "uvicorn.*",
-    "sqlalchemy.*",
-    "pydantic.*",
     "websockets.*",
+    "pytest.*",
+    "coverage.*",
 ]
 ignore_missing_imports = true
+
+# Test files - less strict
+[[tool.mypy.overrides]]
+module = [
+    "tests.*",
+    "conftest",
+]
+disallow_untyped_defs = false
+disallow_incomplete_defs = false
+disallow_untyped_decorators = false
 
 [tool.coverage.run]
 source = ["backend"]

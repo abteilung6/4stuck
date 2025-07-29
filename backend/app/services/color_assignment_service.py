@@ -1,5 +1,5 @@
 import logging
-from typing import Any
+from typing import Any, Optional
 
 from sqlalchemy.orm import Session
 
@@ -12,7 +12,7 @@ logger = logging.getLogger(__name__)
 class ColorAssignmentService:
     """Centralized color management with validation and testing support"""
 
-    def __init__(self, color_scheme: list[str] = None):
+    def __init__(self, color_scheme: Optional[list[str]] = None):
         self.color_scheme = color_scheme or ["red", "blue", "yellow", "green"]
         self.fallback_color = "gray"
 
@@ -90,7 +90,7 @@ class ColorAssignmentService:
 
             # Count users per color
             for member in team_members:
-                if member.color:
+                if member.color and member.id is not None:
                     if member.color not in color_counts:
                         color_counts[member.color] = []
                     color_counts[member.color].append(member.id)
@@ -144,8 +144,8 @@ class ColorAssignmentService:
         try:
             team_members = db.query(models.User).filter(models.User.team_id == team_id).order_by(models.User.id).all()
 
-            reassignments = {}
-            used_colors = []
+            reassignments: dict[str, str] = {}
+            used_colors: list[str] = []
 
             # Reassign colors to all team members
             for member in team_members:
