@@ -1,5 +1,6 @@
-fastapi
-uvicorn[standard]
-sqlalchemy
-httpx
-jsonschema
+fastapi>=0.116.0
+uvicorn[standard]>=0.35.0
+sqlalchemy>=2.0.41
+httpx>=0.28.1
+jsonschema>=4.25.0
+websockets>=15.0.1
