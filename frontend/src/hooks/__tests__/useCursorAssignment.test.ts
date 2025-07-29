@@ -29,4 +29,4 @@ describe('getCursorColor', () => {
   it('returns gray if neither teamMembers nor playerCursors has color', () => {
     expect(getCursorColor(5, playerCursors, teamMembers)).toBe('gray');
   });
-}); 
+});

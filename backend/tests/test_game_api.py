@@ -1,17 +1,27 @@
-import pytest
-from fastapi.testclient import TestClient
-from fastapi import FastAPI
 from uuid import uuid4
+
+from fastapi import FastAPI
+from fastapi.testclient import TestClient
+import pytest
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
+
 from app.models import Base
-from app.routers.team import router as team_router, get_db as get_db_team
-from app.routers.game import router as game_router, get_db as get_db_game
+from app.routers.game import (
+    get_db as get_db_game,
+    router as game_router,
+)
+from app.routers.team import (
+    get_db as get_db_team,
+    router as team_router,
+)
+
 
 # Helper to create a fresh app and DB for each test
 def create_test_app_and_client():
     # Create a temporary SQLite DB
     import tempfile
+
     tmp = tempfile.NamedTemporaryFile(suffix=".db")
     TEST_DATABASE_URL = f"sqlite:///{tmp.name}"
     engine = create_engine(TEST_DATABASE_URL, connect_args={"check_same_thread": False})
@@ -34,6 +44,7 @@ def create_test_app_and_client():
     client = TestClient(app)
     return client, tmp
 
+
 def create_team_and_user(client):
     unique = str(uuid4())
     username = f"testuser_{unique}"
@@ -41,6 +52,7 @@ def create_team_and_user(client):
     user_resp = client.post("/team/register", json={"username": username})
     team_resp = client.post("/team/create", json={"name": teamname})
     return user_resp.json()["id"], team_resp.json()["id"]
+
 
 def test_create_game_session():
     client, tmp = create_test_app_and_client()
@@ -58,6 +70,7 @@ def test_create_game_session():
     assert "Game session already exists" in resp2.text
     tmp.close()
 
+
 def test_get_current_session():
     client, tmp = create_test_app_and_client()
     _, team_id = create_team_and_user(client)
@@ -74,6 +87,7 @@ def test_get_current_session():
     assert data["status"] == "countdown"
     tmp.close()
 
+
 def test_create_session_invalid_team():
     client, tmp = create_test_app_and_client()
     # Team does not exist
@@ -82,8 +96,10 @@ def test_create_session_invalid_team():
     assert "Team not found" in resp.text
     tmp.close()
 
+
 def test_game_session_state_transitions_and_survival_time():
     import time as pytime
+
     client, tmp = create_test_app_and_client()
     _, team_id = create_team_and_user(client)
     # Create session (should start in countdown)
@@ -124,7 +140,7 @@ def test_game_session_state_transitions_and_survival_time():
     assert session["survival_time_seconds"] is not None
     # Survival time should be at least 1 second
     assert session["survival_time_seconds"] >= 1
-    tmp.close() 
+    tmp.close()
 
 
 @pytest.mark.parametrize(
@@ -133,7 +149,7 @@ def test_game_session_state_transitions_and_survival_time():
         (["countdown", "active"], True),
         (["countdown", "finished"], False),
         (["countdown", "active", "finished"], True),
-    ]
+    ],
 )
 def test_state_transition_paths(transitions, should_succeed):
     client, tmp = create_test_app_and_client()
@@ -156,4 +172,4 @@ def test_state_transition_paths(transitions, should_succeed):
             success = False
             break
     assert success == should_succeed
-    tmp.close() 
+    tmp.close()

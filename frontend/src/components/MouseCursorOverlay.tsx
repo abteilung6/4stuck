@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useMouseTracking } from '../hooks/useMouseTracking';
-import { 
-  calculateCursorPosition, 
-  calculateRemoteCursorPosition, 
-  getCursorStyles, 
+import {
+  calculateCursorPosition,
+  calculateRemoteCursorPosition,
+  getCursorStyles,
   getDefaultCursorConfig,
   createResponsiveCursorConfig,
   getViewportInfo,
@@ -65,12 +65,12 @@ const MouseCursorOverlay: React.FC<MouseCursorOverlayProps> = ({
   const handleMessage = useCallback((event: MessageEvent) => {
     try {
       const data = JSON.parse(event.data);
-      
+
       if (data.type === 'mouse_cursor') {
         if (data.data && data.data.user_id !== currentUserId) {
           // Find the team member to get their username
           const teamMember = teamMembers.find(member => member.id === data.data.user_id);
-          
+
           setPlayerCursors(prev => {
             const updated = new Map(prev);
             const cursorData = {
@@ -85,7 +85,7 @@ const MouseCursorOverlay: React.FC<MouseCursorOverlayProps> = ({
               normalized_x: data.data.normalized_x, // Store normalized coordinates if available
               normalized_y: data.data.normalized_y // Store normalized coordinates if available
             };
-            
+
             updated.set(data.data.user_id, cursorData);
             return updated;
           });
@@ -101,7 +101,7 @@ const MouseCursorOverlay: React.FC<MouseCursorOverlayProps> = ({
     // Calculate normalized coordinates for consistent positioning
     const normalized = normalizeMouseCoordinates(event.clientX, event.clientY);
     const calculatedPosition = denormalizeCoordinates(normalized);
-    
+
     // Send normalized coordinates via WebSocket
     if (websocket && websocket.readyState === WebSocket.OPEN) {
       const message = {
@@ -117,14 +117,14 @@ const MouseCursorOverlay: React.FC<MouseCursorOverlayProps> = ({
       };
       websocket.send(JSON.stringify(message));
     }
-    
+
 
   }, [cursorConfig, localViewport, websocket, currentUserId]);
 
   useEffect(() => {
     // Add local mouse tracking
     document.addEventListener('mousemove', handleMouseMove);
-    
+
     return () => {
       document.removeEventListener('mousemove', handleMouseMove);
     };
@@ -134,7 +134,7 @@ const MouseCursorOverlay: React.FC<MouseCursorOverlayProps> = ({
     if (websocket && websocket.readyState === WebSocket.OPEN) {
       websocketRef.current = websocket;
       websocket.addEventListener('message', handleMessage);
-      
+
       return () => {
         websocket.removeEventListener('message', handleMessage);
       };
@@ -168,7 +168,7 @@ const MouseCursorOverlay: React.FC<MouseCursorOverlayProps> = ({
         y: cursor.normalized_y
       });
     }
-    
+
     // Fallback to viewport normalization if no normalized coordinates
     if (cursor.viewport) {
       return calculateRemoteCursorPosition(
@@ -192,7 +192,7 @@ const MouseCursorOverlay: React.FC<MouseCursorOverlayProps> = ({
       {remoteCursors.map(cursor => {
         const color = getPlayerColor({ id: cursor.userId, color: cursor.color }, teamMembers);
         const remotePosition = getRemoteCursorPosition(cursor);
-        
+
         return (
           <div
             key={cursor.userId}

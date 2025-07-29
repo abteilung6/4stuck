@@ -5,7 +5,7 @@
   /* Font Families */
   --font-family-primary: 'Inter', 'Roboto', 'system-ui', sans-serif;
   --font-family-mono: 'SF Mono', 'Monaco', 'Inconsolata', 'Roboto Mono', monospace;
-  
+
   /* Font Sizes */
   --font-size-xs: 0.75rem;    /* 12px */
   --font-size-sm: 0.875rem;   /* 14px */
@@ -15,19 +15,19 @@
   --font-size-2xl: 1.5rem;    /* 24px */
   --font-size-3xl: 1.875rem;  /* 30px */
   --font-size-4xl: 2.25rem;   /* 36px */
-  
+
   /* Font Weights */
   --font-weight-light: 300;
   --font-weight-normal: 400;
   --font-weight-medium: 500;
   --font-weight-semibold: 600;
   --font-weight-bold: 700;
-  
+
   /* Line Heights */
   --line-height-tight: 1.25;
   --line-height-normal: 1.5;
   --line-height-relaxed: 1.75;
-  
+
   /* Colors */
   --text-color-primary: #333;
   --text-color-secondary: #666;
@@ -37,7 +37,7 @@
   --text-color-error: #d32f2f;
   --text-color-warning: #f57c00;
   --text-color-info: #1976d2;
-  
+
   /* Letter Spacing */
   --letter-spacing-tight: -0.025em;
   --letter-spacing-normal: 0;
@@ -219,4 +219,4 @@
     --text-color-secondary: #b0b0b0;
     --text-color-muted: #888;
   }
-} 
+}

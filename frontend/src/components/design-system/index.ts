@@ -21,4 +21,4 @@ export {
 } from './Typography';
 
 // Re-export Typography as default for convenience
-export { default as Typography } from './Typography'; 
+export { default as Typography } from './Typography';

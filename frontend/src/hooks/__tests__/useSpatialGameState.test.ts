@@ -16,7 +16,7 @@ describe('useSpatialGameState', () => {
       obstacleSpeed: 2
     };
 
-    const { result } = renderHook(() => 
+    const { result } = renderHook(() =>
       useSpatialGameState({
         gameConfig,
         puzzleType: 'spatial',
@@ -106,7 +106,7 @@ describe('useSpatialGameState', () => {
       obstacleSpeed: 2
     };
 
-    const { result } = renderHook(() => 
+    const { result } = renderHook(() =>
       useSpatialGameState({
         gameConfig,
         puzzleType: 'spatial',
@@ -140,7 +140,7 @@ describe('useSpatialGameState', () => {
       obstacleSpeed: 2
     };
 
-    const { result } = renderHook(() => 
+    const { result } = renderHook(() =>
       useSpatialGameState({
         gameConfig,
         puzzleType: 'spatial',
@@ -166,7 +166,7 @@ describe('useSpatialGameState', () => {
       obstacleSpeed: 2
     };
 
-    const { result } = renderHook(() => 
+    const { result } = renderHook(() =>
       useSpatialGameState({
         gameConfig,
         puzzleType: 'spatial',
@@ -240,4 +240,4 @@ describe('useSpatialGameState', () => {
     expect(result.current.gameState.circlePosition).toEqual({ x: 180, y: 0 });
     expect(result.current.gameState.gameWon).toBe(false);
   });
-}); 
+});

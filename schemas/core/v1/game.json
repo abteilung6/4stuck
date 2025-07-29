@@ -8,8 +8,7 @@
       "title": "Game Status",
       "description": "Current status of a game session",
       "type": "string",
-      "enum": ["lobby", "countdown", "active", "finished"],
-      "description": "Available game statuses"
+      "enum": ["lobby", "countdown", "active", "finished"]
     },
     "GameSession": {
       "title": "Game Session",
@@ -257,4 +256,4 @@
       ]
     }
   }
-} 
+}

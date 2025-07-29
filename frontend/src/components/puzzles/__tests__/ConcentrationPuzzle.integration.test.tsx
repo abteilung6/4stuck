@@ -258,7 +258,7 @@ describe('ConcentrationPuzzle Integration Tests', () => {
   it('should maintain game state consistency during interactions', () => {
     const mockHandleClick = vi.fn();
     const mockResetGame = vi.fn();
-    
+
     mockUseConcentrationGameState.handleClick = mockHandleClick;
     mockUseConcentrationGameState.resetGame = mockResetGame;
 
@@ -301,7 +301,7 @@ describe('ConcentrationPuzzle Integration Tests', () => {
 
     const circle = screen.getByTestId('color-circle');
     expect(circle).toHaveClass('clicked');
-    
+
     // Should show feedback symbol
     expect(screen.getByText('✗')).toBeInTheDocument(); // Wrong click
   });
@@ -319,4 +319,4 @@ describe('ConcentrationPuzzle Integration Tests', () => {
     // Should show correct feedback symbol
     expect(screen.getByText('✓')).toBeInTheDocument(); // Correct click
   });
-}); 
+});

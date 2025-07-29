@@ -124,7 +124,7 @@ export class GameWebSocketService implements WebSocketService {
     this.ws.onmessage = (event) => {
       try {
         const message = JSON.parse(event.data);
-        
+
         // Handle different message types
         switch (message.type) {
           case 'state_update':
@@ -176,4 +176,4 @@ export class GameWebSocketService implements WebSocketService {
 
 export function createGameWebSocketService(callbacks: WebSocketCallbacks): WebSocketService {
   return new GameWebSocketService(callbacks);
-} 
+}

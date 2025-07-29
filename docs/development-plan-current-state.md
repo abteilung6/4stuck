@@ -263,4 +263,4 @@ Build a survival-based team puzzle game where teams compete for the longest surv
 4. **Test End-to-End**: Ensure complete game flow works
 5. **Iterate and Polish**: Add puzzles and improve UI based on feedback
 
-This plan will transform your current implementation into a fully functional survival-based team puzzle game that matches the design and provides an engaging team experience! 
+This plan will transform your current implementation into a fully functional survival-based team puzzle game that matches the design and provides an engaging team experience!

@@ -31,7 +31,7 @@ Complete the Team.försvarsmakten game efficiently by working together effective
 
 ### **When Starting a New Task:**
 ```
-"I'm starting task [TASK_NUMBER] - [TASK_DESCRIPTION]. 
+"I'm starting task [TASK_NUMBER] - [TASK_DESCRIPTION].
 Can you help me understand what needs to be done?"
 ```
 
@@ -223,4 +223,4 @@ Does this look correct?"
 - **Stay organized** - Keep track of progress
 - **Ask questions** - Don't assume anything
 - **Test everything** - Quality is important
-- **Have fun** - Enjoy the development process! 
+- **Have fun** - Enjoy the development process!

@@ -261,7 +261,7 @@
   clip: rect(0, 0, 0, 0);
   white-space: nowrap;
   border: 0;
-} 
+}
 
 /* Mobile-specific responsive styles */
 @media (max-width: 768px) {
@@ -269,23 +269,23 @@
     flex-direction: column;
     align-items: stretch;
   }
-  
+
   .puzzle-input-field {
     margin-right: 0;
     margin-bottom: 8px;
   }
-  
+
   .mapping-grid {
     grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
     gap: 0.5rem;
   }
-  
+
   .team-points-table {
     font-size: 0.875rem;
   }
-  
-  .team-points-table th, 
+
+  .team-points-table th,
   .team-points-table td {
     padding: 6px 8px;
   }
-} 
+}

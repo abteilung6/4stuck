@@ -221,24 +221,24 @@
     padding: 20px;
     margin: 10px;
   }
-  
+
   .results-title {
     font-size: 1.8rem;
   }
-  
+
   .time-display {
     font-size: 3rem;
   }
-  
+
   .players-grid {
     grid-template-columns: 1fr;
   }
-  
+
   .results-actions {
     flex-direction: column;
     align-items: center;
   }
-  
+
   .action-button {
     width: 100%;
     max-width: 250px;
@@ -249,16 +249,16 @@
   .results-title {
     font-size: 1.5rem;
   }
-  
+
   .time-display {
     font-size: 2.5rem;
   }
-  
+
   .survival-message {
     font-size: 1.1rem;
   }
-  
+
   .player-result {
     padding: 15px;
   }
-} 
+}

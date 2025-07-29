@@ -86,4 +86,4 @@ When adding new schemas or modifying existing ones:
 3. Include examples
 4. Update this README if needed
 5. Test code generation
-6. Validate with real data 
+6. Validate with real data

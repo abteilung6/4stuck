@@ -125,4 +125,4 @@
 | Memory           | Recall color for a number                    | Memory, attention               |
 | Spatial/Path     | Drag circle to the other side, avoid orange  | Spatial, planning, motor skills |
 | Concentration    | Click when text matches circle color         | Concentration, inhibition       |
-| Multitasking     | Find/click number six and all numbers        | Multitasking, visual search     | 
+| Multitasking     | Find/click number six and all numbers        | Multitasking, visual search     |

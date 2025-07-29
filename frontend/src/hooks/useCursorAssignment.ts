@@ -16,4 +16,4 @@ export function getCursorColor(userId: number, playerCursors: Map<number, { colo
   if (cursor && cursor.color) return cursor.color;
   // Fallback to gray
   return 'gray';
-} 
+}

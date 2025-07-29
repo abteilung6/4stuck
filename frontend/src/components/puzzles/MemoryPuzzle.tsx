@@ -123,4 +123,4 @@ export const MemoryPuzzle: React.FC<MemoryPuzzleProps> = ({
       )}
     </Card>
   );
-}; 
+};

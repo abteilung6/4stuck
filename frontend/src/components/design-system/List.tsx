@@ -26,4 +26,4 @@ const ListItem: React.FC<ListItemProps> = ({ children, className = '' }) => (
 const List = ListBase as React.FC<ListProps> & { Item: typeof ListItem };
 List.Item = ListItem;
 
-export default List; 
+export default List;

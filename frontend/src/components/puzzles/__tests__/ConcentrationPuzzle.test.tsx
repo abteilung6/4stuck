@@ -413,4 +413,4 @@ describe('Readonly/Spectator Mode', () => {
     // No errors should occur and overlay is present
     expect(circle).toBeInTheDocument();
   });
-}); 
+});

@@ -119,23 +119,23 @@
     padding: 20px;
     margin: 10px;
   }
-  
+
   .countdown-title {
     font-size: 1.8rem;
   }
-  
+
   .countdown-number {
     font-size: 5rem;
   }
-  
+
   .countdown-text {
     font-size: 1.5rem;
   }
-  
+
   .countdown-rules li {
     font-size: 1rem;
   }
-  
+
   .countdown-motivation p {
     font-size: 1rem;
   }
@@ -145,12 +145,12 @@
   .countdown-title {
     font-size: 1.5rem;
   }
-  
+
   .countdown-number {
     font-size: 4rem;
   }
-  
+
   .countdown-text {
     font-size: 1.2rem;
   }
-} 
+}

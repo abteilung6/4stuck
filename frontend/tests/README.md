@@ -201,4 +201,4 @@ When adding new tests:
 2. Use the test utilities when possible
 3. Add appropriate `data-testid` attributes to new components
 4. Test both success and failure scenarios
-5. Include multiplayer scenarios for real-time features 
+5. Include multiplayer scenarios for real-time features

@@ -22,4 +22,4 @@ test.describe('Basic Setup Verification', () => {
     await page.setViewportSize({ width: 768, height: 1024 });
     await expect(page.locator('button').first()).toBeVisible();
   });
-}); 
+});

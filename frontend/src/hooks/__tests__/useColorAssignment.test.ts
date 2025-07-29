@@ -21,7 +21,7 @@ vi.mock('../../services/colorAssignmentService', () => ({
 describe('useColorAssignment', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    
+
     // Setup default mock implementations
     vi.mocked(colorAssignmentService.getColorScheme).mockReturnValue(['red', 'blue', 'yellow', 'green']);
     vi.mocked(colorAssignmentService.getFallbackColor).mockReturnValue('gray');
@@ -297,7 +297,7 @@ describe('useColorAssignment', () => {
       expect(result.current.isLoading).toBe(false);
     });
   });
-}); 
+});
 
 describe('getPlayerColor', () => {
   const teamMembers = [
@@ -328,4 +328,4 @@ describe('getPlayerColor', () => {
     expect(getPlayerColor({ id: 1, color: 'red' }, [])).toBe('red');
     expect(getPlayerColor({ id: 1 }, [])).toBe('gray');
   });
-}); 
+});

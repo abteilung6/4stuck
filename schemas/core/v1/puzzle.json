@@ -8,8 +8,7 @@
       "title": "Puzzle Type",
       "description": "Available puzzle types in the game",
       "type": "string",
-      "enum": ["memory", "spatial", "concentration", "multitasking"],
-      "description": "Types of puzzles available"
+      "enum": ["memory", "spatial", "concentration", "multitasking"]
     },
     "PuzzleState": {
       "title": "Puzzle State",
@@ -296,4 +295,4 @@
       ]
     }
   }
-} 
+}

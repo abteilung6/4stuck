@@ -392,4 +392,4 @@ describe('concentrationPuzzleLogic', () => {
       expect(isGameActive(state)).toBe(false);
     });
   });
-}); 
+});

@@ -9,16 +9,16 @@ export type HeadingProps = {
   style?: React.CSSProperties;
 };
 
-export const Heading: React.FC<HeadingProps> = ({ 
-  children, 
-  level = 2, 
-  className = '', 
-  style 
+export const Heading: React.FC<HeadingProps> = ({
+  children,
+  level = 2,
+  className = '',
+  style
 }) => {
   const Tag: React.ElementType = `h${level}` as React.ElementType;
   return (
-    <Tag 
-      className={`ds-heading ds-heading--h${level} ${className}`.trim()} 
+    <Tag
+      className={`ds-heading ds-heading--h${level} ${className}`.trim()}
       style={style}
     >
       {children}
@@ -37,12 +37,12 @@ export type TextProps = {
   as?: React.ElementType;
 };
 
-export const Text: React.FC<TextProps> = ({ 
-  children, 
+export const Text: React.FC<TextProps> = ({
+  children,
   variant = 'body',
   color = 'primary',
   weight = 'normal',
-  className = '', 
+  className = '',
   style,
   as: Component = 'p'
 }) => {
@@ -89,15 +89,15 @@ export type QuestionTextProps = {
   style?: React.CSSProperties;
 };
 
-export const QuestionText: React.FC<QuestionTextProps> = ({ 
-  children, 
-  className = '', 
-  style 
+export const QuestionText: React.FC<QuestionTextProps> = ({
+  children,
+  className = '',
+  style
 }) => (
-  <Text 
-    variant="body-large" 
-    weight="medium" 
-    className={`ds-text--margin-bottom-large ${className}`.trim()} 
+  <Text
+    variant="body-large"
+    weight="medium"
+    className={`ds-text--margin-bottom-large ${className}`.trim()}
     style={style}
   >
     {children}
@@ -111,15 +111,15 @@ export type ChoiceTextProps = {
   style?: React.CSSProperties;
 };
 
-export const ChoiceText: React.FC<ChoiceTextProps> = ({ 
-  children, 
-  className = '', 
-  style 
+export const ChoiceText: React.FC<ChoiceTextProps> = ({
+  children,
+  className = '',
+  style
 }) => (
-  <Text 
-    variant="body" 
-    weight="normal" 
-    className={className} 
+  <Text
+    variant="body"
+    weight="normal"
+    className={className}
     style={style}
   >
     {children}
@@ -136,4 +136,4 @@ export default {
   Label,
   QuestionText,
   ChoiceText
-}; 
+};

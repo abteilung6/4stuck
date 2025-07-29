@@ -30,26 +30,26 @@ export interface GameResult {
  */
 export function validateGameConfig(config: GameConfig): { isValid: boolean; errors: string[] } {
   const errors: string[] = [];
-  
+
   if (config.gameWidth <= 0) errors.push('Game width must be positive');
   if (config.gameHeight <= 0) errors.push('Game height must be positive');
   if (config.circleRadius <= 0) errors.push('Circle radius must be positive');
   if (config.obstacleWidth <= 0) errors.push('Obstacle width must be positive');
   if (config.obstacleHeight <= 0) errors.push('Obstacle height must be positive');
   if (config.obstacleSpeed <= 0) errors.push('Obstacle speed must be positive');
-  
+
   if (config.circleRadius * 2 > config.gameWidth) {
     errors.push('Circle diameter cannot exceed game width');
   }
-  
+
   if (config.circleRadius * 2 > config.gameHeight) {
     errors.push('Circle diameter cannot exceed game height');
   }
-  
+
   if (config.obstacleWidth > config.gameWidth) {
     errors.push('Obstacle width cannot exceed game width');
   }
-  
+
   return {
     isValid: errors.length === 0,
     errors
@@ -60,10 +60,10 @@ export function validateGameConfig(config: GameConfig): { isValid: boolean; erro
  * Check collision between circle and obstacle
  */
 export function checkCollision(
-  circlePos: Position, 
-  obstaclePos: Position, 
-  circleRadius: number, 
-  obstacleWidth: number, 
+  circlePos: Position,
+  obstaclePos: Position,
+  circleRadius: number,
+  obstacleWidth: number,
   obstacleHeight: number
 ): boolean {
   const circleLeft = circlePos.x;
@@ -77,9 +77,9 @@ export function checkCollision(
   const obstacleBottom = obstaclePos.y + obstacleHeight;
 
   // Check if rectangles overlap
-  return !(circleLeft >= obstacleRight || 
-           circleRight <= obstacleLeft || 
-           circleTop >= obstacleBottom || 
+  return !(circleLeft >= obstacleRight ||
+           circleRight <= obstacleLeft ||
+           circleTop >= obstacleBottom ||
            circleBottom <= obstacleTop);
 }
 
@@ -87,8 +87,8 @@ export function checkCollision(
  * Check if circle reached the bottom (win condition)
  */
 export function checkWinCondition(
-  circlePos: Position, 
-  gameHeight: number, 
+  circlePos: Position,
+  gameHeight: number,
   circleRadius: number
 ): boolean {
   // The bottom of the circle
@@ -109,7 +109,7 @@ export function updateObstaclePosition(
 ): { newPosition: Position; newDirection: 'left' | 'right' } {
   let newX = currentPos.x;
   let newDirection = direction;
-  
+
   if (direction === 'right') {
     newX += speed;
     if (newX >= gameWidth - obstacleWidth) {
@@ -121,7 +121,7 @@ export function updateObstaclePosition(
       newDirection = 'right';
     }
   }
-  
+
   return {
     newPosition: { ...currentPos, x: newX },
     newDirection
@@ -141,7 +141,7 @@ export function calculateCirclePosition(
 ): Position {
   const newX = Math.max(0, Math.min(gameWidth - circleRadius * 2, mouseX - dragOffset.x));
   const newY = Math.max(0, Math.min(gameHeight - circleRadius * 2, mouseY - dragOffset.y));
-  
+
   return { x: newX, y: newY };
 }
 
@@ -155,10 +155,10 @@ export function isMouseInCircle(
   circleRadius: number
 ): boolean {
   const distance = Math.sqrt(
-    Math.pow(mouseX - circlePos.x - circleRadius, 2) + 
+    Math.pow(mouseX - circlePos.x - circleRadius, 2) +
     Math.pow(mouseY - circlePos.y - circleRadius, 2)
   );
-  
+
   return distance <= circleRadius;
 }
 
@@ -181,13 +181,13 @@ export function calculateDragOffset(
  */
 export function getInitialGameState(config: GameConfig): GameState {
   return {
-    circlePosition: { 
-      x: config.gameWidth / 2 - config.circleRadius, 
+    circlePosition: {
+      x: config.gameWidth / 2 - config.circleRadius,
       y: 0 // Start at the very top
     },
-    obstaclePosition: { 
-      x: 0, 
-      y: config.gameHeight / 2 - config.obstacleHeight / 2 
+    obstaclePosition: {
+      x: 0,
+      y: config.gameHeight / 2 - config.obstacleHeight / 2
     },
     obstacleDirection: 'right',
     gameWon: false,
@@ -201,10 +201,10 @@ export function getInitialGameState(config: GameConfig): GameState {
 export function processGameTick(
   currentState: GameState,
   config: GameConfig
-): { 
-  newState: GameState; 
-  shouldEndGame: boolean; 
-  gameResult: GameResult 
+): {
+  newState: GameState;
+  shouldEndGame: boolean;
+  gameResult: GameResult
 } {
   // Don't process if game is already over
   if (currentState.gameWon || currentState.gameLost) {
@@ -226,10 +226,10 @@ export function processGameTick(
 
   // Check collision
   if (checkCollision(
-    currentState.circlePosition, 
-    newObstaclePos, 
-    config.circleRadius, 
-    config.obstacleWidth, 
+    currentState.circlePosition,
+    newObstaclePos,
+    config.circleRadius,
+    config.obstacleWidth,
     config.obstacleHeight
   )) {
     return {
@@ -246,8 +246,8 @@ export function processGameTick(
 
   // Check win condition
   if (checkWinCondition(
-    currentState.circlePosition, 
-    config.gameHeight, 
+    currentState.circlePosition,
+    config.gameHeight,
     config.circleRadius
   )) {
     return {
@@ -302,9 +302,9 @@ export function calculateGameStats(
   const maxProgress = config.gameHeight - config.circleRadius * 2 - 20;
   const currentProgress = Math.max(0, Math.min(maxProgress, gameState.circlePosition.y - 20)); // Adjust for start position
   const progress = maxProgress > 0 ? (currentProgress / maxProgress) * 100 : 0;
-  
+
   const distanceToGoal = maxProgress - currentProgress;
-  
+
   // Check if circle is near obstacle (danger zone)
   const dangerZoneMargin = config.circleRadius * 2;
   const isInDangerZone = checkCollision(
@@ -314,10 +314,10 @@ export function calculateGameStats(
     config.obstacleWidth + dangerZoneMargin,
     config.obstacleHeight + dangerZoneMargin
   );
-  
+
   return {
     progress,
     distanceToGoal,
     isInDangerZone
   };
-} 
+}

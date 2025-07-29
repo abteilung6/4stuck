@@ -78,7 +78,7 @@ describe('MemoryPuzzle', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-    
+
     // Default mock implementations
     mockUseMemoryGameState.mockReturnValue({
       showMapping: true,
@@ -392,9 +392,9 @@ describe('MemoryPuzzle', () => {
       render(<MemoryPuzzle {...defaultProps} answer="blue" />);
 
       const form = screen.getByRole('radiogroup').closest('form');
-      
+
       fireEvent.submit(form!);
-      
+
       expect(defaultProps.submitAnswer).toHaveBeenCalled();
     });
 
@@ -455,4 +455,4 @@ describe('MemoryPuzzle', () => {
       expect(true).toBe(true);
     });
   });
-}); 
+});

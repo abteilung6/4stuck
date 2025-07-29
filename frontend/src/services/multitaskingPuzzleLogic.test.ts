@@ -34,4 +34,4 @@ describe('Multitasking Puzzle Logic', () => {
     expect(isSixCellClicked(1, 5, six)).toBe(false);
     expect(isSixCellClicked(2, 5, null)).toBe(false);
   });
-}); 
+});

@@ -48,7 +48,7 @@ describe('SpatialPuzzle Integration Tests', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     vi.clearAllTimers();
-    
+
     // Reset the mock to return a callback that we can control
     mockRequestAnimationFrame.mockImplementation((callback) => {
       // Store the callback so we can call it manually
@@ -148,4 +148,4 @@ describe('SpatialPuzzle Integration Tests', () => {
     expect(circleAfterTime).toBeInTheDocument();
     expect(obstacle).toBeInTheDocument();
   });
-}); 
+});

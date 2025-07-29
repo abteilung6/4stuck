@@ -9,17 +9,17 @@ export type ContainerProps = {
   dataTestId?: string;
 };
 
-const Container: React.FC<ContainerProps> = ({ 
-  children, 
-  variant = 'default', 
-  className = '', 
+const Container: React.FC<ContainerProps> = ({
+  children,
+  variant = 'default',
+  className = '',
   style,
   dataTestId
 }) => {
   const variantClass = variant === 'default' ? '' : `ds-container--${variant}`;
   const gameSessionClass = dataTestId === 'game-session-container' ? 'game-session-container' : '';
   const classes = `ds-container ${variantClass} ${gameSessionClass} ${className}`.trim();
-  
+
   return (
     <div className={classes} style={style} data-testid={dataTestId}>
       {children}
@@ -27,4 +27,4 @@ const Container: React.FC<ContainerProps> = ({
   );
 };
 
-export default Container; 
+export default Container;

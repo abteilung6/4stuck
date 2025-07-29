@@ -1,5 +1,5 @@
 import { useCallback, useState } from 'react';
-import { 
+import {
   type Position,
   type GameConfig,
   isMouseInCircle,
@@ -28,7 +28,7 @@ export function useSpatialMouseHandling({
   const getMousePosition = useCallback((e: React.MouseEvent): Position | null => {
     const rect = containerRef.current?.getBoundingClientRect();
     if (!rect) return null;
-    
+
     return {
       x: e.clientX - rect.left,
       y: e.clientY - rect.top
@@ -37,10 +37,10 @@ export function useSpatialMouseHandling({
 
   const handleMouseDown = useCallback((e: React.MouseEvent) => {
     if (!isGameActive) return;
-    
+
     const mousePos = getMousePosition(e);
     if (!mousePos) return;
-    
+
     if (isMouseInCircle(mousePos.x, mousePos.y, circlePosition, gameConfig.circleRadius)) {
       setIsDragging(true);
       setDragOffset(calculateDragOffset(mousePos.x, mousePos.y, circlePosition));
@@ -49,10 +49,10 @@ export function useSpatialMouseHandling({
 
   const handleMouseMove = useCallback((e: React.MouseEvent) => {
     if (!isDragging || !isGameActive) return;
-    
+
     const mousePos = getMousePosition(e);
     if (!mousePos) return;
-    
+
     const newPosition = calculateCirclePosition(
       mousePos.x,
       mousePos.y,
@@ -61,7 +61,7 @@ export function useSpatialMouseHandling({
       gameConfig.gameHeight,
       gameConfig.circleRadius
     );
-    
+
     onCirclePositionChange(newPosition);
   }, [isDragging, isGameActive, getMousePosition, dragOffset, gameConfig, onCirclePositionChange]);
 
@@ -80,4 +80,4 @@ export function useSpatialMouseHandling({
     handleMouseUp,
     handleMouseLeave
   };
-} 
+}

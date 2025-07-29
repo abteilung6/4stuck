@@ -55,10 +55,10 @@ const ConcentrationPuzzle: React.FC<ConcentrationPuzzleProps> = ({
   // Handle game completion
   useEffect(() => {
     if (gameState.isComplete && gameState.gameResult) {
-      const answer = gameState.clickedIndex !== null 
-        ? String(gameState.clickedIndex) 
+      const answer = gameState.clickedIndex !== null
+        ? String(gameState.clickedIndex)
         : 'timeout';
-      
+
       if (gameState.gameResult === 'success') {
         onSolve(answer);
       } else {
@@ -87,12 +87,12 @@ const ConcentrationPuzzle: React.FC<ConcentrationPuzzleProps> = ({
             <div className="failure-message">
               <h3>Game Over! 💥</h3>
               <p>
-                {gameState.clickedIndex !== null 
+                {gameState.clickedIndex !== null
                   ? "You clicked at the wrong time. Try again!"
                   : "Time's up! You didn't click in time. Try again!"
                 }
               </p>
-              <button 
+              <button
                 onClick={handleRetry}
                 className="retry-button"
               >
@@ -125,23 +125,23 @@ const ConcentrationPuzzle: React.FC<ConcentrationPuzzleProps> = ({
           <div className="progress-info">
             <span>Pair {gameState.currentIndex + 1} / {puzzle.data.pairs.length}</span>
             <div className="progress-bar">
-              <div 
-                className="progress-fill" 
+              <div
+                className="progress-fill"
                 style={{ width: `${progress}%` }}
                 data-testid="progress-bar"
               />
             </div>
           </div>
         </div>
-        
+
         <div className="concentration-content">
-          <div 
-            className="color-word" 
+          <div
+            className="color-word"
             style={{ color: getColorValue(currentPair.color_word) }}
           >
             {currentPair.color_word.toUpperCase()}
           </div>
-          
+
           <div
             className={`color-circle ${gameState.hasClicked ? 'clicked' : ''}`}
             style={{ backgroundColor: getColorValue(currentPair.circle_color) }}
@@ -154,7 +154,7 @@ const ConcentrationPuzzle: React.FC<ConcentrationPuzzleProps> = ({
               </div>
             )}
           </div>
-          
+
           <div className="instruction">
             {currentPair.is_match
               ? "Click the circle - text and color match!"
@@ -167,4 +167,4 @@ const ConcentrationPuzzle: React.FC<ConcentrationPuzzleProps> = ({
   );
 };
 
-export default ConcentrationPuzzle; 
+export default ConcentrationPuzzle;

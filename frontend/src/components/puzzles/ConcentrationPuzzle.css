@@ -137,22 +137,22 @@
     padding: 1.5rem;
     min-height: 350px;
   }
-  
+
   .color-word {
     font-size: 2.5rem;
     min-height: 3rem;
   }
-  
+
   .color-circle {
     width: 100px;
     height: 100px;
   }
-  
+
   .click-feedback {
     font-size: 2.5rem;
   }
-  
+
   .concentration-header h3 {
     font-size: 1.5rem;
   }
-} 
+}

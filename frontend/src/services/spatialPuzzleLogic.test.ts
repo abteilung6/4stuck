@@ -27,75 +27,75 @@ describe('spatialPuzzleLogic', () => {
     it('should detect collision when circle overlaps obstacle', () => {
       const circlePos: Position = { x: 50, y: 50 };
       const obstaclePos: Position = { x: 40, y: 40 };
-      
+
       const result = checkCollision(
-        circlePos, 
-        obstaclePos, 
-        testConfig.circleRadius, 
-        testConfig.obstacleWidth, 
+        circlePos,
+        obstaclePos,
+        testConfig.circleRadius,
+        testConfig.obstacleWidth,
         testConfig.obstacleHeight
       );
-      
+
       expect(result).toBe(true);
     });
 
     it('should not detect collision when circle is above obstacle', () => {
       const circlePos: Position = { x: 50, y: 10 };
       const obstaclePos: Position = { x: 50, y: 100 };
-      
+
       const result = checkCollision(
-        circlePos, 
-        obstaclePos, 
-        testConfig.circleRadius, 
-        testConfig.obstacleWidth, 
+        circlePos,
+        obstaclePos,
+        testConfig.circleRadius,
+        testConfig.obstacleWidth,
         testConfig.obstacleHeight
       );
-      
+
       expect(result).toBe(false);
     });
 
     it('should not detect collision when circle is below obstacle', () => {
       const circlePos: Position = { x: 50, y: 200 };
       const obstaclePos: Position = { x: 50, y: 100 };
-      
+
       const result = checkCollision(
-        circlePos, 
-        obstaclePos, 
-        testConfig.circleRadius, 
-        testConfig.obstacleWidth, 
+        circlePos,
+        obstaclePos,
+        testConfig.circleRadius,
+        testConfig.obstacleWidth,
         testConfig.obstacleHeight
       );
-      
+
       expect(result).toBe(false);
     });
 
     it('should not detect collision when circle is left of obstacle', () => {
       const circlePos: Position = { x: 10, y: 50 };
       const obstaclePos: Position = { x: 200, y: 50 };
-      
+
       const result = checkCollision(
-        circlePos, 
-        obstaclePos, 
-        testConfig.circleRadius, 
-        testConfig.obstacleWidth, 
+        circlePos,
+        obstaclePos,
+        testConfig.circleRadius,
+        testConfig.obstacleWidth,
         testConfig.obstacleHeight
       );
-      
+
       expect(result).toBe(false);
     });
 
     it('should not detect collision when circle is right of obstacle', () => {
       const circlePos: Position = { x: 300, y: 50 };
       const obstaclePos: Position = { x: 100, y: 50 };
-      
+
       const result = checkCollision(
-        circlePos, 
-        obstaclePos, 
-        testConfig.circleRadius, 
-        testConfig.obstacleWidth, 
+        circlePos,
+        obstaclePos,
+        testConfig.circleRadius,
+        testConfig.obstacleWidth,
         testConfig.obstacleHeight
       );
-      
+
       expect(result).toBe(false);
     });
   });
@@ -107,8 +107,8 @@ describe('spatialPuzzleLogic', () => {
       // y such that bottom of circle is exactly at gameHeight - 10
       const circlePos = { x: 50, y: gameHeight - (circleRadius * 2) - 10 };
       const result = checkWinCondition(
-        circlePos, 
-        gameHeight, 
+        circlePos,
+        gameHeight,
         circleRadius
       );
       expect(result).toBe(true);
@@ -116,13 +116,13 @@ describe('spatialPuzzleLogic', () => {
 
     it('should return false when circle is not at bottom', () => {
       const circlePos: Position = { x: 50, y: 100 };
-      
+
       const result = checkWinCondition(
-        circlePos, 
-        testConfig.gameHeight, 
+        circlePos,
+        testConfig.gameHeight,
         testConfig.circleRadius
       );
-      
+
       expect(result).toBe(false);
     });
   });
@@ -131,7 +131,7 @@ describe('spatialPuzzleLogic', () => {
     it('should move obstacle right when direction is right', () => {
       const currentPos: Position = { x: 50, y: 100 };
       const direction = 'right' as const;
-      
+
       const result = updateObstaclePosition(
         currentPos,
         direction,
@@ -139,7 +139,7 @@ describe('spatialPuzzleLogic', () => {
         testConfig.gameWidth,
         testConfig.obstacleWidth
       );
-      
+
       expect(result.newPosition.x).toBe(52); // 50 + 2
       expect(result.newPosition.y).toBe(100);
       expect(result.newDirection).toBe('right');
@@ -148,7 +148,7 @@ describe('spatialPuzzleLogic', () => {
     it('should move obstacle left when direction is left', () => {
       const currentPos: Position = { x: 50, y: 100 };
       const direction = 'left' as const;
-      
+
       const result = updateObstaclePosition(
         currentPos,
         direction,
@@ -156,7 +156,7 @@ describe('spatialPuzzleLogic', () => {
         testConfig.gameWidth,
         testConfig.obstacleWidth
       );
-      
+
       expect(result.newPosition.x).toBe(48); // 50 - 2
       expect(result.newPosition.y).toBe(100);
       expect(result.newDirection).toBe('left');
@@ -165,7 +165,7 @@ describe('spatialPuzzleLogic', () => {
     it('should change direction to left when hitting right boundary', () => {
       const currentPos: Position = { x: testConfig.gameWidth - testConfig.obstacleWidth - 1, y: 100 };
       const direction = 'right' as const;
-      
+
       const result = updateObstaclePosition(
         currentPos,
         direction,
@@ -173,14 +173,14 @@ describe('spatialPuzzleLogic', () => {
         testConfig.gameWidth,
         testConfig.obstacleWidth
       );
-      
+
       expect(result.newDirection).toBe('left');
     });
 
     it('should change direction to right when hitting left boundary', () => {
       const currentPos: Position = { x: 1, y: 100 };
       const direction = 'left' as const;
-      
+
       const result = updateObstaclePosition(
         currentPos,
         direction,
@@ -188,7 +188,7 @@ describe('spatialPuzzleLogic', () => {
         testConfig.gameWidth,
         testConfig.obstacleWidth
       );
-      
+
       expect(result.newDirection).toBe('right');
     });
   });
@@ -198,7 +198,7 @@ describe('spatialPuzzleLogic', () => {
       const mouseX = 100;
       const mouseY = 150;
       const dragOffset: Position = { x: 10, y: 5 };
-      
+
       const result = calculateCirclePosition(
         mouseX,
         mouseY,
@@ -207,7 +207,7 @@ describe('spatialPuzzleLogic', () => {
         testConfig.gameHeight,
         testConfig.circleRadius
       );
-      
+
       expect(result.x).toBe(90); // 100 - 10
       expect(result.y).toBe(145); // 150 - 5
     });
@@ -216,7 +216,7 @@ describe('spatialPuzzleLogic', () => {
       const mouseX = 5;
       const mouseY = 150;
       const dragOffset: Position = { x: 10, y: 5 };
-      
+
       const result = calculateCirclePosition(
         mouseX,
         mouseY,
@@ -225,7 +225,7 @@ describe('spatialPuzzleLogic', () => {
         testConfig.gameHeight,
         testConfig.circleRadius
       );
-      
+
       expect(result.x).toBe(0); // Clamped to 0
       expect(result.y).toBe(145);
     });
@@ -234,7 +234,7 @@ describe('spatialPuzzleLogic', () => {
       const mouseX = testConfig.gameWidth + 10;
       const mouseY = 150;
       const dragOffset: Position = { x: 10, y: 5 };
-      
+
       const result = calculateCirclePosition(
         mouseX,
         mouseY,
@@ -243,7 +243,7 @@ describe('spatialPuzzleLogic', () => {
         testConfig.gameHeight,
         testConfig.circleRadius
       );
-      
+
       expect(result.x).toBe(testConfig.gameWidth - testConfig.circleRadius * 2); // Clamped to max
       expect(result.y).toBe(145);
     });
@@ -254,9 +254,9 @@ describe('spatialPuzzleLogic', () => {
       const mouseX = 50;
       const mouseY = 50;
       const circlePos: Position = { x: 40, y: 40 };
-      
+
       const result = isMouseInCircle(mouseX, mouseY, circlePos, testConfig.circleRadius);
-      
+
       expect(result).toBe(true);
     });
 
@@ -264,9 +264,9 @@ describe('spatialPuzzleLogic', () => {
       const mouseX = 100;
       const mouseY = 100;
       const circlePos: Position = { x: 40, y: 40 };
-      
+
       const result = isMouseInCircle(mouseX, mouseY, circlePos, testConfig.circleRadius);
-      
+
       expect(result).toBe(false);
     });
 
@@ -274,9 +274,9 @@ describe('spatialPuzzleLogic', () => {
       const mouseX = 40 + testConfig.circleRadius;
       const mouseY = 40;
       const circlePos: Position = { x: 40, y: 40 };
-      
+
       const result = isMouseInCircle(mouseX, mouseY, circlePos, testConfig.circleRadius);
-      
+
       expect(result).toBe(true);
     });
   });
@@ -286,9 +286,9 @@ describe('spatialPuzzleLogic', () => {
       const mouseX = 100;
       const mouseY = 150;
       const circlePos: Position = { x: 80, y: 120 };
-      
+
       const result = calculateDragOffset(mouseX, mouseY, circlePos);
-      
+
       expect(result.x).toBe(20); // 100 - 80
       expect(result.y).toBe(30); // 150 - 120
     });
@@ -297,7 +297,7 @@ describe('spatialPuzzleLogic', () => {
   describe('getInitialGameState', () => {
     it('should return correct initial state', () => {
       const result = getInitialGameState(testConfig);
-      
+
       expect(result.circlePosition.x).toBe(testConfig.gameWidth / 2 - testConfig.circleRadius);
       expect(result.circlePosition.y).toBe(0);
       expect(result.obstaclePosition.x).toBe(0);
@@ -317,9 +317,9 @@ describe('spatialPuzzleLogic', () => {
         gameWon: false,
         gameLost: false
       };
-      
+
       const result = processGameTick(currentState, testConfig);
-      
+
       expect(result.shouldEndGame).toBe(false);
       expect(result.gameResult.type).toBe(null);
       expect(result.newState.gameWon).toBe(false);
@@ -335,9 +335,9 @@ describe('spatialPuzzleLogic', () => {
         gameWon: false,
         gameLost: false
       };
-      
+
       const result = processGameTick(currentState, testConfig);
-      
+
       expect(result.shouldEndGame).toBe(true);
       expect(result.gameResult.type).toBe('lost');
       expect(result.newState.gameLost).toBe(true);
@@ -367,9 +367,9 @@ describe('spatialPuzzleLogic', () => {
         gameWon: true,
         gameLost: false
       };
-      
+
       const result = processGameTick(currentState, testConfig);
-      
+
       expect(result.shouldEndGame).toBe(false);
       expect(result.gameResult.type).toBe(null);
       expect(result.newState).toEqual(currentState);
@@ -383,12 +383,12 @@ describe('spatialPuzzleLogic', () => {
         gameWon: false,
         gameLost: true
       };
-      
+
       const result = processGameTick(currentState, testConfig);
-      
+
       expect(result.shouldEndGame).toBe(false);
       expect(result.gameResult.type).toBe(null);
       expect(result.newState).toEqual(currentState);
     });
   });
-}); 
+});

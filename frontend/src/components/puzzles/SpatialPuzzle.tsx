@@ -158,7 +158,7 @@ export const SpatialPuzzle: React.FC<SpatialPuzzleProps> = ({
   return (
     <Card>
       {readonly && <div className="spectator-overlay">Spectating</div>}
-        <div 
+        <div
           ref={containerRef}
         className="spatial-puzzle-container spatial-puzzle-game-area"
           style={{
@@ -246,7 +246,7 @@ export const SpatialPuzzle: React.FC<SpatialPuzzleProps> = ({
             <div className="spatial-puzzle-overlay failure">
               <h3>Game Over! 💥</h3>
               <p>You hit the obstacle. Try again!</p>
-              <button 
+              <button
               onClick={readonly ? undefined : handleRetry}
                 style={{
                   marginTop: '10px',
@@ -283,4 +283,4 @@ export const SpatialPuzzle: React.FC<SpatialPuzzleProps> = ({
       )}
     </Card>
   );
-}; 
+};

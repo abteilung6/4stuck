@@ -21,10 +21,10 @@ interface ResultsViewProps {
   onBackToLobby: () => void;
 }
 
-const ResultsView: React.FC<ResultsViewProps> = ({ 
-  teamResult, 
-  onPlayAgain, 
-  onBackToLobby 
+const ResultsView: React.FC<ResultsViewProps> = ({
+  teamResult,
+  onPlayAgain,
+  onBackToLobby
 }) => {
   const formatTime = (seconds: number): string => {
     const minutes = Math.floor(seconds / 60);
@@ -50,11 +50,11 @@ const ResultsView: React.FC<ResultsViewProps> = ({
     <div className="results-container">
       <div className="results-content">
         <h1 className="results-title">MISSION RESULTS</h1>
-        
+
         <div className="survival-summary">
           <div className="survival-time">
             <h2>Survival Time</h2>
-            <div 
+            <div
               className="time-display"
               style={{ color: getPerformanceColor(teamResult.survivalTimeSeconds) }}
             >
@@ -69,7 +69,7 @@ const ResultsView: React.FC<ResultsViewProps> = ({
         <div className="team-performance">
           <h2>Team Performance</h2>
           <div className="team-name">{teamResult.teamName}</div>
-          
+
           <div className="players-grid">
             {teamResult.players.map((player, index) => (
               <div key={player.id} className="player-result">
@@ -97,13 +97,13 @@ const ResultsView: React.FC<ResultsViewProps> = ({
         </div>
 
         <div className="results-actions">
-          <button 
+          <button
             className="action-button play-again"
             onClick={onPlayAgain}
           >
             PLAY AGAIN
           </button>
-          <button 
+          <button
             className="action-button back-lobby"
             onClick={onBackToLobby}
           >
@@ -120,4 +120,4 @@ const ResultsView: React.FC<ResultsViewProps> = ({
   );
 };
 
-export default ResultsView; 
+export default ResultsView;

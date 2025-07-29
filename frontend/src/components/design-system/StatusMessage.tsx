@@ -21,4 +21,4 @@ const StatusMessage: React.FC<StatusMessageProps> = ({ children, type = 'info', 
   </div>
 );
 
-export default StatusMessage; 
+export default StatusMessage;

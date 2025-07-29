@@ -114,8 +114,7 @@
       "title": "Team Status",
       "description": "Current status of a team",
       "type": "string",
-      "enum": ["available", "full", "in_game", "finished"],
-      "description": "Team availability status"
+      "enum": ["available", "full", "in_game", "finished"]
     },
     "AvailableTeam": {
       "title": "Available Team",
@@ -175,4 +174,4 @@
       ]
     }
   }
-} 
+}

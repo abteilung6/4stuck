@@ -50,7 +50,7 @@
 
 ## Caveats
 - For production, use a message broker (like Redis) if you run multiple FastAPI workers, but for MVP/single-process, in-memory tracking is fine.
-- WebSocket support in FastAPI is robust, but you’ll need to manage connections and broadcast logic. 
+- WebSocket support in FastAPI is robust, but you’ll need to manage connections and broadcast logic.
 
 MVP WebSocket Implementation Plan
 Features
