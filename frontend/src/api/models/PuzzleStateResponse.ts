@@ -3,9 +3,9 @@
 /* tslint:disable */
 /* eslint-disable */
 /**
- * Puzzle State: Puzzle state response model
+ * Puzzle State Response: Puzzle state for API responses
  */
-export type PuzzleState = {
+export type PuzzleStateResponse = {
     /**
      * Puzzle ID
      */
@@ -13,7 +13,7 @@ export type PuzzleState = {
     /**
      * Puzzle type
      */
-    type: PuzzleState.type;
+    type: PuzzleStateResponse.type;
     /**
      * Puzzle-specific data
      */
@@ -21,13 +21,13 @@ export type PuzzleState = {
     /**
      * Puzzle status
      */
-    status: PuzzleState.status;
+    status: PuzzleStateResponse.status;
     /**
      * Correct answer for the puzzle
      */
     correct_answer: string;
 };
-export namespace PuzzleState {
+export namespace PuzzleStateResponse {
     /**
      * Puzzle type
      */

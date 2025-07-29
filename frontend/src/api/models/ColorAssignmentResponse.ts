@@ -3,11 +3,24 @@
 /* tslint:disable */
 /* eslint-disable */
 /**
- * Color Assignment Response: Response containing color assignment result
+ * Color Assignment Response: Response for color assignment operations
  */
 export type ColorAssignmentResponse = {
+    /**
+     * Whether the operation was successful
+     */
     success: boolean;
-    data?: (Record<string, any> | null);
-    error?: (string | null);
+    /**
+     * Response message
+     */
+    message: string;
+    /**
+     * Color reassignments made
+     */
+    reassignments?: (Record<string, any> | null);
+    /**
+     * Color conflicts found
+     */
+    conflicts?: null;
 };
 

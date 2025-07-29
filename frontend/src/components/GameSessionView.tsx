@@ -1,7 +1,7 @@
 import React from 'react';
 import { useGameLogic } from '../hooks/useGameLogic';
-import type { GameSessionOut } from '../api/models/GameSessionOut';
-import type { TeamWithMembersOut } from '../api/models/TeamWithMembersOut';
+import type { GameSessionResponse } from '../api/models/GameSessionResponse';
+import type { AvailableTeam } from '../api/models/AvailableTeam';
 import './GameSessionView.css';
 import { PuzzleRenderer } from './puzzles/PuzzleRenderer';
 import Card from './design-system/Card';
@@ -22,9 +22,9 @@ import GameGridLayout from './GameGridLayout';
 import { useContext } from 'react';
 
 interface GameSessionViewProps {
-  session: GameSessionOut;
+  session: GameSessionResponse;
   user: { id: number; username: string };
-  team: TeamWithMembersOut;
+  team: AvailableTeam;
 }
 
 const GameSessionView: React.FC<GameSessionViewProps> = ({ session, user, team }) => {

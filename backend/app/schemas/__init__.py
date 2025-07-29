@@ -11,6 +11,6 @@ from .v1.core.communication import *
 # WebSocket schemas
 from .v1.websocket.messages import *
 
-# API schemas
+# API schemas - import specific classes to avoid conflicts
 from .v1.api.requests import *
 from .v1.api.responses import *

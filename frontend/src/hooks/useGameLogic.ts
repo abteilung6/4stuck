@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { PuzzleService } from '../api/services/PuzzleService';
-import type { PuzzleState } from '../api/models/PuzzleState';
-import type { PuzzleResult } from '../api/models/PuzzleResult';
+import type { PuzzleStateResponse } from '../api/models/PuzzleStateResponse';
+import type { PuzzleAnswerResponse } from '../api/models/PuzzleAnswerResponse';
 import type { GameState, GameStatusInfo } from '../types/game';
 import { calculateGameStatus } from '../services/gameRules';
 import { createGameWebSocketService, type WebSocketCallbacks } from '../services/gameWebSocket';
@@ -16,7 +16,7 @@ export interface UseGameLogicProps {
 export interface UseGameLogicReturn {
   // Game state
   gameState: GameState | null;
-  puzzle: PuzzleState | null;
+  puzzle: PuzzleStateResponse | null;
   gameStatus: GameStatusInfo | null;
 
   // UI state
@@ -40,7 +40,7 @@ export interface UseGameLogicReturn {
 export function useGameLogic({ sessionId, userId, initialTeam }: UseGameLogicProps): UseGameLogicReturn {
   // Game state
   const [gameState, setGameState] = useState<GameState | null>(null);
-  const [puzzle, setPuzzle] = useState<PuzzleState | null>(null);
+  const [puzzle, setPuzzle] = useState<PuzzleStateResponse | null>(null);
   const [gameStatus, setGameStatus] = useState<GameStatusInfo | null>(null);
 
   // UI state
@@ -133,7 +133,7 @@ export function useGameLogic({ sessionId, userId, initialTeam }: UseGameLogicPro
     setLoading(true);
     setFeedback('');
     try {
-      const result: PuzzleResult = await PuzzleService.submitAnswerPuzzleAnswerPost({
+      const result: PuzzleAnswerResponse = await PuzzleService.submitAnswerPuzzleAnswerPost({
         puzzle_id: puzzle.id,
         answer,
         user_id: userId,
@@ -196,7 +196,7 @@ export function useGameLogic({ sessionId, userId, initialTeam }: UseGameLogicPro
     setLoading(true);
     setFeedback('');
     try {
-      const result: PuzzleResult = await PuzzleService.submitAnswerPuzzleAnswerPost({
+      const result: PuzzleAnswerResponse = await PuzzleService.submitAnswerPuzzleAnswerPost({
         puzzle_id: puzzle.id,
         answer: specificAnswer,
         user_id: userId,

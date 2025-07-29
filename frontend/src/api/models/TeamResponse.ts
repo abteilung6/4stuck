@@ -3,9 +3,9 @@
 /* tslint:disable */
 /* eslint-disable */
 /**
- * Team With Members Out: Team with members response model
+ * Team Response: Team information response
  */
-export type TeamWithMembersOut = {
+export type TeamResponse = {
     /**
      * Team ID
      */
@@ -17,6 +17,6 @@ export type TeamWithMembersOut = {
     /**
      * Team members
      */
-    members: Array<any>;
+    users: Array<any>;
 };
 

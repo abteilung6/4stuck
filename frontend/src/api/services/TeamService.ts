@@ -3,16 +3,12 @@
 /* tslint:disable */
 /* eslint-disable */
 import type { AssignColorRequest } from '../models/AssignColorRequest';
-import type { AvailableColorsResponse } from '../models/AvailableColorsResponse';
 import type { AvailableTeam } from '../models/AvailableTeam';
 import type { ColorAssignmentResponse } from '../models/ColorAssignmentResponse';
-import type { ColorConflictResolutionResponse } from '../models/ColorConflictResolutionResponse';
-import type { TeamColorValidationResponse } from '../models/TeamColorValidationResponse';
 import type { TeamCreate } from '../models/TeamCreate';
-import type { TeamOut } from '../models/TeamOut';
-import type { TeamWithMembersOut } from '../models/TeamWithMembersOut';
+import type { TeamResponse } from '../models/TeamResponse';
 import type { UserCreate } from '../models/UserCreate';
-import type { UserOut } from '../models/UserOut';
+import type { UserResponse } from '../models/UserResponse';
 import type { CancelablePromise } from '../core/CancelablePromise';
 import { OpenAPI } from '../core/OpenAPI';
 import { request as __request } from '../core/request';
@@ -20,12 +16,12 @@ export class TeamService {
     /**
      * Register User
      * @param requestBody
-     * @returns UserOut Successful Response
+     * @returns UserResponse Successful Response
      * @throws ApiError
      */
     public static registerUserTeamRegisterPost(
         requestBody: UserCreate,
-    ): CancelablePromise<UserOut> {
+    ): CancelablePromise<UserResponse> {
         return __request(OpenAPI, {
             method: 'POST',
             url: '/team/register',
@@ -39,12 +35,12 @@ export class TeamService {
     /**
      * Create Team
      * @param requestBody
-     * @returns TeamOut Successful Response
+     * @returns TeamResponse Successful Response
      * @throws ApiError
      */
     public static createTeamTeamCreatePost(
         requestBody: TeamCreate,
-    ): CancelablePromise<TeamOut> {
+    ): CancelablePromise<TeamResponse> {
         return __request(OpenAPI, {
             method: 'POST',
             url: '/team/create',
@@ -59,13 +55,13 @@ export class TeamService {
      * Join Team
      * @param username
      * @param teamId
-     * @returns UserOut Successful Response
+     * @returns UserResponse Successful Response
      * @throws ApiError
      */
     public static joinTeamTeamJoinPost(
         username: string,
         teamId: number,
-    ): CancelablePromise<UserOut> {
+    ): CancelablePromise<UserResponse> {
         return __request(OpenAPI, {
             method: 'POST',
             url: '/team/join',
@@ -102,12 +98,12 @@ export class TeamService {
      * Validate Team Colors
      * Validate that all players in a team have unique colors.
      * @param teamId
-     * @returns TeamColorValidationResponse Successful Response
+     * @returns ColorAssignmentResponse Successful Response
      * @throws ApiError
      */
     public static validateTeamColorsTeamTeamIdValidateColorsGet(
         teamId: number,
-    ): CancelablePromise<TeamColorValidationResponse> {
+    ): CancelablePromise<ColorAssignmentResponse> {
         return __request(OpenAPI, {
             method: 'GET',
             url: '/team/{team_id}/validate-colors',
@@ -123,12 +119,12 @@ export class TeamService {
      * Resolve Color Conflicts
      * Resolve any color conflicts in a team by reassigning colors.
      * @param teamId
-     * @returns ColorConflictResolutionResponse Successful Response
+     * @returns ColorAssignmentResponse Successful Response
      * @throws ApiError
      */
     public static resolveColorConflictsTeamTeamIdResolveConflictsPost(
         teamId: number,
-    ): CancelablePromise<ColorConflictResolutionResponse> {
+    ): CancelablePromise<ColorAssignmentResponse> {
         return __request(OpenAPI, {
             method: 'POST',
             url: '/team/{team_id}/resolve-conflicts',
@@ -144,12 +140,12 @@ export class TeamService {
      * Get Available Colors
      * Get available and used colors for a team.
      * @param teamId
-     * @returns AvailableColorsResponse Successful Response
+     * @returns ColorAssignmentResponse Successful Response
      * @throws ApiError
      */
     public static getAvailableColorsTeamTeamIdAvailableColorsGet(
         teamId: number,
-    ): CancelablePromise<AvailableColorsResponse> {
+    ): CancelablePromise<ColorAssignmentResponse> {
         return __request(OpenAPI, {
             method: 'GET',
             url: '/team/{team_id}/available-colors',
@@ -180,10 +176,10 @@ export class TeamService {
      * List Teams
      * List all teams (for admin/debug purposes).
      * For user-facing team listing, use /team/available instead.
-     * @returns TeamWithMembersOut Successful Response
+     * @returns TeamResponse Successful Response
      * @throws ApiError
      */
-    public static listTeamsTeamGet(): CancelablePromise<Array<TeamWithMembersOut>> {
+    public static listTeamsTeamGet(): CancelablePromise<Array<TeamResponse>> {
         return __request(OpenAPI, {
             method: 'GET',
             url: '/team/',

@@ -8,13 +8,9 @@ from sqlalchemy.orm import Session
 from .. import database, models
 from ..schemas.v1.api.requests import AssignColorRequest, TeamCreate, UserCreate
 from ..schemas.v1.api.responses import (
-    AvailableColorsResponse,
     ColorAssignmentResponse,
-    ColorConflictResolutionResponse,
-    TeamColorValidationResponse,
-    TeamOut,
-    TeamWithMembersOut,
-    UserOut,
+    TeamResponse,
+    UserResponse,
 )
 from ..schemas.v1.core.player import AvailableTeam
 from ..services.color_assignment_service import ColorAssignmentService
@@ -64,31 +60,35 @@ def get_team_availability_status(team: models.Team, db: Session) -> tuple[str, O
     return "available", None, None
 
 
-@router.post("/register", response_model=UserOut)
+@router.post("/register", response_model=UserResponse)
 def register_user(user: UserCreate, db: Session = Depends(get_db)):
     db_user = db.query(models.User).filter(models.User.username == user.username).first()
     if db_user:
         raise HTTPException(status_code=400, detail="Username already registered")
-    new_user = models.User(username=user.username, color=None, team_id=None)
+    new_user = models.User()
+    new_user.username = user.username
+    new_user.color = None
+    new_user.team_id = None
     db.add(new_user)
     db.commit()
     db.refresh(new_user)
     return new_user
 
 
-@router.post("/create", response_model=TeamOut)
+@router.post("/create", response_model=TeamResponse)
 def create_team(team: TeamCreate, db: Session = Depends(get_db)):
     db_team = db.query(models.Team).filter(models.Team.name == team.name).first()
     if db_team:
         raise HTTPException(status_code=400, detail="Team name already exists")
-    new_team = models.Team(name=team.name)
+    new_team = models.Team()
+    new_team.name = team.name
     db.add(new_team)
     db.commit()
     db.refresh(new_team)
     return new_team
 
 
-@router.post("/join", response_model=UserOut)
+@router.post("/join", response_model=UserResponse)
 def join_team(username: str, team_id: int, db: Session = Depends(get_db)):
     user = db.query(models.User).filter(models.User.username == username).first()
     team = db.query(models.Team).filter(models.Team.id == team_id).first()
@@ -161,54 +161,60 @@ def assign_color_to_user(request: AssignColorRequest, db: Session = Depends(get_
         )
 
 
-@router.get("/{team_id}/validate-colors", response_model=TeamColorValidationResponse)
+@router.get("/{team_id}/validate-colors", response_model=ColorAssignmentResponse)
 def validate_team_colors(team_id: int, db: Session = Depends(get_db)):
     """Validate that all players in a team have unique colors."""
     try:
         color_service = ColorAssignmentService()
         result = color_service.validate_team_colors(team_id, db)
-        return TeamColorValidationResponse(team_id=team_id, is_valid=result["is_valid"], conflicts=result["conflicts"])
+        return ColorAssignmentResponse(
+            success=result["is_valid"],
+            message="Validation completed",
+            conflicts=result.get("conflicts"),
+        )
     except Exception as e:
         logger.error(f"Error validating team colors: {str(e)}")
-        return TeamColorValidationResponse(team_id=team_id, is_valid=False, conflicts=[{"error": str(e)}])
+        return ColorAssignmentResponse(
+            success=False,
+            message=f"Validation failed: {str(e)}",
+            conflicts=[{"error": str(e)}],
+        )
 
 
-@router.post("/{team_id}/resolve-conflicts", response_model=ColorConflictResolutionResponse)
+@router.post("/{team_id}/resolve-conflicts", response_model=ColorAssignmentResponse)
 def resolve_color_conflicts(team_id: int, db: Session = Depends(get_db)):
     """Resolve any color conflicts in a team by reassigning colors."""
     try:
         color_service = ColorAssignmentService()
         result = color_service.resolve_color_conflicts(team_id, db)
-        return ColorConflictResolutionResponse(
-            team_id=team_id,
-            reassignments=result["reassignments"],
+        return ColorAssignmentResponse(
             success=result["success"],
             message=result["message"],
+            reassignments=result.get("reassignments", {}),
         )
     except Exception as e:
         logger.error(f"Error resolving color conflicts: {str(e)}")
-        return ColorConflictResolutionResponse(
-            team_id=team_id,
-            reassignments={},
+        return ColorAssignmentResponse(
             success=False,
             message=f"Failed to resolve conflicts: {str(e)}",
+            reassignments={},
         )
 
 
-@router.get("/{team_id}/available-colors", response_model=AvailableColorsResponse)
+@router.get("/{team_id}/available-colors", response_model=ColorAssignmentResponse)
 def get_available_colors(team_id: int, db: Session = Depends(get_db)):
     """Get available and used colors for a team."""
     try:
         color_service = ColorAssignmentService()
         result = color_service.get_available_colors(team_id, db)
-        return AvailableColorsResponse(
-            team_id=team_id,
-            available_colors=result["available_colors"],
-            used_colors=result["used_colors"],
+        return ColorAssignmentResponse(
+            success=True,
+            message="Available colors retrieved",
+            conflicts=result.get("used_colors", []),
         )
     except Exception as e:
         logger.error(f"Error getting available colors: {str(e)}")
-        return AvailableColorsResponse(team_id=team_id, available_colors=[], used_colors=[])
+        return ColorAssignmentResponse(success=False, message=f"Failed to get colors: {str(e)}", conflicts=[])
 
 
 @router.get("/available", response_model=list[AvailableTeam])
@@ -225,7 +231,7 @@ def get_available_teams(db: Session = Depends(get_db)):
         status, game_session_id, game_status = get_team_availability_status(team, db)
         # Only include available teams
         if status == "available":
-            members = [UserOut.model_validate(user) for user in team.users]
+            members = [UserResponse.model_validate(user) for user in team.users]
             # Debug log: print team and member colors
             print(f"[API /team/available] Team {team.id} - {team.name}")
             for user in team.users:
@@ -244,7 +250,7 @@ def get_available_teams(db: Session = Depends(get_db)):
     return available_teams
 
 
-@router.get("/", response_model=list[TeamWithMembersOut])
+@router.get("/", response_model=list[TeamResponse])
 def list_teams(db: Session = Depends(get_db)):
     """
     List all teams (for admin/debug purposes).
@@ -254,8 +260,8 @@ def list_teams(db: Session = Depends(get_db)):
     result = []
 
     for team in teams:
-        members = [UserOut.model_validate(user) for user in team.users]
-        team_out = TeamWithMembersOut(id=team.id, name=team.name, members=members)
+        members = [UserResponse.model_validate(user) for user in team.users]
+        team_out = TeamResponse(id=team.id, name=team.name, users=members)
         result.append(team_out)
 
     return result

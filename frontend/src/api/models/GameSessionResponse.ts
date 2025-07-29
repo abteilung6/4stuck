@@ -3,9 +3,9 @@
 /* tslint:disable */
 /* eslint-disable */
 /**
- * Game Session Out: Game session response model
+ * Game Session Response: Game session information
  */
-export type GameSessionOut = {
+export type GameSessionResponse = {
     /**
      * Game session ID
      */
@@ -17,7 +17,11 @@ export type GameSessionOut = {
     /**
      * Game session status
      */
-    status: GameSessionOut.status;
+    status: GameSessionResponse.status;
+    /**
+     * When the session was created
+     */
+    created_at?: (string | null);
     /**
      * When the game started
      */
@@ -31,7 +35,7 @@ export type GameSessionOut = {
      */
     survival_time_seconds?: (number | null);
 };
-export namespace GameSessionOut {
+export namespace GameSessionResponse {
     /**
      * Game session status
      */

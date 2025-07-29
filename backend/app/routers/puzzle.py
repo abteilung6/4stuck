@@ -7,7 +7,7 @@ from sqlalchemy.orm import Session
 
 from .. import database, models
 from ..schemas.v1.api.requests import PuzzleAnswer, PuzzleCreate
-from ..schemas.v1.api.responses import PlayerPoints, PuzzleResult, PuzzleState, TeamPoints
+from ..schemas.v1.api.responses import PlayerPoints, PuzzleAnswerResponse, PuzzleStateResponse, TeamPoints
 from ..utils.websocket_broadcast import broadcast_state
 
 
@@ -69,7 +69,7 @@ def generate_concentration_puzzle(num_pairs: int = 10):
     return data, correct_answer
 
 
-@router.post("/create", response_model=PuzzleState)
+@router.post("/create", response_model=PuzzleStateResponse)
 def create_puzzle(puzzle: PuzzleCreate, db: Session = Depends(get_db)):
     # Support multiple puzzle types
     if puzzle.type == "memory":
@@ -87,14 +87,13 @@ def create_puzzle(puzzle: PuzzleCreate, db: Session = Depends(get_db)):
     else:
         raise HTTPException(status_code=400, detail=f"Puzzle type '{puzzle.type}' not supported")
 
-    new_puzzle = models.Puzzle(
-        type=puzzle.type,
-        data=data,
-        correct_answer=correct_answer,
-        status="active",
-        game_session_id=puzzle.game_session_id,
-        user_id=puzzle.user_id,
-    )
+    new_puzzle = models.Puzzle()
+    new_puzzle.type = puzzle.type
+    new_puzzle.data = data
+    new_puzzle.correct_answer = correct_answer
+    new_puzzle.status = "active"
+    new_puzzle.game_session_id = puzzle.game_session_id
+    new_puzzle.user_id = puzzle.user_id
     db.add(new_puzzle)
     db.commit()
     db.refresh(new_puzzle)
@@ -102,7 +101,7 @@ def create_puzzle(puzzle: PuzzleCreate, db: Session = Depends(get_db)):
     return new_puzzle
 
 
-@router.get("/current/{user_id}", response_model=PuzzleState)
+@router.get("/current/{user_id}", response_model=PuzzleStateResponse)
 def get_current_puzzle(user_id: int, db: Session = Depends(get_db)):
     puzzle = (
         db.query(models.Puzzle).filter(and_(models.Puzzle.user_id == user_id, models.Puzzle.status == "active")).first()
@@ -112,7 +111,7 @@ def get_current_puzzle(user_id: int, db: Session = Depends(get_db)):
     return puzzle
 
 
-@router.post("/answer", response_model=PuzzleResult)
+@router.post("/answer", response_model=PuzzleAnswerResponse)
 async def submit_answer(answer: PuzzleAnswer, db: Session = Depends(get_db)):
     """Submit an answer to a puzzle and handle point distribution"""
     # Get the puzzle
@@ -199,24 +198,23 @@ async def submit_answer(answer: PuzzleAnswer, db: Session = Depends(get_db)):
         data = {}
         correct_answer = "solved"
 
-    next_puzzle = models.Puzzle(
-        type=next_puzzle_type,
-        data=data,
-        correct_answer=correct_answer,
-        status="active",
-        game_session_id=puzzle.game_session_id,
-        user_id=user.id,
-    )
+    next_puzzle = models.Puzzle()
+    next_puzzle.type = next_puzzle_type
+    next_puzzle.data = data
+    next_puzzle.correct_answer = correct_answer
+    next_puzzle.status = "active"
+    next_puzzle.game_session_id = puzzle.game_session_id
+    next_puzzle.user_id = user.id
     db.add(next_puzzle)
     db.commit()
     db.refresh(next_puzzle)
 
     # Convert to response model
-    from ..schemas.v1.api.responses import PuzzleState
+    from ..schemas.v1.api.responses import PuzzleStateResponse
 
-    next_puzzle_data = PuzzleState.model_validate(next_puzzle)
+    next_puzzle_data = PuzzleStateResponse.model_validate(next_puzzle)
 
-    return PuzzleResult(
+    return PuzzleAnswerResponse(
         correct=correct,
         points_awarded=POINTS_AWARD if awarded_to_user_id else 0,
         message=f"{'Correct' if correct else 'Incorrect'}! {POINTS_AWARD if awarded_to_user_id else 0} points awarded to next player."

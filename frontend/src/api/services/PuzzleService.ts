@@ -3,9 +3,9 @@
 /* tslint:disable */
 /* eslint-disable */
 import type { PuzzleAnswer } from '../models/PuzzleAnswer';
+import type { PuzzleAnswerResponse } from '../models/PuzzleAnswerResponse';
 import type { PuzzleCreate } from '../models/PuzzleCreate';
-import type { PuzzleResult } from '../models/PuzzleResult';
-import type { PuzzleState } from '../models/PuzzleState';
+import type { PuzzleStateResponse } from '../models/PuzzleStateResponse';
 import type { TeamPoints } from '../models/TeamPoints';
 import type { CancelablePromise } from '../core/CancelablePromise';
 import { OpenAPI } from '../core/OpenAPI';
@@ -14,12 +14,12 @@ export class PuzzleService {
     /**
      * Create Puzzle
      * @param requestBody
-     * @returns PuzzleState Successful Response
+     * @returns PuzzleStateResponse Successful Response
      * @throws ApiError
      */
     public static createPuzzlePuzzleCreatePost(
         requestBody: PuzzleCreate,
-    ): CancelablePromise<PuzzleState> {
+    ): CancelablePromise<PuzzleStateResponse> {
         return __request(OpenAPI, {
             method: 'POST',
             url: '/puzzle/create',
@@ -33,12 +33,12 @@ export class PuzzleService {
     /**
      * Get Current Puzzle
      * @param userId
-     * @returns PuzzleState Successful Response
+     * @returns PuzzleStateResponse Successful Response
      * @throws ApiError
      */
     public static getCurrentPuzzlePuzzleCurrentUserIdGet(
         userId: number,
-    ): CancelablePromise<PuzzleState> {
+    ): CancelablePromise<PuzzleStateResponse> {
         return __request(OpenAPI, {
             method: 'GET',
             url: '/puzzle/current/{user_id}',
@@ -54,12 +54,12 @@ export class PuzzleService {
      * Submit Answer
      * Submit an answer to a puzzle and handle point distribution
      * @param requestBody
-     * @returns PuzzleResult Successful Response
+     * @returns PuzzleAnswerResponse Successful Response
      * @throws ApiError
      */
     public static submitAnswerPuzzleAnswerPost(
         requestBody: PuzzleAnswer,
-    ): CancelablePromise<PuzzleResult> {
+    ): CancelablePromise<PuzzleAnswerResponse> {
         return __request(OpenAPI, {
             method: 'POST',
             url: '/puzzle/answer',

@@ -1,464 +1,119 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "4stuck/schemas/api/v1/responses.json",
   "title": "API Response Models",
-  "description": "REST API response models for all endpoints",
+  "description": "Response models for the Team.försvarsmakten API",
+  "type": "object",
   "definitions": {
-    "ApiResponse": {
-      "title": "API Response",
-      "description": "Base structure for all API responses",
+    "ErrorResponse": {
+      "title": "Error Response",
+      "description": "Standard error response",
       "type": "object",
-      "required": ["success"],
+      "required": ["detail"],
       "properties": {
-        "success": {
-          "type": "boolean",
-          "description": "Whether the request was successful"
-        },
-        "data": {
-          "description": "Response data (if successful)"
-        },
-        "error": {
-          "type": "string",
-          "description": "Error message (if not successful)"
-        },
-        "message": {
-          "type": "string",
-          "description": "Additional message or description"
+        "detail": {
+          "oneOf": [
+            {
+              "type": "string",
+              "description": "Error message"
+            },
+            {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "required": ["type", "loc", "msg"],
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "description": "Error type"
+                  },
+                  "loc": {
+                    "type": "array",
+                    "items": {
+                      "oneOf": [
+                        {"type": "string"},
+                        {"type": "integer"}
+                      ]
+                    },
+                    "description": "Error location"
+                  },
+                  "msg": {
+                    "type": "string",
+                    "description": "Error message"
+                  },
+                  "input": {
+                    "description": "Input that caused the error"
+                  }
+                }
+              },
+              "description": "Validation errors"
+            }
+          ]
         }
       },
       "examples": [
         {
-          "success": true,
-          "data": {
-            "id": 1,
-            "name": "Team Alpha"
-          }
+          "detail": "Team not found"
         },
         {
-          "success": false,
-          "error": "Team not found",
-          "message": "The requested team does not exist"
+          "detail": [
+            {
+              "type": "missing",
+              "loc": ["body", "username"],
+              "msg": "Field required",
+              "input": {}
+            }
+          ]
         }
       ]
     },
     "TeamResponse": {
       "title": "Team Response",
-      "description": "Response containing team information",
+      "description": "Team information response",
       "type": "object",
-      "required": ["success"],
+      "required": ["id", "name", "users"],
       "properties": {
-        "success": {
-          "type": "boolean"
+        "id": {
+          "type": "integer",
+          "description": "Team ID"
         },
-        "data": {
-          "$ref": "4stuck/schemas/core/v1/player.json#/definitions/Team"
+        "name": {
+          "type": "string",
+          "description": "Team name"
         },
-        "error": {
-          "type": "string"
-        }
-      }
-    },
-    "AvailableTeamsResponse": {
-      "title": "Available Teams Response",
-      "description": "Response containing list of available teams",
-      "type": "object",
-      "required": ["success"],
-      "properties": {
-        "success": {
-          "type": "boolean"
-        },
-        "data": {
+        "users": {
           "type": "array",
           "items": {
-            "$ref": "4stuck/schemas/core/v1/player.json#/definitions/AvailableTeam"
-          }
-        },
-        "error": {
-          "type": "string"
-        }
-      }
-    },
-    "PlayerResponse": {
-      "title": "Player Response",
-      "description": "Response containing player information",
-      "type": "object",
-      "required": ["success"],
-      "properties": {
-        "success": {
-          "type": "boolean"
-        },
-        "data": {
-          "$ref": "4stuck/schemas/core/v1/player.json#/definitions/Player"
-        },
-        "error": {
-          "type": "string"
-        }
-      }
-    },
-    "GameSessionResponse": {
-      "title": "Game Session Response",
-      "description": "Response containing game session information",
-      "type": "object",
-      "required": ["success"],
-      "properties": {
-        "success": {
-          "type": "boolean"
-        },
-        "data": {
-          "$ref": "4stuck/schemas/core/v1/game.json#/definitions/GameSession"
-        },
-        "error": {
-          "type": "string"
-        }
-      }
-    },
-    "GameStateResponse": {
-      "title": "Game State Response",
-      "description": "Response containing complete game state",
-      "type": "object",
-      "required": ["success"],
-      "properties": {
-        "success": {
-          "type": "boolean"
-        },
-        "data": {
-          "$ref": "4stuck/schemas/core/v1/game.json#/definitions/GameState"
-        },
-        "error": {
-          "type": "string"
-        }
-      }
-    },
-    "GameResultResponse": {
-      "title": "Game Result Response",
-      "description": "Response containing game result information",
-      "type": "object",
-      "required": ["success"],
-      "properties": {
-        "success": {
-          "type": "boolean"
-        },
-        "data": {
-          "$ref": "4stuck/schemas/core/v1/game.json#/definitions/GameResult"
-        },
-        "error": {
-          "type": "string"
-        }
-      }
-    },
-    "PuzzleResponse": {
-      "title": "Puzzle Response",
-      "description": "Response containing puzzle information",
-      "type": "object",
-      "required": ["success"],
-      "properties": {
-        "success": {
-          "type": "boolean"
-        },
-        "data": {
-          "$ref": "4stuck/schemas/core/v1/puzzle.json#/definitions/PuzzleState"
-        },
-        "error": {
-          "type": "string"
-        }
-      }
-    },
-    "PuzzleResultResponse": {
-      "title": "Puzzle Result Response",
-      "description": "Response containing puzzle submission result",
-      "type": "object",
-      "required": ["success"],
-      "properties": {
-        "success": {
-          "type": "boolean"
-        },
-        "data": {
-          "$ref": "4stuck/schemas/core/v1/puzzle.json#/definitions/PuzzleResult"
-        },
-        "error": {
-          "type": "string"
-        }
-      }
-    },
-    "ColorAssignmentResponse": {
-      "title": "Color Assignment Response",
-      "description": "Response containing color assignment result",
-      "type": "object",
-      "required": ["success"],
-      "properties": {
-        "success": {
-          "type": "boolean"
-        },
-        "data": {
-          "type": "object",
-          "required": ["color"],
-          "properties": {
-            "color": {
-              "$ref": "4stuck/schemas/core/v1/communication.json#/definitions/PlayerColor"
-            },
-            "message": {
-              "type": "string"
-            }
-          }
-        },
-        "error": {
-          "type": "string"
-        }
-      }
-    },
-    "CountdownResponse": {
-      "title": "Countdown Response",
-      "description": "Response containing countdown information",
-      "type": "object",
-      "required": ["success"],
-      "properties": {
-        "success": {
-          "type": "boolean"
-        },
-        "data": {
-          "type": "object",
-          "required": ["session_id", "countdown_remaining"],
-          "properties": {
-            "session_id": {
-              "type": "integer"
-            },
-            "countdown_remaining": {
-              "type": "integer",
-              "minimum": 0
-            },
-            "status": {
-              "type": "string",
-              "enum": ["countdown", "active"]
-            }
-          }
-        },
-        "error": {
-          "type": "string"
-        }
-      }
-    },
-    "ErrorResponse": {
-      "title": "Error Response",
-      "description": "Standard error response",
-      "type": "object",
-      "required": ["success", "error"],
-      "properties": {
-        "success": {
-          "const": false
-        },
-        "error": {
-          "type": "string",
-          "description": "Error message"
-        },
-        "message": {
-          "type": "string",
-          "description": "Additional error details"
-        },
-        "code": {
-          "type": "string",
-          "description": "Error code"
-        },
-        "details": {
-          "type": "object",
-          "description": "Additional error details",
-          "additionalProperties": true
+            "$ref": "#/definitions/UserResponse"
+          },
+          "description": "Team members"
         }
       },
       "examples": [
         {
-          "success": false,
-          "error": "Validation error",
-          "message": "Invalid input data",
-          "code": "VALIDATION_ERROR",
-          "details": {
-            "field": "username",
-            "issue": "Username is required"
-          }
-        }
-      ]
-    },
-    "SuccessResponse": {
-      "title": "Success Response",
-      "description": "Standard success response",
-      "type": "object",
-      "required": ["success"],
-      "properties": {
-        "success": {
-          "const": true
-        },
-        "message": {
-          "type": "string",
-          "description": "Success message"
-        },
-        "data": {
-          "description": "Response data"
-        }
-      },
-      "examples": [
-        {
-          "success": true,
-          "message": "Operation completed successfully"
-        }
-      ]
-    },
-    "HealthCheckResponse": {
-      "title": "Health Check Response",
-      "description": "API health check response",
-      "type": "object",
-      "required": ["success", "status", "timestamp"],
-      "properties": {
-        "success": {
-          "const": true
-        },
-        "status": {
-          "type": "string",
-          "enum": ["healthy", "degraded", "unhealthy"]
-        },
-        "timestamp": {
-          "type": "string",
-          "format": "date-time"
-        },
-        "version": {
-          "type": "string",
-          "description": "API version"
-        },
-        "uptime": {
-          "type": "number",
-          "description": "Server uptime in seconds"
-        }
-      },
-      "examples": [
-        {
-          "success": true,
-          "status": "healthy",
-          "timestamp": "2024-01-15T10:30:00Z",
-          "version": "1.0.0",
-          "uptime": 3600
-        }
-      ]
-    },
-    "TeamColorValidationResponse": {
-      "title": "Team Color Validation Response",
-      "description": "Response for team color validation",
-      "type": "object",
-      "required": ["success"],
-      "properties": {
-        "success": {
-          "type": "boolean"
-        },
-        "data": {
-          "type": "object",
-          "properties": {
-            "is_valid": {
-              "type": "boolean"
+          "id": 1,
+          "name": "Alpha Team",
+          "users": [
+            {
+              "id": 1,
+              "username": "alice",
+              "team_id": 1,
+              "color": "red"
             },
-            "conflicts": {
-              "type": "array",
-              "items": {
-                "type": "object",
-                "properties": {
-                  "user_id": {
-                    "type": "integer"
-                  },
-                  "username": {
-                    "type": "string"
-                  },
-                  "color": {
-                    "type": "string"
-                  }
-                }
-              }
+            {
+              "id": 2,
+              "username": "bob",
+              "team_id": 1,
+              "color": "blue"
             }
-          }
-        },
-        "error": {
-          "type": "string"
+          ]
         }
-      }
+      ]
     },
-    "ColorConflictResolutionResponse": {
-      "title": "Color Conflict Resolution Response",
-      "description": "Response for color conflict resolution",
+    "UserResponse": {
+      "title": "User Response",
+      "description": "User information response",
       "type": "object",
-      "required": ["success"],
-      "properties": {
-        "success": {
-          "type": "boolean"
-        },
-        "data": {
-          "type": "object",
-          "properties": {
-            "resolved_conflicts": {
-              "type": "array",
-              "items": {
-                "type": "object",
-                "properties": {
-                  "user_id": {
-                    "type": "integer"
-                  },
-                  "old_color": {
-                    "type": "string"
-                  },
-                  "new_color": {
-                    "type": "string"
-                  }
-                }
-              }
-            }
-          }
-        },
-        "error": {
-          "type": "string"
-        }
-      }
-    },
-    "AvailableColorsResponse": {
-      "title": "Available Colors Response",
-      "description": "Response for available colors",
-      "type": "object",
-      "required": ["success"],
-      "properties": {
-        "success": {
-          "type": "boolean"
-        },
-        "data": {
-          "type": "object",
-          "properties": {
-            "available_colors": {
-              "type": "array",
-              "items": {
-                "type": "string"
-              }
-            },
-            "used_colors": {
-              "type": "array",
-              "items": {
-                "type": "object",
-                "properties": {
-                  "user_id": {
-                    "type": "integer"
-                  },
-                  "username": {
-                    "type": "string"
-                  },
-                  "color": {
-                    "type": "string"
-                  }
-                }
-              }
-            }
-          }
-        },
-        "error": {
-          "type": "string"
-        }
-      }
-    },
-    "UserOut": {
-      "title": "User Out",
-      "description": "User response model",
-      "type": "object",
-      "required": ["id", "username", "points"],
+      "required": ["id", "username"],
       "properties": {
         "id": {
           "type": "integer",
@@ -470,23 +125,27 @@
         },
         "team_id": {
           "type": "integer",
-          "description": "Team ID"
-        },
-        "points": {
-          "type": "integer",
-          "description": "Current points"
+          "description": "Team ID (if assigned)"
         },
         "color": {
           "type": "string",
-          "description": "Assigned color"
+          "description": "User color"
         }
-      }
+      },
+      "examples": [
+        {
+          "id": 1,
+          "username": "alice",
+          "team_id": 1,
+          "color": "red"
+        }
+      ]
     },
-    "TeamOut": {
-      "title": "Team Out",
-      "description": "Team response model",
+    "AvailableTeamResponse": {
+      "title": "Available Team Response",
+      "description": "Available team for joining",
       "type": "object",
-      "required": ["id", "name"],
+      "required": ["id", "name", "user_count", "max_users"],
       "properties": {
         "id": {
           "type": "integer",
@@ -495,37 +154,30 @@
         "name": {
           "type": "string",
           "description": "Team name"
-        }
-      }
-    },
-    "TeamWithMembersOut": {
-      "title": "Team With Members Out",
-      "description": "Team with members response model",
-      "type": "object",
-      "required": ["id", "name", "members"],
-      "properties": {
-        "id": {
+        },
+        "user_count": {
           "type": "integer",
-          "description": "Team ID"
+          "description": "Current number of users"
         },
-        "name": {
-          "type": "string",
-          "description": "Team name"
-        },
-        "members": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/UserOut"
-          },
-          "description": "Team members"
+        "max_users": {
+          "type": "integer",
+          "description": "Maximum number of users"
         }
-      }
+      },
+      "examples": [
+        {
+          "id": 1,
+          "name": "Alpha Team",
+          "user_count": 2,
+          "max_users": 4
+        }
+      ]
     },
-    "GameSessionOut": {
-      "title": "Game Session Out",
-      "description": "Game session response model",
+    "GameSessionResponse": {
+      "title": "Game Session Response",
+      "description": "Game session information",
       "type": "object",
-      "required": ["id", "team_id", "status"],
+      "required": ["id", "team_id", "status", "created_at"],
       "properties": {
         "id": {
           "type": "integer",
@@ -539,6 +191,11 @@
           "type": "string",
           "enum": ["lobby", "countdown", "active", "finished"],
           "description": "Game session status"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time",
+          "description": "When the session was created"
         },
         "started_at": {
           "type": "string",
@@ -556,9 +213,37 @@
         }
       }
     },
-    "PuzzleState": {
-      "title": "Puzzle State",
-      "description": "Puzzle state response model",
+    "PuzzleAnswerResponse": {
+      "title": "Puzzle Answer Response",
+      "description": "Response to puzzle answer submission",
+      "type": "object",
+      "required": ["correct", "points_awarded"],
+      "properties": {
+        "correct": {
+          "type": "boolean",
+          "description": "Whether the answer was correct"
+        },
+        "awarded_to_user_id": {
+          "type": "integer",
+          "description": "ID of user who received points"
+        },
+        "points_awarded": {
+          "type": "integer",
+          "description": "Number of points awarded"
+        },
+        "next_puzzle_id": {
+          "type": "integer",
+          "description": "ID of next puzzle (if any)"
+        },
+        "next_puzzle": {
+          "$ref": "#/definitions/PuzzleStateResponse",
+          "description": "Next puzzle data (if any)"
+        }
+      }
+    },
+    "PuzzleStateResponse": {
+      "title": "Puzzle State Response",
+      "description": "Puzzle state for API responses",
       "type": "object",
       "required": ["id", "type", "data", "status", "correct_answer"],
       "properties": {
@@ -582,34 +267,6 @@
         "correct_answer": {
           "type": "string",
           "description": "Correct answer for the puzzle"
-        }
-      }
-    },
-    "PuzzleResult": {
-      "title": "Puzzle Result",
-      "description": "Puzzle result response model",
-      "type": "object",
-      "required": ["correct", "points_awarded"],
-      "properties": {
-        "correct": {
-          "type": "boolean",
-          "description": "Whether the answer was correct"
-        },
-        "awarded_to_user_id": {
-          "type": "integer",
-          "description": "ID of user who received points"
-        },
-        "points_awarded": {
-          "type": "integer",
-          "description": "Number of points awarded"
-        },
-        "next_puzzle_id": {
-          "type": "integer",
-          "description": "ID of next puzzle (if any)"
-        },
-        "next_puzzle": {
-          "$ref": "#/definitions/PuzzleState",
-          "description": "Next puzzle data (if any)"
         }
       }
     },
@@ -648,7 +305,70 @@
           "items": {
             "$ref": "#/definitions/PlayerPoints"
           },
-          "description": "List of players with their points"
+          "description": "Player points"
+        }
+      }
+    },
+    "ColorAssignmentResponse": {
+      "title": "Color Assignment Response",
+      "description": "Response for color assignment operations",
+      "type": "object",
+      "required": ["success", "message"],
+      "properties": {
+        "success": {
+          "type": "boolean",
+          "description": "Whether the operation was successful"
+        },
+        "message": {
+          "type": "string",
+          "description": "Response message"
+        },
+        "reassignments": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          },
+          "description": "Color reassignments made"
+        },
+        "conflicts": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["user_id", "username", "current_color", "conflicting_users"],
+            "properties": {
+              "user_id": {
+                "type": "integer",
+                "description": "User ID with conflict"
+              },
+              "username": {
+                "type": "string",
+                "description": "Username"
+              },
+              "current_color": {
+                "type": "string",
+                "description": "Current color"
+              },
+              "conflicting_users": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "required": ["user_id", "username"],
+                  "properties": {
+                    "user_id": {
+                      "type": "integer",
+                      "description": "Conflicting user ID"
+                    },
+                    "username": {
+                      "type": "string",
+                      "description": "Conflicting username"
+                    }
+                  }
+                },
+                "description": "Users with conflicting colors"
+              }
+            }
+          },
+          "description": "Color conflicts found"
         }
       }
     }
