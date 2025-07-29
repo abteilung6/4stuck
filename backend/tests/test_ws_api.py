@@ -113,32 +113,6 @@ def test_ws_multiple_clients_receive_updates():
     pytest.skip(
         "Cannot test multi-client WebSocket broadcast with FastAPI TestClient due to in-memory state isolation.",
     )
-    # --- The code below is left for reference ---
-    # client, tmp = create_test_app_and_client()
-    # user_id, team_id, session_id = create_team_user_session(client)
-    # # Create a puzzle for the user
-    # puzzle_resp = client.post("/puzzle/create", json={"type": "memory", "game_session_id": session_id, "user_id": user_id})
-    # puzzle = puzzle_resp.json()
-    # # Connect two clients to the same session
-    # with client.websocket_connect(f"/ws/game/{session_id}") as ws1, \
-    #      client.websocket_connect(f"/ws/game/{session_id}") as ws2:
-    #     # Both should receive initial state
-    #     state1 = json.loads(ws1.receive_text())
-    #     state2 = json.loads(ws2.receive_text())
-    #     assert state1["session"]["id"] == session_id
-    #     assert state2["session"]["id"] == session_id
-    #     # Solve the puzzle (simulate correct answer)
-    #     correct = puzzle["data"]["mapping"][str(puzzle["data"]["question_number"])]
-    #     client.post("/puzzle/answer", json={"puzzle_id": puzzle["id"], "answer": correct})
-    #     # Both clients send a ping to trigger a broadcast
-    #     ws1.send_text("ping")
-    #     ws2.send_text("ping")
-    #     # Both should receive updated state
-    #     updated1 = json.loads(ws1.receive_text())
-    #     updated2 = json.loads(ws2.receive_text())
-    #     assert any(p["status"] == "solved" for p in updated1["puzzles"])
-    #     assert any(p["status"] == "solved" for p in updated2["puzzles"])
-    # tmp.close()
 
 
 def test_ws_message_validation():

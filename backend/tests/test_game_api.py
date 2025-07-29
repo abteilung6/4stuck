@@ -112,12 +112,6 @@ def test_game_session_state_transitions_and_survival_time():
     assert session["ended_at"] is None
     assert session["survival_time_seconds"] is None
 
-    # Session is already in countdown state, so skip this transition
-    # resp = client.post(f"/game/session/{session_id}/state", json={"status": "countdown"})
-    # assert resp.status_code == 200
-    # session = resp.json()
-    # assert session["status"] == "countdown"
-
     # Move to active (should set started_at)
     resp = client.post(f"/game/session/{session_id}/state", json={"status": "active"})
     assert resp.status_code == 200
