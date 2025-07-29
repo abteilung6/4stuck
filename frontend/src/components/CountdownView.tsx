@@ -6,9 +6,9 @@ interface CountdownViewProps {
   initialCountdown?: number;
 }
 
-const CountdownView: React.FC<CountdownViewProps> = ({ 
-  onCountdownComplete, 
-  initialCountdown = 5 
+const CountdownView: React.FC<CountdownViewProps> = ({
+  onCountdownComplete,
+  initialCountdown = 5
 }) => {
   const [countdown, setCountdown] = useState(initialCountdown);
   const [isActive, setIsActive] = useState(true);
@@ -56,4 +56,4 @@ const CountdownView: React.FC<CountdownViewProps> = ({
   );
 };
 
-export default CountdownView; 
+export default CountdownView;

@@ -37,4 +37,4 @@ export function generateMultitaskingGrid(rows: number, cols: number) {
 export function isSixCellClicked(row: number, col: number, sixPosition: SixPosition | null): boolean {
   if (!sixPosition) return false;
   return row === sixPosition.row && col === sixPosition.col;
-} 
+}

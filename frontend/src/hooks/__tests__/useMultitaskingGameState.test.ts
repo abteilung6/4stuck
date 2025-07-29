@@ -227,7 +227,7 @@ describe('useMultitaskingGameState', () => {
     );
 
     const grid = result.current.grid;
-    
+
     // Check that 6s are in the correct positions
     expect(grid[0][2]).toBe('6'); // Row 0, position 2
     expect(grid[1][5]).toBe('6'); // Row 1, position 5
@@ -244,4 +244,4 @@ describe('useMultitaskingGameState', () => {
     expect(grid[2][6]).toBe('9');
     expect(grid[2][8]).toBe('9');
   });
-}); 
+});

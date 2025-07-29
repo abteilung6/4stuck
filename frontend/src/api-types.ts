@@ -296,7 +296,10 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Submit Answer */
+        /**
+         * Submit Answer
+         * @description Submit an answer to a puzzle and handle point distribution
+         */
         post: operations["submit_answer_puzzle_answer_post"];
         delete?: never;
         options?: never;
@@ -330,7 +333,10 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Decay Points */
+        /**
+         * Decay Points
+         * @description Decay points for all players in a team (called by background task)
+         */
         post: operations["decay_points_puzzle_decay__team_id__post"];
         delete?: never;
         options?: never;
@@ -535,7 +541,7 @@ export interface components {
         };
         /**
          * PuzzleAnswer
-         * @description Puzzle Answer: Request to submit a puzzle answer
+         * @description Puzzle Answer: Answer submission for a puzzle
          */
         PuzzleAnswer: {
             /**
@@ -545,9 +551,14 @@ export interface components {
             puzzle_id: number;
             /**
              * Answer
-             * @description Player's answer to the puzzle
+             * @description The answer submitted by the user
              */
             answer: string;
+            /**
+             * User Id
+             * @description ID of the user submitting the answer
+             */
+            user_id: number;
         };
         /**
          * PuzzleCreate

@@ -10,14 +10,13 @@
       "type": "string",
       "enum": [
         "mouse_position",
-        "puzzle_interaction", 
+        "puzzle_interaction",
         "state_update",
         "ping",
         "pong",
         "error",
         "game_event"
-      ],
-      "description": "Available WebSocket message types"
+      ]
     },
     "WebSocketMessage": {
       "title": "WebSocket Message",
@@ -279,7 +278,7 @@
               "type": "string",
               "enum": [
                 "player_joined",
-                "player_left", 
+                "player_left",
                 "game_started",
                 "game_ended",
                 "puzzle_solved",
@@ -371,4 +370,4 @@
       }
     }
   }
-} 
+}

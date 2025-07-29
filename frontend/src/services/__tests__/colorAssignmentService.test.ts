@@ -185,4 +185,4 @@ describe('ColorAssignmentService', () => {
       expect(service.getColorValue('unknown')).toBe('#888888'); // fallback
     });
   });
-}); 
+});

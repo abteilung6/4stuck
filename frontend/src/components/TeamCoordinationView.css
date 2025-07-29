@@ -258,15 +258,15 @@
   .team-status-grid {
     grid-template-columns: 1fr;
   }
-  
+
   .player-status-item {
     min-height: 100px;
   }
-  
+
   .points-value {
     font-size: 1.2rem;
   }
-  
+
   .transfer-text {
     font-size: 0.8rem;
   }
@@ -276,16 +276,16 @@
   .team-coordination-container {
     gap: 0.5rem;
   }
-  
+
   .player-status-item {
     padding: 0.75rem;
   }
-  
+
   .player-name {
     font-size: 0.9rem;
   }
-  
+
   .points-value {
     font-size: 1.1rem;
   }
-} 
+}

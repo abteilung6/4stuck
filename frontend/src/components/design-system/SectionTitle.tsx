@@ -15,4 +15,4 @@ const SectionTitle: React.FC<SectionTitleProps> = ({ children, level = 2, classN
   return <Tag className={`ds-section-title ds-section-title--l${level} ${className}`.trim()} style={style}>{children}</Tag>;
 };
 
-export default SectionTitle; 
+export default SectionTitle;

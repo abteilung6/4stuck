@@ -33,7 +33,7 @@ export function useConcentrationGameState({
   const [lastPuzzleId, setLastPuzzleId] = useState<number | null>(null);
   const [resetCounter, setResetCounter] = useState(0);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
-  
+
   // Game state
   const [gameState, setGameState] = useState<ConcentrationGameState>(getInitialConcentrationGameState());
 
@@ -59,7 +59,7 @@ export function useConcentrationGameState({
       clearTimeout(timerRef.current);
       timerRef.current = null;
     }
-    
+
     setGameState(getInitialConcentrationGameState());
   }, []);
 
@@ -119,4 +119,4 @@ export function useConcentrationGameState({
     resetCounter,
     handleClick
   };
-} 
+}

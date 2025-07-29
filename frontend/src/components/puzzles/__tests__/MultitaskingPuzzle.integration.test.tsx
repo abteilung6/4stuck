@@ -45,7 +45,7 @@ describe('MultitaskingPuzzle Integration', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-    
+
     // Default mock implementations
     mockUseMultitaskingGameState.mockReturnValue({
       puzzleData: validPuzzleData,
@@ -123,7 +123,7 @@ describe('MultitaskingPuzzle Integration', () => {
   it('should allow replacing incorrect selections', async () => {
     const mockHandleDigitClick = vi.fn();
     let currentFoundPositions: number[] = [];
-    
+
     mockUseMultitaskingGameState.mockReturnValue({
       puzzleData: validPuzzleData,
       grid: mockGrid,
@@ -326,7 +326,7 @@ describe('MultitaskingPuzzle Integration', () => {
     const progressDots = document.querySelectorAll('.progress-dot');
     expect(progressDots).toHaveLength(2);
   });
-}); 
+});
 
 describe('Readonly/Spectator Mode', () => {
   const mockSubmitAnswerWithAnswer = vi.fn();
@@ -363,4 +363,4 @@ describe('Readonly/Spectator Mode', () => {
     // Spectating overlay should be visible
     expect(screen.getByText('Spectating')).toBeInTheDocument();
   });
-}); 
+});

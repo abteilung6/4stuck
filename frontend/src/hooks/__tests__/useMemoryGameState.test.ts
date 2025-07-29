@@ -24,7 +24,7 @@ describe('useMemoryGameState', () => {
     });
 
     it('should initialize with custom mapping duration', () => {
-      const { result } = renderHook(() => 
+      const { result } = renderHook(() =>
         useMemoryGameState({ mappingDuration: 10 })
       );
 
@@ -34,7 +34,7 @@ describe('useMemoryGameState', () => {
     });
 
     it('should initialize with puzzle ID', () => {
-      const { result } = renderHook(() => 
+      const { result } = renderHook(() =>
         useMemoryGameState({ puzzleId: 123 })
       );
 
@@ -67,7 +67,7 @@ describe('useMemoryGameState', () => {
 
     it('should complete mapping phase when timer reaches zero', () => {
       const onMappingComplete = vi.fn();
-      const { result } = renderHook(() => 
+      const { result } = renderHook(() =>
         useMemoryGameState({ onMappingComplete })
       );
 
@@ -86,7 +86,7 @@ describe('useMemoryGameState', () => {
     });
 
     it('should handle custom mapping duration correctly', () => {
-      const { result } = renderHook(() => 
+      const { result } = renderHook(() =>
         useMemoryGameState({ mappingDuration: 3 })
       );
 
@@ -150,7 +150,7 @@ describe('useMemoryGameState', () => {
     });
 
     it('should handle undefined puzzle ID', () => {
-      const { result } = renderHook(() => 
+      const { result } = renderHook(() =>
         useMemoryGameState({ puzzleId: undefined })
       );
 
@@ -159,7 +159,7 @@ describe('useMemoryGameState', () => {
     });
 
     it('should handle null puzzle ID', () => {
-      const { result } = renderHook(() => 
+      const { result } = renderHook(() =>
         useMemoryGameState({ puzzleId: null as any })
       );
 
@@ -206,7 +206,7 @@ describe('useMemoryGameState', () => {
   describe('Callback Functionality', () => {
     it('should call onMappingComplete when timer completes', () => {
       const onMappingComplete = vi.fn();
-      const { result } = renderHook(() => 
+      const { result } = renderHook(() =>
         useMemoryGameState({ onMappingComplete })
       );
 
@@ -232,7 +232,7 @@ describe('useMemoryGameState', () => {
 
     it('should call onMappingComplete only once per completion', () => {
       const onMappingComplete = vi.fn();
-      const { result } = renderHook(() => 
+      const { result } = renderHook(() =>
         useMemoryGameState({ onMappingComplete })
       );
 
@@ -289,7 +289,7 @@ describe('useMemoryGameState', () => {
     });
 
     it('should handle very short mapping duration', () => {
-      const { result } = renderHook(() => 
+      const { result } = renderHook(() =>
         useMemoryGameState({ mappingDuration: 1 })
       );
 
@@ -306,7 +306,7 @@ describe('useMemoryGameState', () => {
     });
 
     it('should handle zero mapping duration', () => {
-      const { result } = renderHook(() => 
+      const { result } = renderHook(() =>
         useMemoryGameState({ mappingDuration: 0 })
       );
 
@@ -316,7 +316,7 @@ describe('useMemoryGameState', () => {
     });
 
     it('should handle negative mapping duration', () => {
-      const { result } = renderHook(() => 
+      const { result } = renderHook(() =>
         useMemoryGameState({ mappingDuration: -1 })
       );
 
@@ -373,4 +373,4 @@ describe('useMemoryGameState', () => {
       expect(result.current.isComplete).toBe(true);
     });
   });
-}); 
+});

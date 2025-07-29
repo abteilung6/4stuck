@@ -41,7 +41,7 @@
   .game-grid-container {
     padding: 0 15px; /* Reduce padding on smaller screens */
   }
-  
+
   .game-grid {
     gap: 15px;
   }
@@ -51,7 +51,7 @@
   .game-grid-container {
     padding: 0 10px; /* Further reduce padding on mobile */
   }
-  
+
   .game-grid {
     grid-template-columns: 1fr;
     grid-template-rows: repeat(4, 1fr);
@@ -63,8 +63,8 @@
   .game-grid-container {
     padding: 0 8px; /* Minimal padding on small screens */
   }
-  
+
   .game-grid {
     gap: 8px;
   }
-} 
+}

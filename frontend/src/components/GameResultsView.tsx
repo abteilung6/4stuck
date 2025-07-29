@@ -9,11 +9,11 @@ interface GameResultsViewProps {
   onReturnToLobby?: () => void;
 }
 
-const GameResultsView: React.FC<GameResultsViewProps> = ({ 
-  gameStatus, 
-  user, 
+const GameResultsView: React.FC<GameResultsViewProps> = ({
+  gameStatus,
+  user,
   onPlayAgain,
-  onReturnToLobby 
+  onReturnToLobby
 }) => {
   const handlePlayAgain = () => {
     if (onPlayAgain) {
@@ -37,7 +37,7 @@ const GameResultsView: React.FC<GameResultsViewProps> = ({
     <Container variant="full" dataTestId="game-results-container">
       <Card style={{ background: '#fff', margin: '1em 0', padding: '2em' }}>
         <SectionTitle level={2}>Game Results</SectionTitle>
-        
+
         {/* Team Survival Time */}
         <div style={{ textAlign: 'center', marginBottom: '2em' }}>
           <SectionTitle level={3} style={{ color: '#1976d2', marginBottom: '0.5em' }}>
@@ -57,20 +57,20 @@ const GameResultsView: React.FC<GameResultsViewProps> = ({
           <SectionTitle level={3}>Final Standings</SectionTitle>
           <List aria-label="Final standings">
             {gameStatus.finalStandings.map((player, index) => (
-              <List.Item 
-                key={player.id} 
+              <List.Item
+                key={player.id}
                 className={player.id === user.id ? 'current-user' : ''}
-                style={{ 
-                  display: 'flex', 
-                  justifyContent: 'space-between', 
+                style={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
                   alignItems: 'center',
                   padding: '0.75em 0'
                 }}
               >
                 <div style={{ display: 'flex', alignItems: 'center' }}>
-                  <span style={{ 
-                    fontSize: '1.2rem', 
-                    fontWeight: 'bold', 
+                  <span style={{
+                    fontSize: '1.2rem',
+                    fontWeight: 'bold',
                     marginRight: '0.5em',
                     color: index === 0 ? '#ffd700' : '#666'
                   }}>
@@ -83,9 +83,9 @@ const GameResultsView: React.FC<GameResultsViewProps> = ({
                     </span>
                   )}
                 </div>
-                <span style={{ 
-                  color: '#1976d2', 
-                  fontWeight: 600, 
+                <span style={{
+                  color: '#1976d2',
+                  fontWeight: 600,
                   fontSize: '1.1rem'
                 }}>
                   {player.points} pts
@@ -98,9 +98,9 @@ const GameResultsView: React.FC<GameResultsViewProps> = ({
         {/* Individual Statistics */}
         <div style={{ marginBottom: '2em' }}>
           <SectionTitle level={3}>Your Performance</SectionTitle>
-          <div style={{ 
-            display: 'grid', 
-            gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', 
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
             gap: '1em',
             marginTop: '1em'
           }}>
@@ -129,21 +129,21 @@ const GameResultsView: React.FC<GameResultsViewProps> = ({
         </div>
 
         {/* Action Buttons */}
-        <div style={{ 
-          display: 'flex', 
-          gap: '1em', 
+        <div style={{
+          display: 'flex',
+          gap: '1em',
           justifyContent: 'center',
           marginTop: '2em'
         }}>
-          <Button 
-            onClick={handlePlayAgain} 
+          <Button
+            onClick={handlePlayAgain}
             variant="primary"
             aria-label="Play Again"
           >
             Play Again
           </Button>
-          <Button 
-            onClick={handleReturnToLobby} 
+          <Button
+            onClick={handleReturnToLobby}
             variant="secondary"
             aria-label="Return to Lobby"
           >
@@ -152,9 +152,9 @@ const GameResultsView: React.FC<GameResultsViewProps> = ({
         </div>
 
         {/* Motivational Message */}
-        <div style={{ 
-          textAlign: 'center', 
-          marginTop: '2em', 
+        <div style={{
+          textAlign: 'center',
+          marginTop: '2em',
           padding: '1em',
           background: 'rgba(76, 175, 80, 0.1)',
           border: '1px solid #4caf50',
@@ -169,4 +169,4 @@ const GameResultsView: React.FC<GameResultsViewProps> = ({
   );
 };
 
-export default GameResultsView; 
+export default GameResultsView;

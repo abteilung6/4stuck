@@ -35,7 +35,7 @@ export const validateMemoryPuzzleData = (data: any): MemoryPuzzleValidation => {
   // Validate mapping structure
   if (data.mapping && typeof data.mapping === 'object') {
     const mappingEntries = Object.entries(data.mapping);
-    
+
     if (mappingEntries.length === 0) {
       errors.push('Mapping is empty');
     }
@@ -72,7 +72,7 @@ export const validateMemoryPuzzleData = (data: any): MemoryPuzzleValidation => {
  */
 export const extractMemoryPuzzleData = (puzzle: any): MemoryPuzzleData | null => {
   const validation = validateMemoryPuzzleData(puzzle?.data);
-  
+
   if (!validation.isValid) {
     console.error('Invalid memory puzzle data:', validation.errors);
     return null;
@@ -117,4 +117,4 @@ export const generateMappingLabel = (number: string, color: string): string => {
  */
 export const generateChoiceLabel = (choice: string): string => {
   return choice;
-}; 
+};

@@ -221,4 +221,4 @@ import Draggable from 'react-draggable';
 3. Implement team and game session logic
 4. Build the interactive UI for the first puzzle
 5. Test multiplayer and scoring logic
-6. Iterate and add more puzzles 
+6. Iterate and add more puzzles

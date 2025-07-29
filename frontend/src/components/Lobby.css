@@ -145,20 +145,20 @@ button:focus {
     flex-direction: column;
     align-items: stretch;
   }
-  
+
   .username-input-container input,
   .new-team-input-container input {
     margin-right: 0;
     margin-bottom: 8px;
   }
-  
+
   .team-item {
     flex-direction: column;
     align-items: flex-start;
     gap: 0.5rem;
   }
-  
+
   .team-name {
     margin-bottom: 0.5rem;
   }
-} 
+}

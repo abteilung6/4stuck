@@ -5,19 +5,19 @@ export interface UseColorAssignmentReturn {
     // State
     isLoading: boolean;
     error: string | null;
-    
+
     // Color assignment
     assignColorToUser: (userId: number, teamId: number) => Promise<ColorAssignmentResult>;
-    
+
     // Validation
     validateTeamColors: (teamId: number) => Promise<TeamColorValidationResult>;
-    
+
     // Conflict resolution
     resolveColorConflicts: (teamId: number) => Promise<ColorConflictResolutionResult>;
-    
+
     // Available colors
     getAvailableColors: (teamId: number) => Promise<AvailableColorsResult>;
-    
+
     // Utility functions
     getColorScheme: () => string[];
     getFallbackColor: () => string;
@@ -28,18 +28,18 @@ export interface UseColorAssignmentReturn {
 export function useColorAssignment(): UseColorAssignmentReturn {
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
-    
+
     const assignColorToUser = useCallback(async (userId: number, teamId: number): Promise<ColorAssignmentResult> => {
         setIsLoading(true);
         setError(null);
-        
+
         try {
             const result = await colorAssignmentService.assignColorToUser(userId, teamId);
-            
+
             if (!result.success) {
                 setError(result.message);
             }
-            
+
             return result;
         } catch (err) {
             const errorMessage = err instanceof Error ? err.message : 'Failed to assign color';
@@ -53,11 +53,11 @@ export function useColorAssignment(): UseColorAssignmentReturn {
             setIsLoading(false);
         }
     }, []);
-    
+
     const validateTeamColors = useCallback(async (teamId: number): Promise<TeamColorValidationResult> => {
         setIsLoading(true);
         setError(null);
-        
+
         try {
             const result = await colorAssignmentService.validateTeamColors(teamId);
             return result;
@@ -72,18 +72,18 @@ export function useColorAssignment(): UseColorAssignmentReturn {
             setIsLoading(false);
         }
     }, []);
-    
+
     const resolveColorConflicts = useCallback(async (teamId: number): Promise<ColorConflictResolutionResult> => {
         setIsLoading(true);
         setError(null);
-        
+
         try {
             const result = await colorAssignmentService.resolveColorConflicts(teamId);
-            
+
             if (!result.success) {
                 setError(result.message);
             }
-            
+
             return result;
         } catch (err) {
             const errorMessage = err instanceof Error ? err.message : 'Failed to resolve color conflicts';
@@ -97,11 +97,11 @@ export function useColorAssignment(): UseColorAssignmentReturn {
             setIsLoading(false);
         }
     }, []);
-    
+
     const getAvailableColors = useCallback(async (teamId: number): Promise<AvailableColorsResult> => {
         setIsLoading(true);
         setError(null);
-        
+
         try {
             const result = await colorAssignmentService.getAvailableColors(teamId);
             return result;
@@ -116,23 +116,23 @@ export function useColorAssignment(): UseColorAssignmentReturn {
             setIsLoading(false);
         }
     }, []);
-    
+
     const getColorScheme = useCallback(() => {
         return colorAssignmentService.getColorScheme();
     }, []);
-    
+
     const getFallbackColor = useCallback(() => {
         return colorAssignmentService.getFallbackColor();
     }, []);
-    
+
     const getColorClass = useCallback((color: string) => {
         return colorAssignmentService.getColorClass(color);
     }, []);
-    
+
     const getColorValue = useCallback((color: string) => {
         return colorAssignmentService.getColorValue(color);
     }, []);
-    
+
     return {
         isLoading,
         error,
@@ -158,4 +158,4 @@ export function getPlayerColor(player: { id: number; color?: string }, teamMembe
   if (member && member.color) return member.color;
   if (player.color) return player.color;
   return 'gray';
-} 
+}

@@ -137,10 +137,10 @@ export const useMultitaskingGameState = (
       }
 
       const newFoundPositions = [...prev.foundPositions];
-      
+
       // Check if this position is already found
       const existingIndex = newFoundPositions.findIndex((_, index) => index === rowIndex);
-      
+
       if (existingIndex >= 0) {
         // Already found a 6 in this row, replace it
         newFoundPositions[rowIndex] = colIndex;
@@ -239,4 +239,4 @@ export const useMultitaskingGameState = (
     handleDigitClick,
     resetGame
   };
-}; 
+};

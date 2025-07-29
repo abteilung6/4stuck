@@ -255,4 +255,4 @@ describe('Game Rules', () => {
       expect(topPlayers).toHaveLength(4);
     });
   });
-}); 
+});

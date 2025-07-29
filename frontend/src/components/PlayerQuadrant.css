@@ -205,15 +205,15 @@
   .player-quadrant {
     padding: 12px;
   }
-  
+
   .player-name {
     font-size: 1rem;
   }
-  
+
   .puzzle-area {
     min-height: 0; /* Allow puzzle area to shrink */
   }
-  
+
   .life-circle {
     width: 10px;
     height: 10px;
@@ -224,45 +224,45 @@
   .player-quadrant {
     padding: 10px;
   }
-  
+
   .player-header {
     flex-direction: column;
     align-items: flex-start;
     gap: 5px;
   }
-  
+
   .player-status {
     align-self: flex-end;
   }
-  
+
   .player-name {
     font-size: 0.9rem;
   }
-  
+
   .status-active,
   .status-waiting,
   .status-eliminated {
     font-size: 0.7rem;
     padding: 3px 6px;
   }
-  
+
   .life-circle {
     width: 8px;
     height: 8px;
   }
-  
+
   .puzzle-area {
     min-height: 0; /* Allow puzzle area to shrink */
   }
-  
+
   .puzzle-icon {
     font-size: 1.5rem;
   }
-  
+
   .puzzle-text {
     font-size: 0.9rem;
   }
-  
+
   .puzzle-subtext {
     font-size: 0.7rem;
   }
@@ -272,36 +272,36 @@
   .player-quadrant {
     padding: 8px;
   }
-  
+
   .player-name {
     font-size: 0.8rem;
   }
-  
+
   .status-active,
   .status-waiting,
   .status-eliminated {
     font-size: 0.6rem;
     padding: 2px 4px;
   }
-  
+
   .life-circle {
     width: 6px;
     height: 6px;
   }
-  
+
   .puzzle-area {
     min-height: 0; /* Allow puzzle area to shrink */
   }
-  
+
   .puzzle-icon {
     font-size: 1.2rem;
   }
-  
+
   .puzzle-text {
     font-size: 0.8rem;
   }
-  
+
   .puzzle-subtext {
     font-size: 0.6rem;
   }
-} 
+}

@@ -30,7 +30,7 @@ describe('MouseCursorOverlay', () => {
 
   it('displays player cursors when mouse cursor messages are received', async () => {
     render(<MouseCursorOverlay {...defaultProps} teamMembers={[{ id: 2, username: 'Player 2', color: 'red' }]} />);
-    
+
     // Simulate receiving a mouse cursor message
     const messageEvent = new MessageEvent('message', {
       data: JSON.stringify({
@@ -48,7 +48,7 @@ describe('MouseCursorOverlay', () => {
     const messageHandler = mockWebSocket.addEventListener.mock.calls.find(
       (call: any) => call[0] === 'message'
     )?.[1];
-    
+
     if (messageHandler) {
       await act(async () => {
         messageHandler(messageEvent);
@@ -63,7 +63,7 @@ describe('MouseCursorOverlay', () => {
 
   it('does not display own cursor', async () => {
     render(<MouseCursorOverlay {...defaultProps} />);
-    
+
     // Simulate receiving own cursor message
     const messageEvent = new MessageEvent('message', {
       data: JSON.stringify({
@@ -75,7 +75,7 @@ describe('MouseCursorOverlay', () => {
     const messageHandler = mockWebSocket.addEventListener.mock.calls.find(
       (call: any) => call[0] === 'message'
     )?.[1];
-    
+
     if (messageHandler) {
       await act(async () => {
         messageHandler(messageEvent);
@@ -103,8 +103,8 @@ describe('MouseCursorOverlay', () => {
     ];
 
     render(
-      <MouseCursorOverlay 
-        {...defaultProps} 
+      <MouseCursorOverlay
+        {...defaultProps}
         currentUserId={1}
         teamMembers={teamMembers}
       />
@@ -131,7 +131,7 @@ describe('MouseCursorOverlay', () => {
           }
         })
       });
-      
+
       await act(async () => {
         messageHandler(messageEvent1);
       });
@@ -148,7 +148,7 @@ describe('MouseCursorOverlay', () => {
           }
         })
       });
-      
+
       await act(async () => {
         messageHandler(messageEvent2);
       });
@@ -171,8 +171,8 @@ describe('MouseCursorOverlay', () => {
     ];
 
     render(
-      <MouseCursorOverlay 
-        {...defaultProps} 
+      <MouseCursorOverlay
+        {...defaultProps}
         currentUserId={1}
         teamMembers={teamMembers}
       />
@@ -195,7 +195,7 @@ describe('MouseCursorOverlay', () => {
           }
         })
       });
-      
+
       await act(async () => {
         messageHandler(messageEvent);
       });
@@ -210,8 +210,8 @@ describe('MouseCursorOverlay', () => {
   // NEW: Test WebSocket connection state
   it('should handle null websocket gracefully', () => {
     render(
-      <MouseCursorOverlay 
-        {...defaultProps} 
+      <MouseCursorOverlay
+        {...defaultProps}
         websocket={null}
         teamMembers={[{ id: 2, username: 'Player 2', color: 'red' }]}
       />
@@ -219,8 +219,8 @@ describe('MouseCursorOverlay', () => {
 
     // Component should render without crashing
     expect(screen.getByTestId('mouse-cursor-overlay')).toBeInTheDocument();
-    
+
     // Should not set up WebSocket listeners
     expect(mockWebSocket.addEventListener).not.toHaveBeenCalled();
   });
-}); 
+});

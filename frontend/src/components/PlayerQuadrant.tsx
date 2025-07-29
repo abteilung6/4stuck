@@ -103,4 +103,4 @@ const PlayerQuadrant: React.FC<PlayerQuadrantProps> = ({
   );
 };
 
-export default PlayerQuadrant; 
+export default PlayerQuadrant;

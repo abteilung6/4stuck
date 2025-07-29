@@ -60,13 +60,13 @@ export const extractMultitaskingPuzzleData = (data: any): MultitaskingPuzzleData
     const rows = 3; // Fixed at 3 rows
     const digitsPerRow = 9; // Fixed at 9 digits per row
     const timeLimit = 10; // Fixed at 10 seconds
-    
+
     // Generate random positions for exactly one 6 per row
     const sixPositions: number[] = [];
     for (let i = 0; i < rows; i++) {
       sixPositions.push(Math.floor(Math.random() * digitsPerRow));
     }
-    
+
     return {
       rows,
       digitsPerRow,
@@ -74,10 +74,10 @@ export const extractMultitaskingPuzzleData = (data: any): MultitaskingPuzzleData
       sixPositions
     };
   }
-  
+
   // Validate existing data if provided
   const validation = validateMultitaskingPuzzleData(data);
-  
+
   if (!validation.isValid) {
     console.error('Invalid multitasking puzzle data:', validation.errors);
     return null;
@@ -93,18 +93,18 @@ export const extractMultitaskingPuzzleData = (data: any): MultitaskingPuzzleData
 
 export const generateNumberGrid = (puzzleData: MultitaskingPuzzleData): string[][] => {
   const grid: string[][] = [];
-  
+
   for (let row = 0; row < puzzleData.rows; row++) {
     const rowDigits: string[] = [];
     const sixPosition = puzzleData.sixPositions[row];
-    
+
     for (let col = 0; col < puzzleData.digitsPerRow; col++) {
       rowDigits.push(col === sixPosition ? '6' : '9');
     }
-    
+
     grid.push(rowDigits);
   }
-  
+
   return grid;
 };
 
@@ -112,14 +112,14 @@ export const checkWinCondition = (foundPositions: number[], puzzleData: Multitas
   if (foundPositions.length !== puzzleData.rows) {
     return false;
   }
-  
+
   // Check if all found positions match the expected six positions
   for (let i = 0; i < puzzleData.rows; i++) {
     if (foundPositions[i] !== puzzleData.sixPositions[i]) {
       return false;
     }
   }
-  
+
   return true;
 };
 
@@ -127,4 +127,4 @@ export const formatTime = (seconds: number): string => {
   const mins = Math.floor(seconds / 60);
   const secs = seconds % 60;
   return `${mins}:${secs.toString().padStart(2, '0')}`;
-}; 
+};

@@ -64,7 +64,7 @@ export function calculateGameStatus(
   const finalStandings = getFinalStandings(gameState.players);
 
   let status: GameStatus;
-  
+
   if (!wsConnected) {
     status = 'loading';
   } else if (gameState.session.status === 'countdown') {
@@ -129,4 +129,4 @@ export function getPlayerById(players: Player[], playerId: number): Player | und
  */
 export function getTopPlayers(players: Player[], count: number = 3): Player[] {
   return getFinalStandings(players).slice(0, count);
-} 
+}

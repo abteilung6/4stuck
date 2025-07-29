@@ -30,8 +30,7 @@
       "title": "Player Color",
       "description": "Color assigned to a player for identification",
       "type": "string",
-      "enum": ["yellow", "red", "blue", "green", "gray"],
-      "description": "Available player colors"
+      "enum": ["yellow", "red", "blue", "green", "gray"]
     },
     "MousePosition": {
       "title": "Mouse Position",
@@ -130,4 +129,4 @@
       ]
     }
   }
-} 
+}

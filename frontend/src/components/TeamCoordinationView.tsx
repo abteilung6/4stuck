@@ -28,10 +28,10 @@ interface PointTransfer {
   type: 'puzzle_solved' | 'point_decay' | 'elimination';
 }
 
-const TeamCoordinationView: React.FC<TeamCoordinationViewProps> = ({ 
-  players, 
-  currentUserId, 
-  notifications 
+const TeamCoordinationView: React.FC<TeamCoordinationViewProps> = ({
+  players,
+  currentUserId,
+  notifications
 }) => {
   const [pointTransfers, setPointTransfers] = useState<PointTransfer[]>([]);
   const [lastPointUpdate, setLastPointUpdate] = useState<{[key: number]: number}>({});
@@ -39,21 +39,21 @@ const TeamCoordinationView: React.FC<TeamCoordinationViewProps> = ({
   // Track point changes to detect transfers
   useEffect(() => {
     const newTransfers: PointTransfer[] = [];
-    
+
     players.forEach(player => {
       const lastPoints = lastPointUpdate[player.id] || 15; // Default starting points
       const currentPoints = player.points;
-      
+
       if (currentPoints !== lastPoints) {
         const pointDiff = currentPoints - lastPoints;
-        
+
         if (pointDiff > 0) {
           // Player gained points - find who might have given them
-          const potentialGivers = players.filter(p => 
-            p.id !== player.id && 
+          const potentialGivers = players.filter(p =>
+            p.id !== player.id &&
             (lastPointUpdate[p.id] || 15) > p.points
           );
-          
+
           if (potentialGivers.length > 0) {
             // Assume the first potential giver (could be enhanced with more logic)
             const giver = potentialGivers[0];
@@ -81,11 +81,11 @@ const TeamCoordinationView: React.FC<TeamCoordinationViewProps> = ({
         }
       }
     });
-    
+
     if (newTransfers.length > 0) {
       setPointTransfers(prev => [...newTransfers, ...prev.slice(0, 9)]); // Keep last 10 transfers
     }
-    
+
     // Update last known points
     const newLastPoints: {[key: number]: number} = {};
     players.forEach(player => {
@@ -140,10 +140,10 @@ const TeamCoordinationView: React.FC<TeamCoordinationViewProps> = ({
           {players.map(player => {
             const status = getPlayerStatus(player);
             const isCurrentUser = player.id === currentUserId;
-            
+
             return (
-              <div 
-                key={player.id} 
+              <div
+                key={player.id}
                 className={`player-status-item ${isCurrentUser ? 'current-user' : ''} ${status}`}
               >
                 <div className="player-status-header">
@@ -162,8 +162,8 @@ const TeamCoordinationView: React.FC<TeamCoordinationViewProps> = ({
                   )}
                   {player.activity?.progress && (
                     <div className="progress-bar">
-                      <div 
-                        className="progress-fill" 
+                      <div
+                        className="progress-fill"
                         style={{ width: `${player.activity.progress}%` }}
                       ></div>
                     </div>
@@ -194,7 +194,7 @@ const TeamCoordinationView: React.FC<TeamCoordinationViewProps> = ({
                   <div className="transfer-text">
                     {transfer.type === 'puzzle_solved' && (
                       <span>
-                        <strong>{transfer.fromPlayer}</strong> solved puzzle → 
+                        <strong>{transfer.fromPlayer}</strong> solved puzzle →
                         <strong> {transfer.toPlayer}</strong> +{transfer.points} points
                       </span>
                     )}
@@ -236,4 +236,4 @@ const TeamCoordinationView: React.FC<TeamCoordinationViewProps> = ({
   );
 };
 
-export default TeamCoordinationView; 
+export default TeamCoordinationView;

@@ -106,4 +106,4 @@ export const PuzzleRenderer: React.FC<PuzzleRendererProps> = ({
         </Card>
       );
   }
-}; 
+};

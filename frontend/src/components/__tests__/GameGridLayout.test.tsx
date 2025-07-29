@@ -99,4 +99,4 @@ describe('GameGridLayout', () => {
     // Eliminated player (id 3) should not render a puzzle
     expect(screen.queryByTestId('puzzle-3')).toBeNull();
   });
-}); 
+});

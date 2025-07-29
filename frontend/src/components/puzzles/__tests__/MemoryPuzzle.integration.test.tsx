@@ -78,7 +78,7 @@ describe('MemoryPuzzle Integration Tests', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-    
+
     // Default mock implementations
     mockUseMemoryGameState.mockReturnValue({
       showMapping: true,
@@ -646,4 +646,4 @@ describe('MemoryPuzzle Integration Tests', () => {
       expect(screen.getByText('Invalid puzzle data.')).toBeInTheDocument();
     });
   });
-}); 
+});

@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
-import { 
+import {
   type GameState,
   type GameConfig,
   getInitialGameState
@@ -19,10 +19,10 @@ export function useSpatialGameState({
   const [lastPuzzleType, setLastPuzzleType] = useState<string | null>(null);
   const [lastPuzzleId, setLastPuzzleId] = useState<number | null>(null);
   const [resetCounter, setResetCounter] = useState(0);
-  
+
   // Get initial state
   const initialGameState = useMemo(() => getInitialGameState(gameConfig), [gameConfig]);
-  
+
   // Game state
   const [circlePosition, setCirclePosition] = useState<GameState['circlePosition']>(initialGameState.circlePosition);
   const [obstaclePosition, setObstaclePosition] = useState<GameState['obstaclePosition']>(initialGameState.obstaclePosition);
@@ -77,4 +77,4 @@ export function useSpatialGameState({
     setGameLost,
     resetGame
   };
-} 
+}

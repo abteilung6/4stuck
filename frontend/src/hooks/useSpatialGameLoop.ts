@@ -1,9 +1,9 @@
 import { useCallback, useRef, useEffect } from 'react';
-import { 
+import {
   processGameTick,
-  type GameState, 
-  type GameConfig, 
-  type Position 
+  type GameState,
+  type GameConfig,
+  type Position
 } from '../services/spatialPuzzleLogic';
 
 interface GameCallbacks {
@@ -68,7 +68,7 @@ export function useSpatialGameLoop({
 
   const startGameLoop = useCallback(() => {
     if (!isActive) return;
-    
+
     const gameTick = () => {
       const currentState = gameStateRef.current;
       const currentCallbacks = callbacksRef.current;
@@ -119,4 +119,4 @@ export function useSpatialGameLoop({
     stopGameLoop,
     isRunning: animationRef.current !== undefined
   };
-} 
+}

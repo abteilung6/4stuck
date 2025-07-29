@@ -18,20 +18,20 @@ export interface UseGameLogicReturn {
   gameState: GameState | null;
   puzzle: PuzzleState | null;
   gameStatus: GameStatusInfo | null;
-  
+
   // UI state
   answer: string;
   feedback: string;
   loading: boolean;
   error: string;
   notifications: string[];
-  
+
   // Actions
   setAnswer: (answer: string) => void;
   submitAnswer: () => Promise<void>;
   submitAnswerWithAnswer: (answer: string) => Promise<void>;
   fetchPuzzle: () => Promise<void>;
-  
+
   // Connection state
   isConnected: boolean;
   websocket: WebSocket | null;
@@ -42,17 +42,17 @@ export function useGameLogic({ sessionId, userId, initialTeam }: UseGameLogicPro
   const [gameState, setGameState] = useState<GameState | null>(null);
   const [puzzle, setPuzzle] = useState<PuzzleState | null>(null);
   const [gameStatus, setGameStatus] = useState<GameStatusInfo | null>(null);
-  
+
   // UI state
   const [answer, setAnswer] = useState('');
   const [feedback, setFeedback] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [notifications, setNotifications] = useState<string[]>([]);
-  
+
   // Connection state
   const [isConnected, setIsConnected] = useState(false);
-  
+
   // Refs
   const wsServiceRef = useRef<ReturnType<typeof createGameWebSocketService> | null>(null);
 
@@ -64,29 +64,29 @@ export function useGameLogic({ sessionId, userId, initialTeam }: UseGameLogicPro
       setError('');
       // Do NOT setGameStatus here! Let the effect handle it.
     }, []),
-    
+
     onPuzzleInteraction: useCallback((interaction: any) => {
       setNotifications(prev => [`Teammate interaction: ${interaction.interaction_type}`, ...prev.slice(0, 4)]);
     }, []),
-    
+
     onTeamCommunication: useCallback((communication: any) => {
       setNotifications(prev => [`Team message: ${communication.message_type}`, ...prev.slice(0, 4)]);
     }, []),
-    
+
     onAchievement: useCallback((achievement: any) => {
       setNotifications(prev => [`Achievement: ${achievement.achievement_type}`, ...prev.slice(0, 4)]);
     }, []),
-    
+
     onError: useCallback((error: string) => {
       setError(error);
       setNotifications(prev => [`WebSocket error: ${error}`, ...prev.slice(0, 4)]);
     }, []),
-    
+
     onConnectionClosed: useCallback(() => {
       setIsConnected(false);
       setNotifications(prev => ['WebSocket connection lost', ...prev.slice(0, 4)]);
     }, []),
-    
+
     onConnected: useCallback(() => {
       setIsConnected(true);
       setError('');
@@ -98,7 +98,7 @@ export function useGameLogic({ sessionId, userId, initialTeam }: UseGameLogicPro
   useEffect(() => {
     wsServiceRef.current = createGameWebSocketService(wsCallbacks);
     wsServiceRef.current.connect(sessionId);
-    
+
     return () => {
       wsServiceRef.current?.disconnect();
     };
@@ -117,7 +117,7 @@ export function useGameLogic({ sessionId, userId, initialTeam }: UseGameLogicPro
         setTimeout(() => fetchPuzzle(retryCount + 1), 500);
         return;
       }
-      
+
       // If no puzzle exists, wait for the backend to create one
       setPuzzle(null);
       // Don't set error - this is expected when game first starts
@@ -129,7 +129,7 @@ export function useGameLogic({ sessionId, userId, initialTeam }: UseGameLogicPro
   // Submit answer
   const submitAnswer = useCallback(async () => {
     if (!puzzle) return;
-    
+
     setLoading(true);
     setFeedback('');
     try {
@@ -138,13 +138,13 @@ export function useGameLogic({ sessionId, userId, initialTeam }: UseGameLogicPro
         answer,
         user_id: userId,
       });
-      
+
       if (result.correct) {
         setFeedback('Correct!');
       } else {
         setFeedback('Incorrect.');
       }
-      
+
       setAnswer('');
       // Refetch puzzle (next or same)
       await fetchPuzzle();
@@ -167,30 +167,30 @@ export function useGameLogic({ sessionId, userId, initialTeam }: UseGameLogicPro
   const submitAnswerWithAnswer = useCallback(async (specificAnswer: string) => {
     if (!puzzle) return;
     if (isSubmittingRef.current) return;
-    
+
     // Rate limiting: prevent submissions more frequent than 1 second apart
     const now = Date.now();
     if (now - lastSubmissionTimeRef.current < 1000) {
       return;
     }
-    
+
     // Validate answer format based on puzzle type
     if (puzzle.type === 'spatial' && specificAnswer !== 'solved' && specificAnswer !== 'collision') {
       return;
     }
-    
+
     if (puzzle.type === 'multitasking' && !/^\d+(,\d+)*$/.test(specificAnswer) && specificAnswer !== '') {
       return;
     }
-    
+
     if (puzzle.type === 'concentration' && !/^\d+$/.test(specificAnswer)) {
       return;
     }
-    
+
     if (puzzle.type === 'memory' && !['red', 'blue', 'green', 'yellow'].includes(specificAnswer)) {
       return;
     }
-    
+
     isSubmittingRef.current = true;
     lastSubmissionTimeRef.current = now;
     setLoading(true);
@@ -249,7 +249,7 @@ export function useGameLogic({ sessionId, userId, initialTeam }: UseGameLogicPro
     if (gameState) {
       const status = calculateGameStatus(gameState, userId, puzzle, isConnected);
       setGameStatus(status);
-      
+
       // If game just became active and we don't have a puzzle, fetch it
       if (gameState.session.status === 'active' && !puzzle && status.status === 'waiting') {
         fetchPuzzle();
@@ -264,22 +264,22 @@ export function useGameLogic({ sessionId, userId, initialTeam }: UseGameLogicPro
     gameState,
     puzzle,
     gameStatus,
-    
+
     // UI state
     answer,
     feedback,
     loading,
     error,
     notifications,
-    
+
     // Actions
     setAnswer,
     submitAnswer,
     submitAnswerWithAnswer,
     fetchPuzzle,
-    
+
     // Connection state
     isConnected,
     websocket: wsServiceRef.current?.getWebSocket() || null
   };
-} 
+}

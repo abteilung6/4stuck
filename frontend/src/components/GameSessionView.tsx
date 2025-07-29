@@ -75,9 +75,9 @@ const GameSessionView: React.FC<GameSessionViewProps> = ({ session, user, team }
       <Container variant="full" dataTestId="game-session-container">
         <SectionTitle level={2}>Game Session</SectionTitle>
         <StatusMessage type="error">Error: {error}</StatusMessage>
-        <Button 
-          onClick={() => window.location.reload()} 
-          variant="secondary" 
+        <Button
+          onClick={() => window.location.reload()}
+          variant="secondary"
           style={{ marginTop: 16 }}
           aria-label="Retry Connection"
         >
@@ -164,7 +164,7 @@ const GameSessionView: React.FC<GameSessionViewProps> = ({ session, user, team }
           </div>
         </div>
       </Container>
-      
+
       {/* Mouse cursor overlay for other players */}
       {user && websocket && (
         <MouseCursorOverlay
@@ -201,23 +201,23 @@ const GameOverView: React.FC<{ gameStatus: any; user: any }> = ({ gameStatus, us
   </Container>
 );
 
-const EliminatedView: React.FC<{ gameState: any; user: any; notifications: string[] }> = ({ 
-  gameState, 
-  user, 
-  notifications 
+const EliminatedView: React.FC<{ gameState: any; user: any; notifications: string[] }> = ({
+  gameState,
+  user,
+  notifications
 }) => (
   <Container variant="full" dataTestId="game-session-container">
     <SectionTitle level={2}>Game Session</SectionTitle>
     <StatusMessage type="error">You have been eliminated.</StatusMessage>
     <div>Thank you for playing! Please wait for the game to finish.</div>
-    
+
     {/* Enhanced Team Coordination View */}
-    <TeamCoordinationView 
+    <TeamCoordinationView
       players={gameState?.players || []}
       currentUserId={user.id}
       notifications={notifications}
     />
-    
+
     <Button onClick={() => window.location.reload()} variant="secondary" style={{ marginTop: 24 }} aria-label="Return to Lobby">
       Return to Lobby
     </Button>
@@ -229,14 +229,14 @@ const WaitingView: React.FC<{ gameState: any; user: any; notifications: string[]
     <SectionTitle level={2}>Game Session</SectionTitle>
     <StatusMessage type="info">Waiting for your turn...</StatusMessage>
     <div>Watch your teammates and get ready!</div>
-    
+
     {/* Enhanced Team Coordination View */}
-    <TeamCoordinationView 
+    <TeamCoordinationView
       players={gameState?.players || []}
       currentUserId={user.id}
       notifications={notifications}
     />
-    
+
     <Button onClick={() => window.location.reload()} variant="secondary" style={{ marginTop: 24 }} aria-label="Return to Lobby">
       Return to Lobby
     </Button>
@@ -319,4 +319,4 @@ const ActiveGameView: React.FC<{
   );
 };
 
-export default GameSessionView; 
+export default GameSessionView;

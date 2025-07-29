@@ -162,7 +162,7 @@ describe('multitaskingPuzzleUtils', () => {
       };
 
       const grid = generateNumberGrid(puzzleData);
-      
+
       expect(grid).toHaveLength(3);
       expect(grid[0]).toHaveLength(9);
       expect(grid[1]).toHaveLength(9);
@@ -268,4 +268,4 @@ describe('multitaskingPuzzleUtils', () => {
       expect(formatTime(3600)).toBe('60:00');
     });
   });
-}); 
+});

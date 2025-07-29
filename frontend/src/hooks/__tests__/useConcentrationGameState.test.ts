@@ -21,7 +21,7 @@ describe('useConcentrationGameState', () => {
   });
 
   it('should initialize with default game state', () => {
-    const { result } = renderHook(() => 
+    const { result } = renderHook(() =>
       useConcentrationGameState({
         puzzleData: mockPuzzleData,
         puzzleType: 'concentration',
@@ -123,7 +123,7 @@ describe('useConcentrationGameState', () => {
   });
 
   it('should handle click correctly', () => {
-    const { result } = renderHook(() => 
+    const { result } = renderHook(() =>
       useConcentrationGameState({
         puzzleData: mockPuzzleData,
         puzzleType: 'concentration',
@@ -145,7 +145,7 @@ describe('useConcentrationGameState', () => {
   });
 
   it('should handle correct click', () => {
-    const { result } = renderHook(() => 
+    const { result } = renderHook(() =>
       useConcentrationGameState({
         puzzleData: mockPuzzleData,
         puzzleType: 'concentration',
@@ -169,7 +169,7 @@ describe('useConcentrationGameState', () => {
   });
 
   it('should not allow multiple clicks', () => {
-    const { result } = renderHook(() => 
+    const { result } = renderHook(() =>
       useConcentrationGameState({
         puzzleData: mockPuzzleData,
         puzzleType: 'concentration',
@@ -192,7 +192,7 @@ describe('useConcentrationGameState', () => {
   });
 
   it('should auto-advance pairs after duration', () => {
-    const { result } = renderHook(() => 
+    const { result } = renderHook(() =>
       useConcentrationGameState({
         puzzleData: mockPuzzleData,
         puzzleType: 'concentration',
@@ -211,7 +211,7 @@ describe('useConcentrationGameState', () => {
   });
 
   it('should complete game when reaching end without click', () => {
-    const { result } = renderHook(() => 
+    const { result } = renderHook(() =>
       useConcentrationGameState({
         puzzleData: mockPuzzleData,
         puzzleType: 'concentration',
@@ -235,7 +235,7 @@ describe('useConcentrationGameState', () => {
   });
 
   it('should not auto-advance after click', () => {
-    const { result } = renderHook(() => 
+    const { result } = renderHook(() =>
       useConcentrationGameState({
         puzzleData: mockPuzzleData,
         puzzleType: 'concentration',
@@ -259,7 +259,7 @@ describe('useConcentrationGameState', () => {
   });
 
   it('should increment reset counter when resetGame is called', () => {
-    const { result } = renderHook(() => 
+    const { result } = renderHook(() =>
       useConcentrationGameState({
         puzzleData: mockPuzzleData,
         puzzleType: 'concentration',
@@ -277,7 +277,7 @@ describe('useConcentrationGameState', () => {
   });
 
   it('should reset game state when resetGame is called', () => {
-    const { result } = renderHook(() => 
+    const { result } = renderHook(() =>
       useConcentrationGameState({
         puzzleData: mockPuzzleData,
         puzzleType: 'concentration',
@@ -306,7 +306,7 @@ describe('useConcentrationGameState', () => {
   });
 
   it('should update currentPair when advancing', () => {
-    const { result } = renderHook(() => 
+    const { result } = renderHook(() =>
       useConcentrationGameState({
         puzzleData: mockPuzzleData,
         puzzleType: 'concentration',
@@ -325,7 +325,7 @@ describe('useConcentrationGameState', () => {
   });
 
   it('should return null currentPair when game is complete', () => {
-    const { result } = renderHook(() => 
+    const { result } = renderHook(() =>
       useConcentrationGameState({
         puzzleData: mockPuzzleData,
         puzzleType: 'concentration',
@@ -342,4 +342,4 @@ describe('useConcentrationGameState', () => {
     expect(result.current.gameState.isComplete).toBe(true);
     expect(result.current.currentPair).toBeNull();
   });
-}); 
+});

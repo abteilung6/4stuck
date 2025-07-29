@@ -74,7 +74,7 @@ const GameGridLayout: React.FC<GameGridLayoutProps> = ({
           const puzzle = getPuzzleForPlayer(player.id);
           const isLocal = player.id === localUserId;
           return (
-        <PlayerQuadrant 
+        <PlayerQuadrant
               key={player.id}
               player={player}
               position={['top-left', 'top-right', 'bottom-left', 'bottom-right'][idx] as any}
@@ -94,4 +94,4 @@ const GameGridLayout: React.FC<GameGridLayoutProps> = ({
   );
 };
 
-export default GameGridLayout; 
+export default GameGridLayout;

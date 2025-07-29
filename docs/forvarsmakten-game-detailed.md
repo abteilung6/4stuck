@@ -148,4 +148,4 @@ Team.försvarsmakten is a collaborative, team-based cognitive puzzle game inspir
 ---
 
 ## 10. Summary
-Team.försvarsmakten is a unique, team-based cognitive challenge that rewards collaboration, quick thinking, and mutual support. Its design ensures that no player can succeed alone, making it a powerful tool for team-building and cognitive training. 
+Team.försvarsmakten is a unique, team-based cognitive challenge that rewards collaboration, quick thinking, and mutual support. Its design ensures that no player can succeed alone, making it a powerful tool for team-building and cognitive training.

@@ -20,31 +20,31 @@ test.describe('Game States and UI Components', () => {
       // Check main lobby elements
       await expect(page.getByText('Game Lobby')).toBeVisible();
       await expect(page.getByText('Available Teams:')).toBeVisible();
-      
+
       // Check username section
       await expect(page.getByPlaceholder('Username')).toBeVisible();
       await expect(page.locator('button').first()).toBeVisible();
-      
+
       // Check team creation section
       await expect(page.getByPlaceholder('New team name')).toBeVisible();
       await expect(page.locator('button').filter({ hasText: 'Create New Team' })).toBeVisible();
-      
+
       // Check teams list container
       await expect(page.locator('.teams-list')).toBeVisible();
     });
 
     test('should handle username setting workflow', async ({ page }) => {
       const username = 'testuser' + uniqueSuffix();
-      
+
       // Set username
       await page.getByPlaceholder('Username').fill(username);
       await expect(page.locator('button').first()).toBeVisible();
       await expect(page.locator('button').first()).toBeEnabled();
       await page.locator('button').first().click();
-      
+
       // Verify username is set
       await expect(page.getByText(`Hello, ${username}!`)).toBeVisible();
-      
+
       // Verify username field is disabled
       await expect(page.getByPlaceholder('Username')).toBeDisabled();
       await expect(page.locator('button').first()).toBeDisabled();
@@ -74,19 +74,19 @@ test.describe('Game States and UI Components', () => {
       await expect(page.locator('button').first()).toBeVisible();
       await expect(page.locator('button').first()).toBeEnabled();
       await page.locator('button').first().click();
-      
+
       // Create team
       const teamName = 'TestTeam123_' + uniqueSuffix();
       await page.getByPlaceholder('New team name').fill(teamName);
       await expect(page.locator('button').filter({ hasText: 'Create New Team' })).toBeVisible();
       await expect(page.locator('button').filter({ hasText: 'Create New Team' })).toBeEnabled();
       await page.locator('button').filter({ hasText: 'Create New Team' }).click();
-      
+
       // Join team
       await expect(page.locator('button').filter({ hasText: 'Join' }).first()).toBeVisible();
       await expect(page.locator('button').filter({ hasText: 'Join' }).first()).toBeEnabled();
       await page.locator(`li:has-text("${teamName}") button:has-text("Join")`).click();
-      
+
       // Verify team membership
       await expect(page.getByText(`Your Team: ${teamName}`)).toBeVisible();
       await expect(page.getByRole('button', { name: 'Start Game' })).toBeVisible();
@@ -99,7 +99,7 @@ test.describe('Game States and UI Components', () => {
       // Setup: Create user and team
       const username = 'user_' + uniqueSuffix();
       const teamName = 'team_' + uniqueSuffix();
-      
+
       await page.getByPlaceholder('Username').fill(username);
       await expect(page.locator('button').first()).toBeVisible();
       await expect(page.locator('button').first()).toBeEnabled();
@@ -111,15 +111,15 @@ test.describe('Game States and UI Components', () => {
       await expect(page.locator('button').filter({ hasText: 'Join' }).first()).toBeVisible();
       await expect(page.locator('button').filter({ hasText: 'Join' }).first()).toBeEnabled();
       await page.locator(`li:has-text("${teamName}") button:has-text("Join")`).click();
-      
+
       // Start game
       await expect(page.getByRole('button', { name: 'Start Game' })).toBeVisible();
       await expect(page.getByRole('button', { name: 'Start Game' })).toBeEnabled();
       await page.getByRole('button', { name: 'Start Game' }).click();
-      
+
       // Wait for transition
       await page.waitForTimeout(2000);
-      
+
       // Verify game session view
       await expect(page.locator('.game-session-container')).toBeVisible();
       await expect(page.getByText('Game Session')).toBeVisible();
@@ -143,7 +143,7 @@ test.describe('Game States and UI Components', () => {
       await expect(page.getByRole('button', { name: 'Start Game' })).toBeVisible();
       await expect(page.getByRole('button', { name: 'Start Game' })).toBeEnabled();
       await page.getByRole('button', { name: 'Start Game' }).click();
-      
+
       // Pass if either connecting message or game session container is visible
       const connecting = page.getByText('Connecting to game...');
       const container = page.locator('.game-session-container');
@@ -171,10 +171,10 @@ test.describe('Game States and UI Components', () => {
       await expect(page.getByRole('button', { name: 'Start Game' })).toBeVisible();
       await expect(page.getByRole('button', { name: 'Start Game' })).toBeEnabled();
       await page.getByRole('button', { name: 'Start Game' }).click();
-      
+
       // Wait for game session to load
       await page.waitForTimeout(3000);
-      
+
       // Check for waiting state (if not active)
       try {
         await expect(page.getByText('Waiting for your turn...')).toBeVisible({ timeout: 2000 });
@@ -203,10 +203,10 @@ test.describe('Game States and UI Components', () => {
       await expect(page.getByRole('button', { name: 'Start Game' })).toBeVisible();
       await expect(page.getByRole('button', { name: 'Start Game' })).toBeEnabled();
       await page.getByRole('button', { name: 'Start Game' }).click();
-      
+
       // Wait for game session to load
       await page.waitForTimeout(3000);
-      
+
       // Check for active game elements
       try {
         await expect(page.getByText('Your Puzzle')).toBeVisible({ timeout: 2000 });
@@ -236,10 +236,10 @@ test.describe('Game States and UI Components', () => {
       await expect(page.getByRole('button', { name: 'Start Game' })).toBeVisible();
       await expect(page.getByRole('button', { name: 'Start Game' })).toBeEnabled();
       await page.getByRole('button', { name: 'Start Game' }).click();
-      
+
       // Wait for game session to load
       await page.waitForTimeout(3000);
-      
+
       // Check for eliminated state (if applicable)
       try {
         await expect(page.getByText('You have been eliminated.')).toBeVisible({ timeout: 2000 });
@@ -268,10 +268,10 @@ test.describe('Game States and UI Components', () => {
       await expect(page.getByRole('button', { name: 'Start Game' })).toBeVisible();
       await expect(page.getByRole('button', { name: 'Start Game' })).toBeEnabled();
       await page.getByRole('button', { name: 'Start Game' }).click();
-      
+
       // Wait for game session to load
       await page.waitForTimeout(3000);
-      
+
       // Check for game over state (if applicable)
       try {
         await expect(page.getByText('Game Over')).toBeVisible({ timeout: 2000 });
@@ -304,10 +304,10 @@ test.describe('Game States and UI Components', () => {
       await expect(page.getByRole('button', { name: 'Start Game' })).toBeVisible();
       await expect(page.getByRole('button', { name: 'Start Game' })).toBeEnabled();
       await page.getByRole('button', { name: 'Start Game' }).click();
-      
+
       // Wait for game session to load
       await page.waitForTimeout(3000);
-      
+
       // Check for team points table
       try {
         await expect(page.locator('.team-points-table')).toBeVisible({ timeout: 3000 });
@@ -337,10 +337,10 @@ test.describe('Game States and UI Components', () => {
       await expect(page.getByRole('button', { name: 'Start Game' })).toBeVisible();
       await expect(page.getByRole('button', { name: 'Start Game' })).toBeEnabled();
       await page.getByRole('button', { name: 'Start Game' }).click();
-      
+
       // Wait for game session to load
       await page.waitForTimeout(3000);
-      
+
       // Check for current user highlighting
       try {
         await expect(page.locator('.current-user')).toBeVisible({ timeout: 3000 });
@@ -359,18 +359,18 @@ test.describe('Game States and UI Components', () => {
       await expect(page.locator('button').first()).toBeEnabled();
       await page.locator('button').first().click();
       await expect(page.getByText('Please enter a username.')).toBeVisible();
-      
+
       // Try to create team without username (button should be disabled)
       const createTeamButton = page.locator('button').filter({ hasText: 'Create New Team' });
       await expect(createTeamButton).toBeDisabled();
-      
+
       // Set a username first
       const username = 'testuser' + uniqueSuffix();
       await page.getByPlaceholder('Username').fill(username);
       await expect(page.locator('button').first()).toBeVisible();
       await expect(page.locator('button').first()).toBeEnabled();
       await page.locator('button').first().click();
-      
+
       // Now try to create team with empty name
       await page.getByPlaceholder('New team name').fill('');
       await expect(page.locator('button').filter({ hasText: 'Create New Team' })).toBeVisible();
@@ -399,10 +399,10 @@ test.describe('Game States and UI Components', () => {
       await expect(page.getByRole('button', { name: 'Start Game' })).toBeVisible();
       await expect(page.getByRole('button', { name: 'Start Game' })).toBeEnabled();
       await page.getByRole('button', { name: 'Start Game' }).click();
-      
+
       // Wait for game session
       await page.waitForTimeout(3000);
-      
+
       // Try to return to lobby (if game over state is available)
       try {
         await expect(page.getByRole('button', { name: 'Return to Lobby' })).toBeVisible();
@@ -433,15 +433,15 @@ test.describe('Game States and UI Components', () => {
       await expect(page.getByRole('button', { name: 'Start Game' })).toBeVisible();
       await expect(page.getByRole('button', { name: 'Start Game' })).toBeEnabled();
       await page.getByRole('button', { name: 'Start Game' }).click();
-      
+
       // Wait for game session
       await page.waitForTimeout(2000);
-      
+
       // Refresh page
       await page.reload();
-      
+
       // Should return to lobby
       await expect(page.getByText('Game Lobby')).toBeVisible();
     });
   });
-}); 
+});

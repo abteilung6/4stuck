@@ -61,7 +61,7 @@ export const useMouseTracking = ({
   }, [websocket, userId]);
 
   const handleMouseMove = useCallback((event: MouseEvent) => {
-    
+
     // Clear existing timeout
     if (throttleTimeoutRef.current) {
       clearTimeout(throttleTimeoutRef.current);
@@ -88,4 +88,4 @@ export const useMouseTracking = ({
   return {
     sendMousePosition
   };
-}; 
+};

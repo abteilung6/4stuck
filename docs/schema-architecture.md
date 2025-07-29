@@ -205,7 +205,7 @@ Each schema file includes a `$id` field for version identification:
 
 ```json
 {
-  "$id": "https://team-forsvarsmakten.com/schemas/core/v1/player.json",
+  "$id": "https://4stuck.com/schemas/core/v1/player.json",
   "title": "Player Models",
   "version": "1.0.0"
 }
@@ -307,4 +307,4 @@ make validate-schemas
 
 ## Conclusion
 
-The centralized schema architecture provides a robust foundation for the Team.försvarsmakten project, ensuring type safety, consistency, and maintainability across the entire application stack. By using JSON Schema as the single source of truth and automatically generating code, we reduce errors, improve developer productivity, and maintain high code quality. 
+The centralized schema architecture provides a robust foundation for the 4stuck project, ensuring type safety, consistency, and maintainability across the entire application stack. By using JSON Schema as the single source of truth and automatically generating code, we reduce errors, improve developer productivity, and maintain high code quality.

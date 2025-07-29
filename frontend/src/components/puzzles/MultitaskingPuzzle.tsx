@@ -111,4 +111,4 @@ const MultitaskingPuzzle: React.FC<MultitaskingPuzzleProps> = ({
   );
 };
 
-export default MultitaskingPuzzle; 
+export default MultitaskingPuzzle;

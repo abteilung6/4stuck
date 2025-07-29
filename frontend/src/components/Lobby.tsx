@@ -122,7 +122,7 @@ const Lobby: React.FC = () => {
       // Get the updated user object with color from the join endpoint
       const joinedUser = await TeamService.joinTeamTeamJoinPost(currentName, team.id);
       setStatus(`Joined ${team.name}`);
-      
+
       // Fetch updated teams and set currentTeam to the fresh data
       await fetchTeams();
       const updatedTeams = await TeamService.getAvailableTeamsTeamAvailableGet();
@@ -194,14 +194,14 @@ const Lobby: React.FC = () => {
             return null;
           }
         });
-      
+
       await Promise.all(colorPromises);
-      
+
       // Create the game session
       const sess = await GameService.createGameSessionGameSessionPost({ team_id: currentTeam.id });
       setSession(sess);
       console.log('[Lobby] setSession', sess);
-      
+
       // Re-fetch teams and update currentTeam to ensure members are up-to-date
       await fetchTeams();
       setTeams(prevTeams => {
@@ -266,10 +266,10 @@ const Lobby: React.FC = () => {
             aria-label="Enter your username"
             style={{ maxWidth: 180 }}
           />
-          <button 
-            className="btn-military" 
-            onClick={handleSetName} 
-            disabled={!!currentName} 
+          <button
+            className="btn-military"
+            onClick={handleSetName}
+            disabled={!!currentName}
             aria-label="Set Username"
           >
             Set Username
@@ -318,10 +318,10 @@ const Lobby: React.FC = () => {
             aria-label="Enter new team name"
             style={{ maxWidth: 180 }}
           />
-          <button 
-            className="btn-military" 
-            onClick={handleCreateTeam} 
-            disabled={creatingTeam || !currentName} 
+          <button
+            className="btn-military"
+            onClick={handleCreateTeam}
+            disabled={creatingTeam || !currentName}
             aria-label="Create New Team"
           >
             + Create New Team
@@ -337,9 +337,9 @@ const Lobby: React.FC = () => {
             ))}
           </ul>
           <div style={{ display: 'flex', gap: 12 }}>
-            <button 
-              className="btn-military danger" 
-              onClick={handleLeaveTeam} 
+            <button
+              className="btn-military danger"
+              onClick={handleLeaveTeam}
               aria-label="Leave Team"
             >
               Leave Team
@@ -392,9 +392,9 @@ const Lobby: React.FC = () => {
       >
         Return to Lobby
       </button>
-      
+
     </Container>
   );
 };
 
-export default Lobby; 
+export default Lobby;

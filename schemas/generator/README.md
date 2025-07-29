@@ -249,4 +249,4 @@ python generate_python.py --verbose
 2. **Add runtime validation** to WebSocket handlers
 3. **Update tests** to use generated models
 4. **Add CI/CD integration** for schema generation
-5. **Document migration guide** for team members 
+5. **Document migration guide** for team members

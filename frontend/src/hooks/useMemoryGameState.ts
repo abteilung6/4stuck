@@ -28,17 +28,17 @@ export const useMemoryGameState = ({
 
   // Reset state when puzzle changes or mapping duration changes
   useEffect(() => {
-    const shouldReset = 
-      puzzleId !== lastPuzzleId.current || 
+    const shouldReset =
+      puzzleId !== lastPuzzleId.current ||
       mappingDuration !== lastMappingDuration.current;
-    
+
     if (shouldReset) {
       // Clear any existing timer
       if (timerRef.current) {
         clearTimeout(timerRef.current);
         timerRef.current = null;
       }
-      
+
       setShowMapping(true);
       setTimeLeft(mappingDuration);
       setIsComplete(false);
@@ -70,13 +70,13 @@ export const useMemoryGameState = ({
       }
       return;
     }
-    
+
     const updateTimer = () => {
       const elapsed = Math.floor((Date.now() - startTimeRef.current) / 1000);
       const remaining = Math.max(0, mappingDuration - elapsed);
-      
+
       setTimeLeft(remaining);
-      
+
       if (remaining <= 0 && !hasCompleted.current) {
         setShowMapping(false);
         setIsComplete(true);
@@ -84,13 +84,13 @@ export const useMemoryGameState = ({
         onMappingComplete?.();
         return;
       }
-      
+
       // Schedule next update
       if (remaining > 0) {
         timerRef.current = setTimeout(updateTimer, 1000);
       }
     };
-    
+
     // Start the timer
     timerRef.current = setTimeout(updateTimer, 1000);
 
@@ -117,4 +117,4 @@ export const useMemoryGameState = ({
     timeLeft,
     isComplete,
   };
-}; 
+};

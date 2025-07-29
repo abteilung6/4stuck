@@ -207,4 +207,4 @@ While the core game is complete, potential future enhancements include:
 - **Mobile App**: Native mobile application
 - **Social Features**: Team chat, achievements, profiles
 
-The centralized schema architecture makes these enhancements straightforward to implement while maintaining type safety and consistency. 
+The centralized schema architecture makes these enhancements straightforward to implement while maintaining type safety and consistency.

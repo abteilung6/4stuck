@@ -21,4 +21,4 @@ class MockWebSocket {
 }
 globalThis.WebSocket = MockWebSocket as any;
 
-// localStorage is no longer used, so no mock needed 
+// localStorage is no longer used, so no mock needed

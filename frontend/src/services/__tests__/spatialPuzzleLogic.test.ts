@@ -21,7 +21,7 @@ describe('spatialPuzzleLogic', () => {
     it('should validate a correct configuration', () => {
       const config = getDefaultGameConfig();
       const result = validateGameConfig(config);
-      
+
       expect(result.isValid).toBe(true);
       expect(result.errors).toHaveLength(0);
     });
@@ -29,7 +29,7 @@ describe('spatialPuzzleLogic', () => {
     it('should detect invalid game width', () => {
       const config = { ...getDefaultGameConfig(), gameWidth: -1 };
       const result = validateGameConfig(config);
-      
+
       expect(result.isValid).toBe(false);
       expect(result.errors).toContain('Game width must be positive');
     });
@@ -37,7 +37,7 @@ describe('spatialPuzzleLogic', () => {
     it('should detect circle too large for game area', () => {
       const config = { ...getDefaultGameConfig(), circleRadius: 300 };
       const result = validateGameConfig(config);
-      
+
       expect(result.isValid).toBe(false);
       expect(result.errors).toContain('Circle diameter cannot exceed game width');
     });
@@ -45,7 +45,7 @@ describe('spatialPuzzleLogic', () => {
     it('should detect obstacle too large for game area', () => {
       const config = { ...getDefaultGameConfig(), obstacleWidth: 500 };
       const result = validateGameConfig(config);
-      
+
       expect(result.isValid).toBe(false);
       expect(result.errors).toContain('Obstacle width cannot exceed game width');
     });
@@ -58,9 +58,9 @@ describe('spatialPuzzleLogic', () => {
       const circleRadius = 20;
       const obstacleWidth = 80;
       const obstacleHeight = 30;
-      
+
       const result = checkCollision(circlePos, obstaclePos, circleRadius, obstacleWidth, obstacleHeight);
-      
+
       expect(result).toBe(true);
     });
 
@@ -70,9 +70,9 @@ describe('spatialPuzzleLogic', () => {
       const circleRadius = 20;
       const obstacleWidth = 80;
       const obstacleHeight = 30;
-      
+
       const result = checkCollision(circlePos, obstaclePos, circleRadius, obstacleWidth, obstacleHeight);
-      
+
       expect(result).toBe(false);
     });
 
@@ -82,9 +82,9 @@ describe('spatialPuzzleLogic', () => {
       const circleRadius = 20;
       const obstacleWidth = 80;
       const obstacleHeight = 30;
-      
+
       const result = checkCollision(circlePos, obstaclePos, circleRadius, obstacleWidth, obstacleHeight);
-      
+
       expect(result).toBe(false);
     });
 
@@ -94,9 +94,9 @@ describe('spatialPuzzleLogic', () => {
       const circleRadius = 20;
       const obstacleWidth = 80;
       const obstacleHeight = 30;
-      
+
       const result = checkCollision(circlePos, obstaclePos, circleRadius, obstacleWidth, obstacleHeight);
-      
+
       expect(result).toBe(false);
     });
 
@@ -106,9 +106,9 @@ describe('spatialPuzzleLogic', () => {
       const circleRadius = 20;
       const obstacleWidth = 80;
       const obstacleHeight = 30;
-      
+
       const result = checkCollision(circlePos, obstaclePos, circleRadius, obstacleWidth, obstacleHeight);
-      
+
       expect(result).toBe(false);
     });
   });
@@ -129,7 +129,7 @@ describe('spatialPuzzleLogic', () => {
       const result = checkWinCondition(circlePos, gameHeight, circleRadius);
       expect(result).toBe(false);
     });
-      
+
     it('should not trigger win at the top', () => {
       const circlePos = { x: 100, y: 0 }; // At the very top
       const gameHeight = 600;
@@ -155,9 +155,9 @@ describe('spatialPuzzleLogic', () => {
       const speed = 10;
       const gameWidth = 400;
       const obstacleWidth = 80;
-      
+
       const result = updateObstaclePosition(currentPos, direction, speed, gameWidth, obstacleWidth);
-      
+
       expect(result.newPosition.x).toBe(110);
       expect(result.newPosition.y).toBe(100);
       expect(result.newDirection).toBe('right');
@@ -169,9 +169,9 @@ describe('spatialPuzzleLogic', () => {
       const speed = 10;
       const gameWidth = 400;
       const obstacleWidth = 80;
-      
+
       const result = updateObstaclePosition(currentPos, direction, speed, gameWidth, obstacleWidth);
-      
+
       expect(result.newPosition.x).toBe(90);
       expect(result.newPosition.y).toBe(100);
       expect(result.newDirection).toBe('left');
@@ -183,9 +183,9 @@ describe('spatialPuzzleLogic', () => {
       const speed = 10;
       const gameWidth = 400;
       const obstacleWidth = 80;
-      
+
       const result = updateObstaclePosition(currentPos, direction, speed, gameWidth, obstacleWidth);
-      
+
       expect(result.newDirection).toBe('left');
     });
 
@@ -195,9 +195,9 @@ describe('spatialPuzzleLogic', () => {
       const speed = 10;
       const gameWidth = 400;
       const obstacleWidth = 80;
-      
+
       const result = updateObstaclePosition(currentPos, direction, speed, gameWidth, obstacleWidth);
-      
+
       expect(result.newDirection).toBe('right');
     });
   });
@@ -210,9 +210,9 @@ describe('spatialPuzzleLogic', () => {
       const gameWidth = 400;
       const gameHeight = 600;
       const circleRadius = 20;
-      
+
       const result = calculateCirclePosition(mouseX, mouseY, dragOffset, gameWidth, gameHeight, circleRadius);
-      
+
       expect(result.x).toBe(190); // 200 - 10
       expect(result.y).toBe(290); // 300 - 10
     });
@@ -224,9 +224,9 @@ describe('spatialPuzzleLogic', () => {
       const gameWidth = 400;
       const gameHeight = 600;
       const circleRadius = 20;
-      
+
       const result = calculateCirclePosition(mouseX, mouseY, dragOffset, gameWidth, gameHeight, circleRadius);
-      
+
       expect(result.x).toBe(0); // Clamped to left boundary
     });
 
@@ -237,9 +237,9 @@ describe('spatialPuzzleLogic', () => {
       const gameWidth = 400;
       const gameHeight = 600;
       const circleRadius = 20;
-      
+
       const result = calculateCirclePosition(mouseX, mouseY, dragOffset, gameWidth, gameHeight, circleRadius);
-      
+
       expect(result.x).toBe(360); // Clamped to right boundary (400 - 40)
     });
   });
@@ -250,9 +250,9 @@ describe('spatialPuzzleLogic', () => {
       const mouseY = 120;
       const circlePos = { x: 100, y: 100 };
       const circleRadius = 20;
-      
+
       const result = isMouseInCircle(mouseX, mouseY, circlePos, circleRadius);
-      
+
       expect(result).toBe(true);
     });
 
@@ -261,9 +261,9 @@ describe('spatialPuzzleLogic', () => {
       const mouseY = 150;
       const circlePos = { x: 100, y: 100 };
       const circleRadius = 20;
-      
+
       const result = isMouseInCircle(mouseX, mouseY, circlePos, circleRadius);
-      
+
       expect(result).toBe(false);
     });
 
@@ -272,9 +272,9 @@ describe('spatialPuzzleLogic', () => {
       const mouseY = 100;
       const circlePos = { x: 100, y: 100 };
       const circleRadius = 20;
-      
+
       const result = isMouseInCircle(mouseX, mouseY, circlePos, circleRadius);
-      
+
       expect(result).toBe(true);
     });
   });
@@ -284,9 +284,9 @@ describe('spatialPuzzleLogic', () => {
       const mouseX = 120;
       const mouseY = 130;
       const circlePos = { x: 100, y: 100 };
-      
+
       const result = calculateDragOffset(mouseX, mouseY, circlePos);
-      
+
       expect(result.x).toBe(20); // 120 - 100
       expect(result.y).toBe(30); // 130 - 100
     });
@@ -296,7 +296,7 @@ describe('spatialPuzzleLogic', () => {
     it('should return valid initial state', () => {
       const config = getDefaultGameConfig();
       const result = getInitialGameState(config);
-      
+
       expect(result.circlePosition.x).toBe(180); // (400/2) - 20
       expect(result.circlePosition.y).toBe(0);
       expect(result.obstaclePosition.x).toBe(0);
@@ -317,9 +317,9 @@ describe('spatialPuzzleLogic', () => {
         gameLost: false
       };
       const config = getDefaultGameConfig();
-      
+
       const result = processGameTick(gameState, config);
-      
+
       expect(result.shouldEndGame).toBe(false);
       expect(result.gameResult.type).toBe(null);
       expect(result.newState.obstaclePosition.x).toBe(10); // Moved right by speed
@@ -334,9 +334,9 @@ describe('spatialPuzzleLogic', () => {
         gameLost: false
       };
       const config = getDefaultGameConfig();
-      
+
       const result = processGameTick(gameState, config);
-      
+
       expect(result.shouldEndGame).toBe(true);
       expect(result.gameResult.type).toBe('lost');
       expect(result.gameResult.reason).toBe('collision');
@@ -352,9 +352,9 @@ describe('spatialPuzzleLogic', () => {
         gameLost: false
       };
       const config = getDefaultGameConfig();
-      
+
       const result = processGameTick(gameState, config);
-      
+
       expect(result.shouldEndGame).toBe(true);
       expect(result.gameResult.type).toBe('won');
       expect(result.gameResult.reason).toBe('reached_bottom');
@@ -370,9 +370,9 @@ describe('spatialPuzzleLogic', () => {
         gameLost: false
       };
       const config = getDefaultGameConfig();
-      
+
       const result = processGameTick(gameState, config);
-      
+
       expect(result.shouldEndGame).toBe(false);
       expect(result.gameResult.type).toBe(null);
       expect(result.newState).toEqual(gameState); // No changes
@@ -389,9 +389,9 @@ describe('spatialPuzzleLogic', () => {
         gameLost: false
       };
       const config = getDefaultGameConfig();
-      
+
       const result = calculateGameStats(gameState, config);
-      
+
       expect(result.progress).toBeCloseTo(55.6, 0); // Actual calculated progress
       expect(result.distanceToGoal).toBeGreaterThan(0);
       expect(result.isInDangerZone).toBe(false);
@@ -406,9 +406,9 @@ describe('spatialPuzzleLogic', () => {
         gameLost: false
       };
       const config = getDefaultGameConfig();
-      
+
       const result = calculateGameStats(gameState, config);
-      
+
       expect(result.isInDangerZone).toBe(true);
     });
 
@@ -421,11 +421,11 @@ describe('spatialPuzzleLogic', () => {
         gameLost: false
       };
       const config = getDefaultGameConfig();
-      
+
       const result = calculateGameStats(gameState, config);
-      
+
       expect(result.progress).toBeCloseTo(100, 1);
       expect(result.distanceToGoal).toBeCloseTo(0, 1);
     });
   });
-}); 
+});

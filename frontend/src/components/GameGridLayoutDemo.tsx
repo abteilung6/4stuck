@@ -63,7 +63,7 @@ const GameGridLayoutDemo: React.FC = () => {
         gap: '10px',
         flexWrap: 'wrap'
       }}>
-        <button 
+        <button
           onClick={() => handleStateChange('lobby')}
           style={{
             padding: '5px 10px',
@@ -76,7 +76,7 @@ const GameGridLayoutDemo: React.FC = () => {
         >
           Lobby
         </button>
-        <button 
+        <button
           onClick={() => handleStateChange('countdown')}
           style={{
             padding: '5px 10px',
@@ -89,7 +89,7 @@ const GameGridLayoutDemo: React.FC = () => {
         >
           Countdown
         </button>
-        <button 
+        <button
           onClick={() => handleStateChange('active')}
           style={{
             padding: '5px 10px',
@@ -102,7 +102,7 @@ const GameGridLayoutDemo: React.FC = () => {
         >
           Active
         </button>
-        <button 
+        <button
           onClick={() => handleStateChange('finished')}
           style={{
             padding: '5px 10px',
@@ -129,4 +129,4 @@ const GameGridLayoutDemo: React.FC = () => {
   );
 };
 
-export default GameGridLayoutDemo; 
+export default GameGridLayoutDemo;

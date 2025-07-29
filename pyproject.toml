@@ -1,0 +1,226 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "4stuck"
+version = "0.1.0"
+description = "collaborative puzzle game"
+readme = "README.md"
+requires-python = ">=3.9"
+license = {text = "MIT"}
+
+[tool.ruff]
+line-length = 120
+target-version = "py39"
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+skip-magic-trailing-comma = false
+line-ending = "auto"
+docstring-code-format = true
+
+[tool.ruff.lint]
+select = [
+    "E",   # pycodestyle errors
+    "W",   # pycodestyle warnings
+    "F",   # pyflakes
+    "I",   # isort
+    "B",   # flake8-bugbear
+    "C4",  # flake8-comprehensions
+    "UP",  # pyupgrade
+    "N",   # pep8-naming
+    "S",   # bandit
+    "A",   # flake8-builtins
+    "COM", # flake8-commas
+    "C90", # mccabe
+    "DTZ", # flake8-datetimez
+    "T20", # flake8-print
+    "TCH", # flake8-type-checking
+    "ARG", # flake8-unused-arguments
+    "PIE", # flake8-pie
+    "SIM", # flake8-simplify
+    "TID", # flake8-tidy-imports
+    "Q",   # flake8-quotes
+    "RSE", # flake8-raise
+    "RET", # flake8-return
+    "SLF", # flake8-self
+    "SLOT", # flake8-slots
+    "TRY", # tryceratops
+    "NPY", # numpy
+    "AIR", # flake8-airflow
+    "PERF", # perflint
+    "FURB", # refurb
+    "LOG", # flake8-logging-format
+    "PTH", # use-pathlib
+    "ERA", # eradicate
+    "PD",  # pandas-vet
+    "PGH", # pygrep-hooks
+    "PL",  # pylint
+    "PT",  # flake8-pytest-style
+    "PYI", # flake8-pyi
+    "YTT", # flake8-2020
+]
+ignore = [
+    "E501",  # line too long (handled by formatter)
+    "B008",  # do not perform function calls in argument defaults
+    "C901",  # too complex
+    "PLR0913", # too many arguments to function call
+    "PLR0912", # too many branches
+    "PLR0915", # too many statements
+    "PLR0911", # too many return statements
+    "PLR2004", # magic value used in comparison
+    "S101",  # assert statements (common in tests)
+    "T201",  # print statements (used in generators and tests)
+    "PT001",  # pytest fixture parentheses style
+    "PT003",  # pytest extraneous scope function
+    "PT006",  # pytest parametrize names wrong type
+    "ARG002", # unused method argument (some are required by interface)
+    "F841",   # unused variable (some are required by interface)
+    "PLC0415", # import outside top-level (some are conditional)
+    "TID252", # relative imports (appropriate for package structure)
+    "F403",   # undefined local with import star (intentional in __init__.py files)
+    "TRY400", # error instead of exception (some are intentional)
+    "S311",   # suspicious non-cryptographic random usage (appropriate for game logic)
+    "PERF203", # try-except in loop (some are necessary)
+    "SIM115", # open file with context handler (some are intentional)
+    "TRY300", # try consider else (some are intentional)
+    "PGH003", # blanket type ignore (some are necessary)
+    "SLF001", # private member access (some are intentional)
+    "E712",   # true-false comparison (some are intentional)
+    "B007",   # unused loop control variable (some are intentional)
+    "C401",   # unnecessary generator set (some are intentional)
+    "N803",   # invalid argument name (some are required by interface)
+    "N806",   # non-lowercase variable in function (test constants)
+    "PTH100", # os path abspath (some are intentional)
+    "PTH118", # os path join (some are intentional)
+    "PTH120", # os path dirname (some are intentional)
+    "RET504", # unnecessary assign (some are intentional)
+    "SIM108", # if-else block instead of if-exp (some are intentional)
+]
+fixable = ["ALL"]
+unfixable = []
+exclude = [
+    ".bzr",
+    ".direnv",
+    ".eggs",
+    ".git",
+    ".git-rewrite",
+    ".hg",
+    ".mypy_cache",
+    ".nox",
+    ".pants.d",
+    ".pytype",
+    ".ruff_cache",
+    ".svn",
+    ".tox",
+    ".venv",
+    "__pypackages__",
+    "_build",
+    "buck-out",
+    "build",
+    "dist",
+    "node_modules",
+    "venv",
+    # Frontend directory (TypeScript/React)
+    "frontend",
+    # Generated files
+    "backend/app/schemas",
+    # Backend directories
+    "backend/venv",
+    "backend/__pycache__",
+    "backend/app/__pycache__",
+    "backend/app/routers/__pycache__",
+    "backend/app/services/__pycache__",
+    "backend/app/utils/__pycache__",
+    "backend/tests/__pycache__",
+    "schemas/__pycache__",
+    "schemas/generator/__pycache__",
+]
+dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
+
+[tool.ruff.lint.per-file-ignores]
+"__init__.py" = ["E501"]
+"setup.py" = ["E501"]
+"conftest.py" = ["E501"]
+"test_*.py" = ["E501"]
+"*_test.py" = ["E501"]
+"backend/app/schemas/**/*.py" = ["UP006", "UP035"]
+
+[tool.ruff.lint.isort]
+section-order = [
+    "future",
+    "standard-library",
+    "third-party",
+    "first-party",
+    "local-folder",
+]
+lines-after-imports = 2
+known-first-party = ["app"]
+combine-as-imports = true
+force-sort-within-sections = true
+force-wrap-aliases = true
+relative-imports-order = "closest-to-furthest"
+
+[tool.ruff.lint.mccabe]
+max-complexity = 10
+
+[tool.ruff.lint.pyupgrade]
+keep-runtime-typing = true
+
+[tool.ruff.lint.flake8-quotes]
+docstring-quotes = "double"
+inline-quotes = "double"
+multiline-quotes = "double"
+
+[tool.ruff.lint.flake8-tidy-imports]
+ban-relative-imports = "all"
+
+[tool.mypy]
+python_version = "3.9"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = true
+disallow_incomplete_defs = true
+check_untyped_defs = true
+disallow_untyped_decorators = true
+no_implicit_optional = true
+warn_redundant_casts = true
+warn_unused_ignores = true
+warn_no_return = true
+warn_unreachable = true
+strict_equality = true
+
+[[tool.mypy.overrides]]
+module = [
+    "fastapi.*",
+    "uvicorn.*",
+    "sqlalchemy.*",
+    "pydantic.*",
+    "websockets.*",
+]
+ignore_missing_imports = true
+
+[tool.coverage.run]
+source = ["backend"]
+omit = [
+    "*/tests/*",
+    "*/venv/*",
+    "*/__pycache__/*",
+    "*/migrations/*",
+]
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "def __repr__",
+    "if self.debug:",
+    "if settings.DEBUG",
+    "raise AssertionError",
+    "raise NotImplementedError",
+    "if 0:",
+    "if __name__ == .__main__.:",
+    "class .*\\bProtocol\\):",
+    "@(abc\\.)?abstractmethod",
+]
