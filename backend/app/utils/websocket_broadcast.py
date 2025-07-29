@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta, timezone
 import json
 import logging
-from typing import Any, Dict, Optional, Set
+from typing import Any, Optional
 
 from fastapi import WebSocket
 from sqlalchemy.orm import Session
@@ -13,16 +13,16 @@ logger = logging.getLogger(__name__)
 
 # In-memory mapping: session_id -> set of WebSocket connections
 # This is shared across all routers
-connections: Dict[int, Set[WebSocket]] = {}
+connections: dict[int, set[WebSocket]] = {}
 
 # Player activity tracking: session_id -> user_id -> activity_data
-player_activity: Dict[int, Dict[int, Dict[str, Any]]] = {}
+player_activity: dict[int, dict[int, dict[str, Any]]] = {}
 
 # Mouse position tracking: session_id -> user_id -> position_data
-mouse_positions: Dict[int, Dict[int, Dict[str, Any]]] = {}
+mouse_positions: dict[int, dict[int, dict[str, Any]]] = {}
 
 # User color cache: session_id -> user_id -> color
-user_colors: Dict[int, Dict[int, str]] = {}
+user_colors: dict[int, dict[int, str]] = {}
 
 
 def add_connection(session_id: int, websocket: WebSocket):
@@ -40,7 +40,7 @@ def remove_connection(session_id: int, websocket: WebSocket):
             del connections[session_id]
 
 
-def update_player_activity(session_id: int, user_id: int, activity_data: Dict[str, Any]):
+def update_player_activity(session_id: int, user_id: int, activity_data: dict[str, Any]):
     """Update player activity status"""
     if session_id not in player_activity:
         player_activity[session_id] = {}
@@ -99,7 +99,7 @@ def cleanup_old_activity(session_id: int, max_age_seconds: int = 30):
                 del mouse_positions[session_id][user_id]
 
 
-async def broadcast_message(session_id: int, message_type: str, data: Dict[str, Any]):
+async def broadcast_message(session_id: int, message_type: str, data: dict[str, Any]):
     """Broadcast a specific message type to all connected clients in a session"""
     if session_id not in connections:
         return
@@ -211,7 +211,7 @@ async def broadcast_puzzle_interaction(
     user_id: int,
     puzzle_id: int,
     interaction_type: str,
-    interaction_data: Dict[str, Any],
+    interaction_data: dict[str, Any],
 ):
     """Broadcast puzzle interaction to all connected clients"""
     message_data = {
@@ -238,7 +238,7 @@ async def broadcast_puzzle_interaction(
         remove_connection(session_id, websocket)
 
 
-async def broadcast_team_communication(session_id: int, user_id: int, message_type: str, message_data: Dict[str, Any]):
+async def broadcast_team_communication(session_id: int, user_id: int, message_type: str, message_data: dict[str, Any]):
     """Broadcast team communication to all connected clients"""
     message_data = {"user_id": user_id, "message_type": message_type, "message_data": message_data}
 
@@ -259,7 +259,7 @@ async def broadcast_team_communication(session_id: int, user_id: int, message_ty
         remove_connection(session_id, websocket)
 
 
-async def broadcast_achievement(session_id: int, user_id: int, achievement_type: str, achievement_data: Dict[str, Any]):
+async def broadcast_achievement(session_id: int, user_id: int, achievement_type: str, achievement_data: dict[str, Any]):
     """Broadcast achievement to all connected clients"""
     message_data = {"user_id": user_id, "achievement_type": achievement_type, "achievement_data": achievement_data}
 
@@ -286,7 +286,7 @@ async def broadcast_mouse_cursor(
     x: int,
     y: int,
     color: str,
-    viewport: Optional[Dict[str, Any]] = None,
+    viewport: Optional[dict[str, Any]] = None,
 ):
     """Broadcast mouse cursor position to all connected clients"""
     message_data = {"user_id": user_id, "x": x, "y": y, "color": color, "viewport": viewport}

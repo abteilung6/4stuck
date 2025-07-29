@@ -82,8 +82,6 @@ ignore = [
     "TID252", # relative imports (appropriate for package structure)
     "ERA001", # commented-out code (some are intentional)
     "F403",   # undefined local with import star (some are intentional)
-    "UP035",  # deprecated import (some are required for compatibility)
-    "UP006",  # non-pep585-annotation (some are in generated files)
     "TRY400", # error instead of exception (some are intentional)
     "S311",   # suspicious non-cryptographic random usage (some are intentional)
     "PERF203", # try-except in loop (some are necessary)
@@ -95,7 +93,7 @@ ignore = [
     "B007",   # unused loop control variable (some are intentional)
     "C401",   # unnecessary generator set (some are intentional)
     "N803",   # invalid argument name (some are required by interface)
-    "N806",   # non-lowercase variable in function (some are test constants)
+    "N806",   # non-lowercase variable in function (test constants)
     "PTH100", # os path abspath (some are intentional)
     "PTH118", # os path join (some are intentional)
     "PTH120", # os path dirname (some are intentional)
@@ -149,6 +147,7 @@ dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
 "conftest.py" = ["E501"]
 "test_*.py" = ["E501"]
 "*_test.py" = ["E501"]
+"backend/app/schemas/**/*.py" = ["UP006", "UP035"]
 
 [tool.ruff.lint.isort]
 section-order = [

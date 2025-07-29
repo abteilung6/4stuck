@@ -2,7 +2,6 @@ import asyncio
 from datetime import datetime, timezone
 import random
 import threading
-from typing import Dict
 
 from sqlalchemy.orm import Session
 
@@ -12,8 +11,8 @@ from ..utils.websocket_broadcast import broadcast_state
 
 class CountdownService:
     def __init__(self):
-        self.active_countdowns: Dict[int, asyncio.Task] = {}
-        self.countdown_locks: Dict[int, threading.Lock] = {}
+        self.active_countdowns: dict[int, asyncio.Task] = {}
+        self.countdown_locks: dict[int, threading.Lock] = {}
 
     def start_countdown(self, session_id: int, duration_seconds: int = 5) -> bool:
         """Start a countdown for a game session"""

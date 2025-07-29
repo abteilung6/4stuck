@@ -1,5 +1,4 @@
 from datetime import datetime, timezone
-from typing import List
 
 from sqlalchemy.orm import Session
 
@@ -13,7 +12,7 @@ class GameEndService:
     def __init__(self):
         pass
 
-    def check_and_handle_game_end(self, db: Session) -> List[int]:
+    def check_and_handle_game_end(self, db: Session) -> list[int]:
         """
         Check for game end conditions and handle transitions to finished state.
 

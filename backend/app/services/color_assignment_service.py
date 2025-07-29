@@ -1,5 +1,5 @@
 import logging
-from typing import Any, Dict, List
+from typing import Any
 
 from sqlalchemy.orm import Session
 
@@ -12,11 +12,11 @@ logger = logging.getLogger(__name__)
 class ColorAssignmentService:
     """Centralized color management with validation and testing support"""
 
-    def __init__(self, color_scheme: List[str] = None):
+    def __init__(self, color_scheme: list[str] = None):
         self.color_scheme = color_scheme or ["red", "blue", "yellow", "green"]
         self.fallback_color = "gray"
 
-    def assign_color_to_user(self, user_id: int, team_id: int, db: Session) -> Dict[str, Any]:
+    def assign_color_to_user(self, user_id: int, team_id: int, db: Session) -> dict[str, Any]:
         """
         Assign unique color to user within team, with retry logic for race conditions.
         """
@@ -71,7 +71,7 @@ class ColorAssignmentService:
             logger.error(f"Error assigning color to user {user_id}: {e}")
             return {"success": False, "color": self.fallback_color, "message": f"Error assigning color: {str(e)}"}
 
-    def validate_team_colors(self, team_id: int, db: Session) -> Dict[str, Any]:
+    def validate_team_colors(self, team_id: int, db: Session) -> dict[str, Any]:
         """
         Validate color uniqueness within team.
 
@@ -85,7 +85,7 @@ class ColorAssignmentService:
         try:
             team_members = db.query(models.User).filter(models.User.team_id == team_id).all()
 
-            color_counts: Dict[str, List[int]] = {}
+            color_counts: dict[str, list[int]] = {}
             conflicts = []
 
             # Count users per color
@@ -107,7 +107,7 @@ class ColorAssignmentService:
             logger.error(f"Error validating team colors for team {team_id}: {e}")
             return {"is_valid": False, "conflicts": [{"error": str(e)}]}
 
-    def get_available_colors(self, team_id: int, db: Session) -> Dict[str, List[str]]:
+    def get_available_colors(self, team_id: int, db: Session) -> dict[str, list[str]]:
         """
         Get available and used colors for team.
 
@@ -130,7 +130,7 @@ class ColorAssignmentService:
             logger.error(f"Error getting available colors for team {team_id}: {e}")
             return {"available_colors": [], "used_colors": []}
 
-    def resolve_color_conflicts(self, team_id: int, db: Session) -> Dict[str, Any]:
+    def resolve_color_conflicts(self, team_id: int, db: Session) -> dict[str, Any]:
         """
         Resolve color conflicts by reassigning colors.
 
@@ -173,7 +173,7 @@ class ColorAssignmentService:
             logger.error(f"Error resolving color conflicts for team {team_id}: {e}")
             return {"success": False, "reassignments": {}, "message": f"Error resolving conflicts: {str(e)}"}
 
-    def _find_available_color(self, used_colors: List[str]) -> str:
+    def _find_available_color(self, used_colors: list[str]) -> str:
         """
         Find first available color from the color scheme.
 
@@ -188,11 +188,11 @@ class ColorAssignmentService:
                 return color
         return self.fallback_color
 
-    def get_color_scheme(self) -> List[str]:
+    def get_color_scheme(self) -> list[str]:
         """Get the current color scheme."""
         return self.color_scheme.copy()
 
-    def set_color_scheme(self, color_scheme: List[str]) -> None:
+    def set_color_scheme(self, color_scheme: list[str]) -> None:
         """Set a new color scheme."""
         self.color_scheme = color_scheme.copy()
 
