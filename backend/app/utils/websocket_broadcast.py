@@ -51,7 +51,7 @@ def update_player_activity(session_id: int, user_id: int, activity_data: dict[st
     cleanup_old_activity(session_id)
 
 
-def update_mouse_position(session_id: int, user_id: int, x: int, y: int, puzzle_area: Optional[str] = None):
+def update_mouse_position(session_id: int, user_id: int, x: float, y: float, puzzle_area: Optional[str] = None):
     """Update mouse position for a player"""
     if session_id not in mouse_positions:
         mouse_positions[session_id] = {}
@@ -283,8 +283,8 @@ async def broadcast_achievement(session_id: int, user_id: int, achievement_type:
 async def broadcast_mouse_cursor(
     session_id: int,
     user_id: int,
-    x: int,
-    y: int,
+    x: float,
+    y: float,
     color: str,
     viewport: Optional[dict[str, Any]] = None,
 ):

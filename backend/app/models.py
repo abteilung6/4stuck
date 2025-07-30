@@ -33,6 +33,7 @@ class GameSession(Base):
     id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
     team_id: Mapped[int] = mapped_column(Integer, ForeignKey("teams.id"))
     status: Mapped[str] = mapped_column(String, default="lobby")  # lobby, countdown, active, finished
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
     started_at: Mapped[Optional[datetime]] = mapped_column(
         DateTime(timezone=True),
         nullable=True,

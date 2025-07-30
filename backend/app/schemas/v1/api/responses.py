@@ -47,7 +47,7 @@ class GameSessionResponse(BaseModel):
     id: int = Field(description="Game session ID")
     team_id: int = Field(description="Team ID")
     status: Literal['lobby', 'countdown', 'active', 'finished'] = Field(description="Game session status")
-    created_at: Optional[datetime] = Field(default=None, description="When the session was created")
+    created_at: datetime = Field(description="When the session was created")
     started_at: Optional[datetime] = Field(default=None, description="When the game started")
     ended_at: Optional[datetime] = Field(default=None, description="When the game ended")
     survival_time_seconds: Optional[int] = Field(default=None, description="How long the team survived in seconds")

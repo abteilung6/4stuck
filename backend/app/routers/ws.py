@@ -68,15 +68,11 @@ async def websocket_endpoint(websocket: WebSocket, session_id: int, db: Session 
                     ):
                         continue
 
-                    # Convert float coordinates to int for compatibility
-                    x_coord = int(incoming_message.x)
-                    y_coord = int(incoming_message.y)
-
                     update_mouse_position(
                         session_id,
                         incoming_message.user_id,
-                        x_coord,
-                        y_coord,
+                        incoming_message.x,
+                        incoming_message.y,
                         None,
                     )
 
@@ -87,8 +83,8 @@ async def websocket_endpoint(websocket: WebSocket, session_id: int, db: Session 
                         await broadcast_mouse_cursor(
                             session_id,
                             incoming_message.user_id,
-                            x_coord,
-                            y_coord,
+                            incoming_message.x,
+                            incoming_message.y,
                             color,
                             None,
                         )
