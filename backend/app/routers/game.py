@@ -36,7 +36,9 @@ def create_game_session(session: GameSessionCreate, db: Session = Depends(get_db
         raise HTTPException(status_code=400, detail="Game session already exists for this team")
 
     # Create session and immediately transition to countdown
-    new_session = models.GameSession(team_id=team.id, status="countdown")
+    new_session = models.GameSession()
+    new_session.team_id = team.id
+    new_session.status = "countdown"
     db.add(new_session)
     db.commit()
     db.refresh(new_session)
@@ -49,8 +51,8 @@ def create_game_session(session: GameSessionCreate, db: Session = Depends(get_db
     # Cache user colors for WebSocket mouse cursor broadcasting
     team_users = db.query(models.User).filter(models.User.team_id == team.id).all()
     for user in team_users:
-        if user.color:  # type: ignore
-            cache_user_color(session_id, user.id, user.color)  # type: ignore
+        if user.color:
+            cache_user_color(session_id, user.id, user.color)
             print(f"[Game Session] Cached color {user.color} for user {user.username} in session {session_id}")
 
     # Broadcast state update to all connected clients
@@ -116,7 +118,7 @@ def update_game_session_state(session_id: int, state_update: GameSessionStateUpd
         raise HTTPException(status_code=404, detail="Game session not found")
 
     # Validate state transition
-    valid_transitions = {
+    valid_transitions: dict[str, list[str]] = {
         "lobby": ["countdown"],
         "countdown": ["active"],
         "active": ["finished"],
@@ -126,7 +128,8 @@ def update_game_session_state(session_id: int, state_update: GameSessionStateUpd
     current_status = session.status
     new_status = state_update.status
 
-    if new_status not in valid_transitions.get(current_status, []):
+    allowed_transitions = valid_transitions.get(current_status, [])
+    if new_status not in allowed_transitions:
         raise HTTPException(status_code=400, detail=f"Invalid state transition from {current_status} to {new_status}")
 
     # Update session state

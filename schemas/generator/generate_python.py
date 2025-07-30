@@ -199,7 +199,7 @@ class PythonGenerator:
             schema_type = self.get_schema_type(schema_id)
 
             if "definitions" in schema_data:
-                for class_name in schema_data["definitions"].keys():
+                for class_name in schema_data["definitions"]:
                     if class_name not in all_classes:
                         all_classes[class_name] = []
                     all_classes[class_name].append((schema_type, module_name))

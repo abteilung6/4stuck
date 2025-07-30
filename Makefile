@@ -1,21 +1,4 @@
-# Team.försvarsmakten - Schema Generation Makefile
-# This Makefile provides commands for generating code from JSON Schema definitions
-
-.PHONY: help install install-dev format lint check test clean generate-backend generate-frontend generate-all
-
-# Default target
-help:
-	@echo "Available commands:"
-	@echo "  install        - Install production dependencies"
-	@echo "  install-dev    - Install development dependencies (includes production)"
-	@echo "  format         - Format code with Ruff"
-	@echo "  lint           - Lint code with Ruff"
-	@echo "  check          - Run all checks (format + lint + type check)"
-	@echo "  test           - Run tests"
-	@echo "  clean          - Clean up cache files"
-	@echo "  generate-backend  - Generate backend schemas"
-	@echo "  generate-frontend - Generate frontend schemas"
-	@echo "  generate-all   - Generate all schemas"
+.PHONY: help install install-dev ruff-format ruff-lint mypy-check clean generate-backend generate-frontend generate-all
 
 # Install production dependencies only
 install:
@@ -32,34 +15,22 @@ install-dev:
 	@echo "✅ Development dependencies installed!"
 
 # Format code with Ruff
-format:
+ruff-format:
 	@echo "🎨 Formatting code with Ruff..."
 	ruff format backend/app/ schemas/ --exclude backend/app/schemas/
 	@echo "✅ Code formatted!"
 
 # Lint code with Ruff
-lint:
+ruff-lint:
 	@echo "🔍 Linting code with Ruff..."
-	ruff check backend/ schemas/ --fix
+	ruff check backend/ schemas/ --fix --exclude backend/app/schemas/
 	@echo "✅ Code linted!"
 
 # Run type checking with MyPy
-type-check:
+mypy-check:
 	@echo "🔍 Running type checks with MyPy..."
 	cd backend && . venv/bin/activate && mypy --explicit-package-bases . ../schemas/
 	@echo "✅ Type checks completed!"
-
-# Run all checks
-check: format lint type-check
-	@echo "✅ All checks completed!"
-
-# Run tests
-test:
-	@echo "🧪 Running tests..."
-	cd backend && python -m pytest tests/ -v --cov=app --cov-report=term-missing
-	cd frontend && npm test
-	@echo "✅ Tests completed!"
-
 # Clean up cache files
 clean:
 	@echo "🧹 Cleaning up cache files..."
@@ -87,30 +58,3 @@ generate-frontend:
 # Generate all schemas
 generate-all: generate-backend generate-frontend
 	@echo "✅ All schemas generated!"
-
-# Install pre-commit hooks
-install-hooks:
-	@echo "🔧 Installing pre-commit hooks..."
-	pre-commit install
-	@echo "✅ Pre-commit hooks installed!"
-
-# Run pre-commit on all files
-pre-commit-all:
-	@echo "🔧 Running pre-commit on all files..."
-	pre-commit run --all-files
-	@echo "✅ Pre-commit completed!"
-
-# Development server
-dev-backend:
-	@echo "🚀 Starting backend development server..."
-	cd backend && uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
-
-dev-frontend:
-	@echo "🚀 Starting frontend development server..."
-	cd frontend && npm run dev
-
-# Full development setup
-setup-dev: install-dev install-hooks
-	@echo "✅ Development environment setup complete!"
-	@echo "Run 'make dev-backend' to start the backend server"
-	@echo "Run 'make dev-frontend' to start the frontend server"

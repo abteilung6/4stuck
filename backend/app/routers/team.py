@@ -125,16 +125,17 @@ def join_team(username: str, team_id: int, db: Session = Depends(get_db)):
     db.refresh(user)
 
     # Cache the user color for WebSocket mouse cursor broadcasting
-    if user.color:  # type: ignore
+    if user.color:
         # Get the game session for this team to cache the color
         game_session = db.query(models.GameSession).filter(models.GameSession.team_id == team_id).first()
         if game_session:
-            cache_user_color(game_session.id, user.id, user.color)  # type: ignore
+            cache_user_color(game_session.id, user.id, user.color)
             print(f"[Team Join] Cached color {user.color} for user {username} in session {game_session.id}")
 
     # Verify the join worked
     updated_user = db.query(models.User).filter(models.User.username == username).first()
-    print(f"[Team Join] After join - User {username} team_id: {updated_user.team_id}, color: {updated_user.color}")
+    if updated_user:
+        print(f"[Team Join] After join - User {username} team_id: {updated_user.team_id}, color: {updated_user.color}")
 
     return user
 
