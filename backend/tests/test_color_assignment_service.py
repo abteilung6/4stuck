@@ -30,7 +30,8 @@ class TestColorAssignmentService:
     def test_team(self, db: Session):
         """Create a test team with unique name."""
         unique_name = f"Test Team {uuid.uuid4().hex[:8]}"
-        team = models.Team(name=unique_name)
+        team = models.Team()
+        team.name = unique_name
         db.add(team)
         db.commit()
         db.refresh(team)
@@ -41,11 +42,10 @@ class TestColorAssignmentService:
         """Create test users for color assignment testing using the color assignment service."""
         users = []
         for i in range(4):
-            user = models.User(
-                username=f"testuser{i}_{uuid.uuid4().hex[:4]}",
-                team_id=test_team.id,
-                color=color_service.color_scheme[i % len(color_service.color_scheme)],
-            )
+            user = models.User()
+            user.username = f"testuser{i}_{uuid.uuid4().hex[:4]}"
+            user.team_id = test_team.id
+            user.color = color_service.color_scheme[i % len(color_service.color_scheme)]
             db.add(user)
             db.commit()
             db.refresh(user)
@@ -69,11 +69,10 @@ class TestColorAssignmentService:
     def test_assign_color_to_user_success(self, color_service, db, test_team):
         """Test successful color assignment to a user."""
         # Add user to DB with fallback color, then assign real color
-        user = models.User(
-            username=f"assignuser_{uuid.uuid4().hex[:4]}",
-            team_id=test_team.id,
-            color=color_service.fallback_color,
-        )
+        user = models.User()
+        user.username = f"assignuser_{uuid.uuid4().hex[:4]}"
+        user.team_id = test_team.id
+        user.color = color_service.fallback_color
         db.add(user)
         db.commit()
         db.refresh(user)
@@ -87,7 +86,10 @@ class TestColorAssignmentService:
 
     def test_assign_color_to_user_already_has_color(self, color_service, db, test_team):
         """Test color assignment when user already has a color."""
-        user = models.User(username=f"alreadyuser_{uuid.uuid4().hex[:4]}", team_id=test_team.id, color="red")
+        user = models.User()
+        user.username = f"alreadyuser_{uuid.uuid4().hex[:4]}"
+        user.team_id = test_team.id
+        user.color = "red"
         db.add(user)
         db.commit()
         db.refresh(user)
@@ -101,17 +103,19 @@ class TestColorAssignmentService:
         # Assign all colors to users
         users = []
         for i, color in enumerate(color_service.color_scheme):
-            user = models.User(username=f"fulluser{i}_{uuid.uuid4().hex[:4]}", team_id=test_team.id, color=color)
+            user = models.User()
+            user.username = f"fulluser{i}_{uuid.uuid4().hex[:4]}"
+            user.team_id = test_team.id
+            user.color = color
             db.add(user)
             db.commit()
             db.refresh(user)
             users.append(user)
         # Add new user to DB with fallback color, then try to assign
-        new_user = models.User(
-            username=f"newuser_{uuid.uuid4().hex[:4]}",
-            team_id=test_team.id,
-            color=color_service.fallback_color,
-        )
+        new_user = models.User()
+        new_user.username = f"newuser_{uuid.uuid4().hex[:4]}"
+        new_user.team_id = test_team.id
+        new_user.color = color_service.fallback_color
         db.add(new_user)
         db.commit()
         db.refresh(new_user)
@@ -128,11 +132,10 @@ class TestColorAssignmentService:
         """Test assigning colors to teams of different sizes using the color assignment service."""
         users = []
         for i in range(team_size):
-            user = models.User(
-                username=f"teamuser{i}_{uuid.uuid4().hex[:4]}",
-                team_id=test_team.id,
-                color=color_service.color_scheme[i % len(color_service.color_scheme)],
-            )
+            user = models.User()
+            user.username = f"teamuser{i}_{uuid.uuid4().hex[:4]}"
+            user.team_id = test_team.id
+            user.color = color_service.color_scheme[i % len(color_service.color_scheme)]
             db.add(user)
             db.commit()
             db.refresh(user)
@@ -177,8 +180,14 @@ class TestColorAssignmentService:
     def test_get_available_colors(self, color_service, db, test_team):
         """Test getting available and used colors for a team."""
         # Assign some colors, leave others unassigned (not in DB)
-        user1 = models.User(username=f"availuser1_{uuid.uuid4().hex[:4]}", team_id=test_team.id, color="red")
-        user2 = models.User(username=f"availuser2_{uuid.uuid4().hex[:4]}", team_id=test_team.id, color="blue")
+        user1 = models.User()
+        user1.username = f"availuser1_{uuid.uuid4().hex[:4]}"
+        user1.team_id = test_team.id
+        user1.color = "red"
+        user2 = models.User()
+        user2.username = f"availuser2_{uuid.uuid4().hex[:4]}"
+        user2.team_id = test_team.id
+        user2.color = "blue"
         db.add(user1)
         db.add(user2)
         db.commit()
@@ -218,8 +227,14 @@ class TestColorAssignmentService:
 
     def test_assign_color_to_user_race_condition(self, color_service, db, test_team):
         """Test that concurrent color assignments do not result in duplicate colors (simulate race condition)."""
-        user1 = models.User(username=f"raceuser1_{uuid.uuid4().hex[:6]}", team_id=test_team.id, color="red")
-        user2 = models.User(username=f"raceuser2_{uuid.uuid4().hex[:6]}", team_id=test_team.id, color="blue")
+        user1 = models.User()
+        user1.username = f"raceuser1_{uuid.uuid4().hex[:6]}"
+        user1.team_id = test_team.id
+        user1.color = "red"
+        user2 = models.User()
+        user2.username = f"raceuser2_{uuid.uuid4().hex[:6]}"
+        user2.team_id = test_team.id
+        user2.color = "blue"
         db.add(user1)
         db.add(user2)
         db.commit()
@@ -231,11 +246,17 @@ class TestColorAssignmentService:
 
     def test_unique_constraint_on_team_color(self, color_service, db, test_team):
         """Test that the unique constraint on (team_id, color) is enforced."""
-        user1 = models.User(username=f"uniqueuser1_{uuid.uuid4().hex[:6]}", team_id=test_team.id, color="red")
+        user1 = models.User()
+        user1.username = f"uniqueuser1_{uuid.uuid4().hex[:6]}"
+        user1.team_id = test_team.id
+        user1.color = "red"
         db.add(user1)
         db.commit()
         db.refresh(user1)
-        user2 = models.User(username=f"uniqueuser2_{uuid.uuid4().hex[:6]}", team_id=test_team.id, color="red")
+        user2 = models.User()
+        user2.username = f"uniqueuser2_{uuid.uuid4().hex[:6]}"
+        user2.team_id = test_team.id
+        user2.color = "red"
         db.add(user2)
         with pytest.raises(IntegrityError):
             db.commit()
