@@ -11,7 +11,7 @@ export type TeamPoints = {
      */
     team_id: number;
     /**
-     * List of players with their points
+     * Player points
      */
     players: Array<any>;
 };

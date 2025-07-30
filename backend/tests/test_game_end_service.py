@@ -40,7 +40,8 @@ def create_team_and_users(TestingSessionLocal, team_name="TestTeam", user_count=
     db = TestingSessionLocal()
     try:
         # Create team
-        team = Team(name=team_name)
+        team = Team()
+        team.name = team_name
         db.add(team)
         db.commit()
         db.refresh(team)
@@ -48,7 +49,10 @@ def create_team_and_users(TestingSessionLocal, team_name="TestTeam", user_count=
         # Create users
         users = []
         for i in range(user_count):
-            user = User(username=f"{team_name.lower()}_user{i + 1}", team_id=team.id, points=15)
+            user = User()
+            user.username = f"{team_name.lower()}_user{i + 1}"
+            user.team_id = team.id
+            user.points = 15
             db.add(user)
             users.append(user)
 
@@ -78,7 +82,9 @@ class TestGameEndService:
 
             # Create a game session
             db = TestingSessionLocal()
-            session = GameSession(team_id=team_id, status="active")
+            session = GameSession()
+            session.team_id = team_id
+            session.status = "active"
             db.add(session)
             db.commit()
             db.refresh(session)
@@ -106,7 +112,9 @@ class TestGameEndService:
 
             # Create a game session
             db = TestingSessionLocal()
-            session = GameSession(team_id=team_id, status="active")
+            session = GameSession()
+            session.team_id = team_id
+            session.status = "active"
             db.add(session)
             db.commit()
             db.refresh(session)
@@ -137,7 +145,9 @@ class TestGameEndService:
 
             # Create a game session
             db = TestingSessionLocal()
-            session = GameSession(team_id=team_id, status="active")
+            session = GameSession()
+            session.team_id = team_id
+            session.status = "active"
             db.add(session)
             db.commit()
             db.refresh(session)
@@ -166,7 +176,10 @@ class TestGameEndService:
             # Create a game session with started_at timestamp
             db = TestingSessionLocal()
             started_at = datetime.now(timezone.utc) - timedelta(minutes=5)  # 5 minutes ago
-            session = GameSession(team_id=team_id, status="active", started_at=started_at)
+            session = GameSession()
+            session.team_id = team_id
+            session.status = "active"
+            session.started_at = started_at
             db.add(session)
             db.commit()
             db.refresh(session)
@@ -198,8 +211,12 @@ class TestGameEndService:
             db = TestingSessionLocal()
 
             # Create two active game sessions
-            session1 = GameSession(team_id=team1_id, status="active")
-            session2 = GameSession(team_id=team2_id, status="active")
+            session1 = GameSession()
+            session1.team_id = team1_id
+            session1.status = "active"
+            session2 = GameSession()
+            session2.team_id = team2_id
+            session2.status = "active"
             db.add(session1)
             db.add(session2)
             db.commit()

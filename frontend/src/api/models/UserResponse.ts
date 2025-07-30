@@ -3,9 +3,9 @@
 /* tslint:disable */
 /* eslint-disable */
 /**
- * User Out: User response model
+ * User Response: User information response
  */
-export type UserOut = {
+export type UserResponse = {
     /**
      * User ID
      */
@@ -15,15 +15,11 @@ export type UserOut = {
      */
     username: string;
     /**
-     * Team ID
+     * Team ID (if assigned)
      */
     team_id?: (number | null);
     /**
-     * Current points
-     */
-    points: number;
-    /**
-     * Assigned color
+     * User color
      */
     color?: (string | null);
 };

@@ -387,20 +387,6 @@ export interface components {
             preferred_color?: unknown | null;
         };
         /**
-         * AvailableColorsResponse
-         * @description Available Colors Response: Response for available colors
-         */
-        AvailableColorsResponse: {
-            /** Success */
-            success: boolean;
-            /** Data */
-            data?: {
-                [key: string]: unknown;
-            } | null;
-            /** Error */
-            error?: string | null;
-        };
-        /**
          * AvailableTeam
          * @description Available Team: Team that can accept new players
          */
@@ -448,31 +434,33 @@ export interface components {
         };
         /**
          * ColorAssignmentResponse
-         * @description Color Assignment Response: Response containing color assignment result
+         * @description Color Assignment Response: Response for color assignment operations
          */
         ColorAssignmentResponse: {
-            /** Success */
+            /**
+             * Success
+             * @description Whether the operation was successful
+             */
             success: boolean;
-            /** Data */
-            data?: {
+            /**
+             * Message
+             * @description Response message
+             */
+            message: string;
+            /**
+             * Reassignments
+             * @description Color reassignments made
+             */
+            reassignments?: {
                 [key: string]: unknown;
             } | null;
-            /** Error */
-            error?: string | null;
-        };
-        /**
-         * ColorConflictResolutionResponse
-         * @description Color Conflict Resolution Response: Response for color conflict resolution
-         */
-        ColorConflictResolutionResponse: {
-            /** Success */
-            success: boolean;
-            /** Data */
-            data?: {
+            /**
+             * Conflicts
+             * @description Color conflicts found
+             */
+            conflicts?: {
                 [key: string]: unknown;
-            } | null;
-            /** Error */
-            error?: string | null;
+            }[] | null;
         };
         /**
          * GameSessionCreate
@@ -486,10 +474,10 @@ export interface components {
             team_id: number;
         };
         /**
-         * GameSessionOut
-         * @description Game Session Out: Game session response model
+         * GameSessionResponse
+         * @description Game Session Response: Game session information
          */
-        GameSessionOut: {
+        GameSessionResponse: {
             /**
              * Id
              * @description Game session ID
@@ -506,6 +494,11 @@ export interface components {
              * @enum {string}
              */
             status: "lobby" | "countdown" | "active" | "finished";
+            /**
+             * Created At
+             * @description When the session was created
+             */
+            created_at?: string | null;
             /**
              * Started At
              * @description When the game started
@@ -561,32 +554,10 @@ export interface components {
             user_id: number;
         };
         /**
-         * PuzzleCreate
-         * @description Puzzle Create: Request to create a new puzzle
+         * PuzzleAnswerResponse
+         * @description Puzzle Answer Response: Response to puzzle answer submission
          */
-        PuzzleCreate: {
-            /**
-             * Type
-             * @description Type of puzzle to create
-             * @enum {string}
-             */
-            type: "memory" | "spatial" | "concentration" | "multitasking";
-            /**
-             * Game Session Id
-             * @description ID of the game session
-             */
-            game_session_id: number;
-            /**
-             * User Id
-             * @description ID of the user for this puzzle
-             */
-            user_id: number;
-        };
-        /**
-         * PuzzleResult
-         * @description Puzzle Result: Puzzle result response model
-         */
-        PuzzleResult: {
+        PuzzleAnswerResponse: {
             /**
              * Correct
              * @description Whether the answer was correct
@@ -614,10 +585,32 @@ export interface components {
             next_puzzle?: unknown | null;
         };
         /**
-         * PuzzleState
-         * @description Puzzle State: Puzzle state response model
+         * PuzzleCreate
+         * @description Puzzle Create: Request to create a new puzzle
          */
-        PuzzleState: {
+        PuzzleCreate: {
+            /**
+             * Type
+             * @description Type of puzzle to create
+             * @enum {string}
+             */
+            type: "memory" | "spatial" | "concentration" | "multitasking";
+            /**
+             * Game Session Id
+             * @description ID of the game session
+             */
+            game_session_id: number;
+            /**
+             * User Id
+             * @description ID of the user for this puzzle
+             */
+            user_id: number;
+        };
+        /**
+         * PuzzleStateResponse
+         * @description Puzzle State Response: Puzzle state for API responses
+         */
+        PuzzleStateResponse: {
             /**
              * Id
              * @description Puzzle ID
@@ -647,20 +640,6 @@ export interface components {
             correct_answer: string;
         };
         /**
-         * TeamColorValidationResponse
-         * @description Team Color Validation Response: Response for team color validation
-         */
-        TeamColorValidationResponse: {
-            /** Success */
-            success: boolean;
-            /** Data */
-            data?: {
-                [key: string]: unknown;
-            } | null;
-            /** Error */
-            error?: string | null;
-        };
-        /**
          * TeamCreate
          * @description Team Create: Request to create a new team
          */
@@ -668,22 +647,6 @@ export interface components {
             /**
              * Name
              * @description Name for the new team
-             */
-            name: string;
-        };
-        /**
-         * TeamOut
-         * @description Team Out: Team response model
-         */
-        TeamOut: {
-            /**
-             * Id
-             * @description Team ID
-             */
-            id: number;
-            /**
-             * Name
-             * @description Team name
              */
             name: string;
         };
@@ -699,15 +662,15 @@ export interface components {
             team_id: number;
             /**
              * Players
-             * @description List of players with their points
+             * @description Player points
              */
             players: unknown[];
         };
         /**
-         * TeamWithMembersOut
-         * @description Team With Members Out: Team with members response model
+         * TeamResponse
+         * @description Team Response: Team information response
          */
-        TeamWithMembersOut: {
+        TeamResponse: {
             /**
              * Id
              * @description Team ID
@@ -719,10 +682,10 @@ export interface components {
              */
             name: string;
             /**
-             * Members
+             * Users
              * @description Team members
              */
-            members: unknown[];
+            users: unknown[];
         };
         /**
          * UserCreate
@@ -736,10 +699,10 @@ export interface components {
             username: string;
         };
         /**
-         * UserOut
-         * @description User Out: User response model
+         * UserResponse
+         * @description User Response: User information response
          */
-        UserOut: {
+        UserResponse: {
             /**
              * Id
              * @description User ID
@@ -752,17 +715,12 @@ export interface components {
             username: string;
             /**
              * Team Id
-             * @description Team ID
+             * @description Team ID (if assigned)
              */
             team_id?: number | null;
             /**
-             * Points
-             * @description Current points
-             */
-            points: number;
-            /**
              * Color
-             * @description Assigned color
+             * @description User color
              */
             color?: string | null;
         };
@@ -803,7 +761,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["UserOut"];
+                    "application/json": components["schemas"]["UserResponse"];
                 };
             };
             /** @description Validation Error */
@@ -836,7 +794,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["TeamOut"];
+                    "application/json": components["schemas"]["TeamResponse"];
                 };
             };
             /** @description Validation Error */
@@ -868,7 +826,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["UserOut"];
+                    "application/json": components["schemas"]["UserResponse"];
                 };
             };
             /** @description Validation Error */
@@ -932,7 +890,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["TeamColorValidationResponse"];
+                    "application/json": components["schemas"]["ColorAssignmentResponse"];
                 };
             };
             /** @description Validation Error */
@@ -963,7 +921,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["ColorConflictResolutionResponse"];
+                    "application/json": components["schemas"]["ColorAssignmentResponse"];
                 };
             };
             /** @description Validation Error */
@@ -994,7 +952,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["AvailableColorsResponse"];
+                    "application/json": components["schemas"]["ColorAssignmentResponse"];
                 };
             };
             /** @description Validation Error */
@@ -1043,7 +1001,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["TeamWithMembersOut"][];
+                    "application/json": components["schemas"]["TeamResponse"][];
                 };
             };
         };
@@ -1067,7 +1025,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["GameSessionOut"];
+                    "application/json": components["schemas"]["GameSessionResponse"];
                 };
             };
             /** @description Validation Error */
@@ -1098,7 +1056,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["GameSessionOut"];
+                    "application/json": components["schemas"]["GameSessionResponse"];
                 };
             };
             /** @description Validation Error */
@@ -1129,7 +1087,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["GameSessionOut"];
+                    "application/json": components["schemas"]["GameSessionResponse"];
                 };
             };
             /** @description Validation Error */
@@ -1164,7 +1122,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["GameSessionOut"];
+                    "application/json": components["schemas"]["GameSessionResponse"];
                 };
             };
             /** @description Validation Error */
@@ -1197,7 +1155,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["PuzzleState"];
+                    "application/json": components["schemas"]["PuzzleStateResponse"];
                 };
             };
             /** @description Validation Error */
@@ -1228,7 +1186,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["PuzzleState"];
+                    "application/json": components["schemas"]["PuzzleStateResponse"];
                 };
             };
             /** @description Validation Error */
@@ -1261,7 +1219,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["PuzzleResult"];
+                    "application/json": components["schemas"]["PuzzleAnswerResponse"];
                 };
             };
             /** @description Validation Error */

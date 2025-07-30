@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { TeamService } from '../api/services/TeamService';
-import type { TeamWithMembersOut } from '../api/models/TeamWithMembersOut';
-import type { AvailableTeamOut } from '../api/models/AvailableTeamOut';
+import type { TeamResponse } from '../api/models/TeamResponse';
+import type { AvailableTeam } from '../api/models/AvailableTeam';
 import type { TeamCreate } from '../api/models/TeamCreate';
-import type { UserOut } from '../api/models/UserOut';
-import type { TeamOut } from '../api/models/TeamOut';
+import type { UserResponse } from '../api/models/UserResponse';
+import type { TeamResponse as TeamResponseType } from '../api/models/TeamResponse';
 import { GameService } from '../api/services/GameService';
-import type { GameSessionOut } from '../api/models/GameSessionOut';
+import type { GameSessionResponse } from '../api/models/GameSessionResponse';
 import GameSessionView from './GameSessionView';
 import { useRef } from 'react';
 import './Lobby.css'; // Add a CSS file for styles
@@ -20,15 +20,15 @@ import List from './design-system/List';
 import './design-system/List.css';
 
 const Lobby: React.FC = () => {
-  const [teams, setTeams] = useState<AvailableTeamOut[]>([]);
+  const [teams, setTeams] = useState<AvailableTeam[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [username, setUsername] = useState('');
   const [currentName, setCurrentName] = useState('');
-  const [currentTeam, setCurrentTeam] = useState<AvailableTeamOut | null>(null);
+  const [currentTeam, setCurrentTeam] = useState<AvailableTeam | null>(null);
   const [newTeamName, setNewTeamName] = useState('');
   const [creatingTeam, setCreatingTeam] = useState(false);
-  const [session, setSession] = useState<GameSessionOut | null>(null);
+  const [session, setSession] = useState<GameSessionResponse | null>(null);
   const [sessionLoading, setSessionLoading] = useState(false);
   const [status, setStatus] = useState('');
   const isFirstLoad = useRef(true);
@@ -112,7 +112,7 @@ const Lobby: React.FC = () => {
     }
   };
 
-  const handleJoinTeam = async (team: AvailableTeamOut) => {
+  const handleJoinTeam = async (team: AvailableTeam) => {
     if (!currentName) {
       setStatus('Set your username first.');
       return;

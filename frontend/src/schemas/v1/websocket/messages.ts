@@ -2,7 +2,7 @@
  * Auto-generated from 4stuck/schemas/websocket/v1/messages.json
  */
 
-/** Message Type: Available WebSocket message types */
+/** Message Type: Types of WebSocket messages */
 export interface MessageType {
 }
 

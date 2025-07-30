@@ -3,7 +3,7 @@
 /* tslint:disable */
 /* eslint-disable */
 import type { GameSessionCreate } from '../models/GameSessionCreate';
-import type { GameSessionOut } from '../models/GameSessionOut';
+import type { GameSessionResponse } from '../models/GameSessionResponse';
 import type { GameSessionStateUpdate } from '../models/GameSessionStateUpdate';
 import type { CancelablePromise } from '../core/CancelablePromise';
 import { OpenAPI } from '../core/OpenAPI';
@@ -12,12 +12,12 @@ export class GameService {
     /**
      * Create Game Session
      * @param requestBody
-     * @returns GameSessionOut Successful Response
+     * @returns GameSessionResponse Successful Response
      * @throws ApiError
      */
     public static createGameSessionGameSessionPost(
         requestBody: GameSessionCreate,
-    ): CancelablePromise<GameSessionOut> {
+    ): CancelablePromise<GameSessionResponse> {
         return __request(OpenAPI, {
             method: 'POST',
             url: '/game/session',
@@ -31,12 +31,12 @@ export class GameService {
     /**
      * Get Current Session
      * @param teamId
-     * @returns GameSessionOut Successful Response
+     * @returns GameSessionResponse Successful Response
      * @throws ApiError
      */
     public static getCurrentSessionGameSessionTeamIdGet(
         teamId: number,
-    ): CancelablePromise<GameSessionOut> {
+    ): CancelablePromise<GameSessionResponse> {
         return __request(OpenAPI, {
             method: 'GET',
             url: '/game/session/{team_id}',
@@ -52,12 +52,12 @@ export class GameService {
      * Start Game Session
      * Start the game (transition from countdown to active)
      * @param sessionId
-     * @returns GameSessionOut Successful Response
+     * @returns GameSessionResponse Successful Response
      * @throws ApiError
      */
     public static startGameSessionGameSessionSessionIdStartPost(
         sessionId: number,
-    ): CancelablePromise<GameSessionOut> {
+    ): CancelablePromise<GameSessionResponse> {
         return __request(OpenAPI, {
             method: 'POST',
             url: '/game/session/{session_id}/start',
@@ -74,13 +74,13 @@ export class GameService {
      * Update game session state (lobby, countdown, active, finished)
      * @param sessionId
      * @param requestBody
-     * @returns GameSessionOut Successful Response
+     * @returns GameSessionResponse Successful Response
      * @throws ApiError
      */
     public static updateGameSessionStateGameSessionSessionIdStatePost(
         sessionId: number,
         requestBody: GameSessionStateUpdate,
-    ): CancelablePromise<GameSessionOut> {
+    ): CancelablePromise<GameSessionResponse> {
         return __request(OpenAPI, {
             method: 'POST',
             url: '/game/session/{session_id}/state',

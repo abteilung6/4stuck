@@ -2,7 +2,7 @@
  * Auto-generated from 4stuck/schemas/core/v1/game.json
  */
 
-/** Game Status: Available game statuses */
+/** Game Status: Current status of a game session */
 export interface GameStatus {
 }
 

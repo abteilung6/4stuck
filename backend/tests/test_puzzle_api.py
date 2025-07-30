@@ -136,8 +136,8 @@ def test_player_elimination_and_game_over():
     session_resp = client.post("/game/session", json={"team_id": team_id})
     session_id = session_resp.json()["id"]
     # Create puzzle for user1
-    user1_id = client.get("/team/").json()[0]["members"][0]["id"]
-    user2_id = client.get("/team/").json()[0]["members"][1]["id"]
+    user1_id = client.get("/team/").json()[0]["users"][0]["id"]
+    user2_id = client.get("/team/").json()[0]["users"][1]["id"]
     resp = client.post("/puzzle/create", json={"type": "memory", "game_session_id": session_id, "user_id": user1_id})
     puzzle = resp.json()
     # Set user1 points to 0 (simulate elimination)

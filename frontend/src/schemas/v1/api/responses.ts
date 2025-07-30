@@ -1,183 +1,56 @@
 /**
- * Auto-generated from 4stuck/schemas/api/v1/responses.json
+ * Auto-generated from 
  */
-
-/** API Response: Base structure for all API responses */
-export interface ApiResponse {
-  /** Whether the request was successful */
-  success: boolean;
-  /** Response data (if successful) */
-  data?: any;
-  /** Error message (if not successful) */
-  error?: string;
-  /** Additional message or description */
-  message?: string;
-}
-
-/** Team Response: Response containing team information */
-export interface TeamResponse {
-  success: boolean;
-  data?: any;
-  error?: string;
-}
-
-/** Available Teams Response: Response containing list of available teams */
-export interface AvailableTeamsResponse {
-  success: boolean;
-  data?: any[];
-  error?: string;
-}
-
-/** Player Response: Response containing player information */
-export interface PlayerResponse {
-  success: boolean;
-  data?: any;
-  error?: string;
-}
-
-/** Game Session Response: Response containing game session information */
-export interface GameSessionResponse {
-  success: boolean;
-  data?: any;
-  error?: string;
-}
-
-/** Game State Response: Response containing complete game state */
-export interface GameStateResponse {
-  success: boolean;
-  data?: any;
-  error?: string;
-}
-
-/** Game Result Response: Response containing game result information */
-export interface GameResultResponse {
-  success: boolean;
-  data?: any;
-  error?: string;
-}
-
-/** Puzzle Response: Response containing puzzle information */
-export interface PuzzleResponse {
-  success: boolean;
-  data?: any;
-  error?: string;
-}
-
-/** Puzzle Result Response: Response containing puzzle submission result */
-export interface PuzzleResultResponse {
-  success: boolean;
-  data?: any;
-  error?: string;
-}
-
-/** Color Assignment Response: Response containing color assignment result */
-export interface ColorAssignmentResponse {
-  success: boolean;
-  data?: Record<string, any>;
-  error?: string;
-}
-
-/** Countdown Response: Response containing countdown information */
-export interface CountdownResponse {
-  success: boolean;
-  data?: Record<string, any>;
-  error?: string;
-}
 
 /** Error Response: Standard error response */
 export interface ErrorResponse {
-  success: any;
-  /** Error message */
-  error: string;
-  /** Additional error details */
-  message?: string;
-  /** Error code */
-  code?: string;
-  /** Additional error details */
-  details?: Record<string, any>;
+  detail: string | Record<string, any>[];
 }
 
-/** Success Response: Standard success response */
-export interface SuccessResponse {
-  success: any;
-  /** Success message */
-  message?: string;
-  /** Response data */
-  data?: any;
-}
-
-/** Health Check Response: API health check response */
-export interface HealthCheckResponse {
-  success: any;
-  status: ('healthy' | 'degraded' | 'unhealthy');
-  timestamp: string;
-  /** API version */
-  version?: string;
-  /** Server uptime in seconds */
-  uptime?: number;
-}
-
-/** Team Color Validation Response: Response for team color validation */
-export interface TeamColorValidationResponse {
-  success: boolean;
-  data?: Record<string, any>;
-  error?: string;
-}
-
-/** Color Conflict Resolution Response: Response for color conflict resolution */
-export interface ColorConflictResolutionResponse {
-  success: boolean;
-  data?: Record<string, any>;
-  error?: string;
-}
-
-/** Available Colors Response: Response for available colors */
-export interface AvailableColorsResponse {
-  success: boolean;
-  data?: Record<string, any>;
-  error?: string;
-}
-
-/** User Out: User response model */
-export interface UserOut {
-  /** User ID */
-  id: number;
-  /** Username */
-  username: string;
-  /** Team ID */
-  team_id?: number;
-  /** Current points */
-  points: number;
-  /** Assigned color */
-  color?: string;
-}
-
-/** Team Out: Team response model */
-export interface TeamOut {
-  /** Team ID */
-  id: number;
-  /** Team name */
-  name: string;
-}
-
-/** Team With Members Out: Team with members response model */
-export interface TeamWithMembersOut {
+/** Team Response: Team information response */
+export interface TeamResponse {
   /** Team ID */
   id: number;
   /** Team name */
   name: string;
   /** Team members */
-  members: any[];
+  users: any[];
 }
 
-/** Game Session Out: Game session response model */
-export interface GameSessionOut {
+/** User Response: User information response */
+export interface UserResponse {
+  /** User ID */
+  id: number;
+  /** Username */
+  username: string;
+  /** Team ID (if assigned) */
+  team_id?: number;
+  /** User color */
+  color?: string;
+}
+
+/** Available Team Response: Available team for joining */
+export interface AvailableTeamResponse {
+  /** Team ID */
+  id: number;
+  /** Team name */
+  name: string;
+  /** Current number of users */
+  user_count: number;
+  /** Maximum number of users */
+  max_users: number;
+}
+
+/** Game Session Response: Game session information */
+export interface GameSessionResponse {
   /** Game session ID */
   id: number;
   /** Team ID */
   team_id: number;
   /** Game session status */
   status: ('lobby' | 'countdown' | 'active' | 'finished');
+  /** When the session was created */
+  created_at: string;
   /** When the game started */
   started_at?: string;
   /** When the game ended */
@@ -186,22 +59,8 @@ export interface GameSessionOut {
   survival_time_seconds?: number;
 }
 
-/** Puzzle State: Puzzle state response model */
-export interface PuzzleState {
-  /** Puzzle ID */
-  id: number;
-  /** Puzzle type */
-  type: ('memory' | 'spatial' | 'concentration' | 'multitasking');
-  /** Puzzle-specific data */
-  data: any;
-  /** Puzzle status */
-  status: ('active' | 'completed' | 'failed');
-  /** Correct answer for the puzzle */
-  correct_answer: string;
-}
-
-/** Puzzle Result: Puzzle result response model */
-export interface PuzzleResult {
+/** Puzzle Answer Response: Response to puzzle answer submission */
+export interface PuzzleAnswerResponse {
   /** Whether the answer was correct */
   correct: boolean;
   /** ID of user who received points */
@@ -212,6 +71,20 @@ export interface PuzzleResult {
   next_puzzle_id?: number;
   /** Next puzzle data (if any) */
   next_puzzle?: any;
+}
+
+/** Puzzle State Response: Puzzle state for API responses */
+export interface PuzzleStateResponse {
+  /** Puzzle ID */
+  id: number;
+  /** Puzzle type */
+  type: ('memory' | 'spatial' | 'concentration' | 'multitasking');
+  /** Puzzle-specific data */
+  data: any;
+  /** Puzzle status */
+  status: ('active' | 'completed' | 'failed');
+  /** Correct answer for the puzzle */
+  correct_answer: string;
 }
 
 /** Player Points: Player points response model */
@@ -228,6 +101,18 @@ export interface PlayerPoints {
 export interface TeamPoints {
   /** Team ID */
   team_id: number;
-  /** List of players with their points */
+  /** Player points */
   players: any[];
+}
+
+/** Color Assignment Response: Response for color assignment operations */
+export interface ColorAssignmentResponse {
+  /** Whether the operation was successful */
+  success: boolean;
+  /** Response message */
+  message: string;
+  /** Color reassignments made */
+  reassignments?: Record<string, any>;
+  /** Color conflicts found */
+  conflicts?: Record<string, any>[];
 }

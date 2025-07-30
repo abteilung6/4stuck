@@ -63,27 +63,31 @@ async def websocket_endpoint(websocket: WebSocket, session_id: int, db: Session 
 
                 elif incoming_message.type == "mouse_position":
                     # Handle mouse position updates with validated data
-                    if incoming_message.user_id and incoming_message.x is not None and incoming_message.y is not None:
-                        update_mouse_position(
+                    if not (
+                        incoming_message.user_id and incoming_message.x is not None and incoming_message.y is not None
+                    ):
+                        continue
+
+                    update_mouse_position(
+                        session_id,
+                        incoming_message.user_id,
+                        incoming_message.x,
+                        incoming_message.y,
+                        None,
+                    )
+
+                    # Get the user's color for the cursor and broadcast if available
+                    color = get_user_color(session_id, incoming_message.user_id)  # noqa: SIM102
+                    if color:
+                        # Send separate mouse_cursor message to all other players
+                        await broadcast_mouse_cursor(
                             session_id,
                             incoming_message.user_id,
                             incoming_message.x,
                             incoming_message.y,
+                            color,
                             None,
                         )
-
-                        # Get the user's color for the cursor
-                        color = get_user_color(session_id, incoming_message.user_id)
-                        if color:
-                            # Send separate mouse_cursor message to all other players
-                            await broadcast_mouse_cursor(
-                                session_id,
-                                incoming_message.user_id,
-                                incoming_message.x,
-                                incoming_message.y,
-                                color,
-                                None,
-                            )
 
                 elif incoming_message.type == "puzzle_interaction":
                     # Handle puzzle interaction events with validated data
@@ -113,19 +117,18 @@ async def websocket_endpoint(websocket: WebSocket, session_id: int, db: Session 
                         # Broadcast to other players
                         await broadcast_state(session_id, db)
 
-                elif incoming_message.type == "achievement":
+                elif (
+                    incoming_message.type == "achievement"
+                    and incoming_message.user_id
+                    and incoming_message.interaction_type
+                ):
                     # Handle achievement broadcasts
-                    if incoming_message.user_id and incoming_message.interaction_type:
-                        await broadcast_achievement(
-                            session_id,
-                            incoming_message.user_id,
-                            incoming_message.interaction_type,
-                            incoming_message.interaction_data or {},
-                        )
-
-                else:
-                    # Unknown message type - just re-broadcast state
-                    await broadcast_state(session_id, db)
+                    await broadcast_achievement(
+                        session_id,
+                        incoming_message.user_id,
+                        incoming_message.interaction_type,
+                        incoming_message.interaction_data or {},
+                    )
 
             except WebSocketDisconnect:
                 break

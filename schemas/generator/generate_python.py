@@ -187,7 +187,24 @@ class PythonGenerator:
         # Create output directory structure with v1 subdirectory
         self.output_dir.mkdir(parents=True, exist_ok=True)
 
-        # Generate __init__.py for main schemas directory
+        # Track all generated classes to avoid conflicts
+        all_classes: dict[str, list[tuple[str, str]]] = {}
+
+        # First pass: collect all class names from each module
+        for schema_id, schema_data in self.schemas.items():
+            if not self.should_generate_schema(schema_id):
+                continue
+
+            module_name = self.get_module_name(schema_id)
+            schema_type = self.get_schema_type(schema_id)
+
+            if "definitions" in schema_data:
+                for class_name in schema_data["definitions"]:
+                    if class_name not in all_classes:
+                        all_classes[class_name] = []
+                    all_classes[class_name].append((schema_type, module_name))
+
+        # Generate __init__.py for main schemas directory with conflict resolution
         init_content = [
             '"""',
             "Auto-generated schemas from JSON Schema definitions",
@@ -202,11 +219,25 @@ class PythonGenerator:
             "# WebSocket schemas",
             "from .v1.websocket.messages import *",
             "",
-            "# API schemas",
-            "from .v1.api.requests import *",
-            "from .v1.api.responses import *",
-            "",
+            "# API schemas - import specific classes to avoid conflicts",
         ]
+
+        # Add specific imports for API classes that might conflict with core classes
+        api_classes = []
+        for class_name, modules in all_classes.items():
+            if len(modules) > 1:  # Class exists in multiple modules
+                api_modules = [(t, m) for t, m in modules if t == "api"]
+                if api_modules:
+                    for schema_type, module_name in api_modules:
+                        api_classes.append(f"from .v1.api.{module_name} import {class_name}")
+
+        if api_classes:
+            init_content.extend(api_classes)
+        else:
+            init_content.append("from .v1.api.requests import *")
+            init_content.append("from .v1.api.responses import *")
+
+        init_content.append("")
 
         init_path = self.output_dir / "__init__.py"
         with init_path.open("w") as f:
@@ -216,7 +247,7 @@ class PythonGenerator:
         v1_dir = self.output_dir / "v1"
         v1_dir.mkdir(exist_ok=True)
 
-        # Generate v1 __init__.py
+        # Generate v1 __init__.py with conflict resolution
         v1_init_content = [
             '"""',
             "Version 1 schemas",
@@ -224,9 +255,15 @@ class PythonGenerator:
             "",
             "from .core import *",
             "from .websocket import *",
-            "from .api import *",
-            "",
         ]
+
+        # Add specific imports for API classes that might conflict
+        if api_classes:
+            v1_init_content.extend([line.replace("from .v1.api.", "from .api.") for line in api_classes])
+        else:
+            v1_init_content.append("from .api import *")
+
+        v1_init_content.append("")
 
         v1_init_path = v1_dir / "__init__.py"
         with v1_init_path.open("w") as f:
@@ -254,7 +291,7 @@ class PythonGenerator:
 
             self.generate_schema_file(schema_data, output_path)
 
-        # Generate __init__.py files for subdirectories
+        # Generate __init__.py files for subdirectories with conflict resolution
         for subdir in ["core", "websocket", "api"]:
             subdir_path = v1_dir / subdir
             if subdir_path.exists():

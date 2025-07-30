@@ -103,14 +103,13 @@ class CountdownService:
             data = {}
             correct_answer = "solved"
 
-        new_puzzle = models.Puzzle(
-            type=puzzle_type,
-            data=data,
-            correct_answer=correct_answer,
-            status="active",
-            game_session_id=session_id,
-            user_id=user_id,
-        )
+        new_puzzle = models.Puzzle()
+        new_puzzle.type = puzzle_type
+        new_puzzle.data = data
+        new_puzzle.correct_answer = correct_answer
+        new_puzzle.status = "active"
+        new_puzzle.game_session_id = session_id
+        new_puzzle.user_id = user_id
         db.add(new_puzzle)
         return new_puzzle
 

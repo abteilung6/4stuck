@@ -2,7 +2,7 @@
  * Auto-generated from 4stuck/schemas/core/v1/puzzle.json
  */
 
-/** Puzzle Type: Types of puzzles available */
+/** Puzzle Type: Available puzzle types in the game */
 export interface PuzzleType {
 }
 

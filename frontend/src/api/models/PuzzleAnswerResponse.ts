@@ -3,9 +3,9 @@
 /* tslint:disable */
 /* eslint-disable */
 /**
- * Puzzle Result: Puzzle result response model
+ * Puzzle Answer Response: Response to puzzle answer submission
  */
-export type PuzzleResult = {
+export type PuzzleAnswerResponse = {
     /**
      * Whether the answer was correct
      */

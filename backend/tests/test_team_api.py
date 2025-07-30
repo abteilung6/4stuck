@@ -130,7 +130,10 @@ def test_get_available_teams_in_game_excluded():
     from app.models import GameSession
 
     db = TestingSessionLocal()
-    game_session = GameSession(team_id=team_id, status="active", started_at=datetime.now(timezone.utc))
+    game_session = GameSession()
+    game_session.team_id = team_id
+    game_session.status = "active"
+    game_session.started_at = datetime.now(timezone.utc)
     db.add(game_session)
     db.commit()
     db.close()
@@ -158,7 +161,10 @@ def test_get_available_teams_mixed_scenarios():
     from app.models import GameSession
 
     db = TestingSessionLocal()
-    game_session = GameSession(team_id=game_team_id, status="active", started_at=datetime.now(timezone.utc))
+    game_session = GameSession()
+    game_session.team_id = game_team_id
+    game_session.status = "active"
+    game_session.started_at = datetime.now(timezone.utc)
     db.add(game_session)
     db.commit()
     db.close()
@@ -186,7 +192,9 @@ def test_get_available_teams_lobby_status_excluded():
     from app.models import GameSession
 
     db = TestingSessionLocal()
-    game_session = GameSession(team_id=team_id, status="lobby")
+    game_session = GameSession()
+    game_session.team_id = team_id
+    game_session.status = "lobby"
     db.add(game_session)
     db.commit()
     db.close()
@@ -212,7 +220,9 @@ def test_get_available_teams_countdown_status_excluded():
     from app.models import GameSession
 
     db = TestingSessionLocal()
-    game_session = GameSession(team_id=team_id, status="countdown")
+    game_session = GameSession()
+    game_session.team_id = team_id
+    game_session.status = "countdown"
     db.add(game_session)
     db.commit()
     db.close()
@@ -238,12 +248,11 @@ def test_get_available_teams_finished_game_included():
     from app.models import GameSession
 
     db = TestingSessionLocal()
-    game_session = GameSession(
-        team_id=team_id,
-        status="finished",
-        started_at=datetime.now(timezone.utc),
-        ended_at=datetime.now(timezone.utc),
-    )
+    game_session = GameSession()
+    game_session.team_id = team_id
+    game_session.status = "finished"
+    game_session.started_at = datetime.now(timezone.utc)
+    game_session.ended_at = datetime.now(timezone.utc)
     db.add(game_session)
     db.commit()
     db.close()
@@ -271,12 +280,11 @@ def test_get_available_teams_finished_game_full_team_excluded():
     from app.models import GameSession
 
     db = TestingSessionLocal()
-    game_session = GameSession(
-        team_id=team_id,
-        status="finished",
-        started_at=datetime.now(timezone.utc),
-        ended_at=datetime.now(timezone.utc),
-    )
+    game_session = GameSession()
+    game_session.team_id = team_id
+    game_session.status = "finished"
+    game_session.started_at = datetime.now(timezone.utc)
+    game_session.ended_at = datetime.now(timezone.utc)
     db.add(game_session)
     db.commit()
     db.close()
