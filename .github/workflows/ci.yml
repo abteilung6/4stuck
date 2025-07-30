@@ -1,0 +1,73 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [ main, master ]
+    types: [ opened, synchronize, reopened ]
+
+jobs:
+  test:
+    runs-on: ubuntu-24.04
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Python 3.12
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.12'
+        cache: 'pip'
+
+    - name: Set up Node.js 22
+      uses: actions/setup-node@v4
+      with:
+        node-version: '22'
+        cache: 'npm'
+        cache-dependency-path: 'frontend/package-lock.json'
+
+    - name: Install Python dependencies
+      run: |
+        cd backend
+        python -m pip install --upgrade pip
+        pip install -r requirements-dev.txt
+
+    - name: Install Node.js dependencies
+      run: |
+        cd frontend
+        npm ci
+
+    - name: Generate schemas
+      run: |
+        make generate-all
+
+    - name: Run backend code formatting
+      run: |
+        make ruff-format
+
+    - name: Run backend linting
+      run: |
+        make ruff-lint
+
+    - name: Run backend type checking
+      run: |
+        make mypy-check
+
+    - name: Run backend tests
+      run: |
+        make test-backend
+
+    - name: Run frontend linting
+      run: |
+        cd frontend
+        npm run lint
+
+    - name: Run frontend tests
+      run: |
+        cd frontend
+        npm test
+
+    - name: Run frontend type checking
+      run: |
+        cd frontend
+        npm run build

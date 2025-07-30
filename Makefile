@@ -1,4 +1,4 @@
-.PHONY: help install install-dev ruff-format ruff-lint mypy-check clean generate-backend generate-frontend generate-all
+.PHONY: help install install-dev ruff-format ruff-lint mypy-check test-backend test-frontend clean generate-backend generate-frontend generate-all
 
 # Install production dependencies only
 install:
@@ -31,6 +31,19 @@ mypy-check:
 	@echo "🔍 Running type checks with MyPy..."
 	cd backend && . venv/bin/activate && mypy --explicit-package-bases . ../schemas/
 	@echo "✅ Type checks completed!"
+
+# Run backend tests
+test-backend:
+	@echo "🧪 Running backend tests..."
+	cd backend && python -m pytest tests/ -v --cov=app --cov-report=term-missing
+	@echo "✅ Backend tests completed!"
+
+# Run frontend tests
+test-frontend:
+	@echo "🧪 Running frontend tests..."
+	cd frontend && npm test
+	@echo "✅ Frontend tests completed!"
+
 # Clean up cache files
 clean:
 	@echo "🧹 Cleaning up cache files..."
