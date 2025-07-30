@@ -12,6 +12,8 @@ from sqlalchemy.orm import sessionmaker
 
 from app.main import app
 from app.models import Base
+# Import all models to ensure they are registered with Base.metadata
+from app.models import Team, User, GameSession, Puzzle
 from app.routers.team import get_db
 
 

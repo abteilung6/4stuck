@@ -5,10 +5,10 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 from app import models
-from app.routers.team import get_db
 from app.services.color_assignment_service import ColorAssignmentService
 
 
+@pytest.mark.usefixtures("_setup_database")
 class TestColorAssignmentService:
     """Test suite for ColorAssignmentService with parameterized tests."""
 
@@ -20,11 +20,26 @@ class TestColorAssignmentService:
     @pytest.fixture
     def db(self):
         """Create a test database session."""
-        db = next(get_db())
+        # Create a temporary database for this test
+        import tempfile
+        from sqlalchemy import create_engine
+        from sqlalchemy.orm import sessionmaker
+        from app.models import Base, Team, User, GameSession, Puzzle
+
+        tmp = tempfile.NamedTemporaryFile(suffix=".db")
+        TEST_DATABASE_URL = f"sqlite:///{tmp.name}"
+        engine = create_engine(TEST_DATABASE_URL, connect_args={"check_same_thread": False})
+        TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+
+        # Create tables
+        Base.metadata.create_all(bind=engine)
+
+        db = TestingSessionLocal()
         try:
             yield db
         finally:
             db.close()
+            tmp.close()
 
     @pytest.fixture
     def test_team(self, db: Session):
