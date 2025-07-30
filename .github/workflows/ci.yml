@@ -29,6 +29,8 @@ jobs:
     - name: Install Python dependencies
       run: |
         cd backend
+        python -m venv venv
+        source venv/bin/activate
         python -m pip install --upgrade pip
         pip install -r requirements-dev.txt
 
@@ -39,19 +41,28 @@ jobs:
 
     - name: Generate schemas
       run: |
-        make generate-all
+        cd backend
+        source venv/bin/activate
+        python ../schemas/generator/generate_python.py --schemas-dir ../schemas --output-dir app/schemas
+        python ../schemas/generator/generate_typescript.py --schemas-dir ../schemas --output-dir ../frontend/src/schemas
 
     - name: Run backend code formatting
       run: |
-        make ruff-format
+        cd backend
+        source venv/bin/activate
+        ruff format app/ ../schemas/ --exclude app/schemas/
 
     - name: Run backend linting
       run: |
-        make ruff-lint
+        cd backend
+        source venv/bin/activate
+        ruff check app/ ../schemas/ --fix --exclude app/schemas/
 
     - name: Run backend type checking
       run: |
-        make mypy-check
+        cd backend
+        source venv/bin/activate
+        mypy --explicit-package-bases . ../schemas/
 
     - name: Run backend tests
       run: |
