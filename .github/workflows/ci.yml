@@ -66,7 +66,9 @@ jobs:
 
     - name: Run backend tests
       run: |
-        make test-backend
+        cd backend
+        source venv/bin/activate
+        python -m pytest tests/ -v --cov=app --cov-report=term-missing
 
     - name: Run frontend linting
       run: |
