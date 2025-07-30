@@ -5,7 +5,6 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 from app import models
-from app.routers.team import get_db
 from app.services.color_assignment_service import ColorAssignmentService
 
 
@@ -20,6 +19,8 @@ class TestColorAssignmentService:
     @pytest.fixture
     def db(self):
         """Create a test database session."""
+        # Import get_db here to get the overridden version from conftest.py
+        from app.routers.team import get_db
         db = next(get_db())
         try:
             yield db
